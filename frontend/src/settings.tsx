@@ -1,0 +1,1 @@
+export const GLOBAL_URL = 'https://resibo-react-1.onrender.com/';

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Orders</title>
+</head>
+<body>
+    <h1>Real-Time Orders</h1>
+    <ul id="orders"></ul>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:4000');
+
+        ws.onmessage = (event) => {
+            const orders = JSON.parse(event.data);
+            const ordersList = document.getElementById('orders');
+            ordersList.innerHTML = '';
+            orders.forEach(order => {
+                const li = document.createElement('li');
+                li.textContent = `Order ID: ${order.order_id}, Customer: ${order.customer_name}, Status: ${order.order_status}, Time: ${order.created_time}`;
+                ordersList.appendChild(li);
+            });
+        };
+    </script>
+</body>
+</html>
