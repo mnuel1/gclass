@@ -9,7 +9,7 @@ export const AssignmentBlock:React.FC<({name: string, date: string})> = ({name, 
         
                 <div className='flex items-center gap-2 my-2 p-2'>
                     
-                    <div className='flex flex-col bg-white p-3 rounded-md '>
+                    <div className='flex flex-col bg-gray-200 p-3 rounded-md '>
                         <div className='flex items-center gap-4'>
                             <h1 className='font-bold'>{name}</h1>
                             <span className='text-xs text-gray-400'>{date}</span>

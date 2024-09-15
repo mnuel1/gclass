@@ -37,7 +37,8 @@ export const ClassroomMenu:React.FC<{item: item}> = ({item}) => {
 
     return (
         <>                        
-            <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-4 
+            border-r border-gray-200 h-full z-0'>
                 <div className='h-[15rem] bg-[green]'></div>
 
                 <div className='flex justify-between mx-6 my-2 relative'>

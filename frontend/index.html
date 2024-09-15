@@ -10,6 +10,20 @@
 
   </head>
   <body>
+    <style>
+       select {
+        appearance: none;  /* Remove default styling (not necessary on some browsers) */
+        -webkit-appearance: none; /* For Safari */
+        -moz-appearance: none; /* For Firefox */
+        
+        /* Adjust background properties */
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="none" stroke="black" stroke-width=".5" d="M0 0l2 2 2-2"/></svg>'); /* Custom arrow as a fallback */
+        background-repeat: no-repeat;
+        background-position: right 10px top 15px; 
+        background-size: 10px;
+        
+    }
+  </style>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

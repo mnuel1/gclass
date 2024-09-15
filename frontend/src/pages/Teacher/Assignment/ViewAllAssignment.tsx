@@ -106,14 +106,14 @@ export const Assignments:React.FC = () => {
                     <ClassroomMenu item={classData}/>
                 </div>
 
-                <div className='w-[70%] bg-gray-200'>
+                <div className='w-[70%] bg-white'>
                     <div className='flex items-center justify-between border-b-2 border-gray-300 p-4'>
                     
                         <h1 className='text-2xl font-bold'>{classData.name}'s Assignment</h1>
                         <button 
                             type='button' 
-                            className='p-2 bg-gray-600 rounded-md text-white flex 
-                            items-center gap-2 hover:bg-gray-700'
+                            className='p-2 rounded-md text-black flex 
+                            items-center gap-2 hover:bg-blue-200 border border-gray-300'
                             onClick={handleCreateAssignment}
                             > 
                             <FaPlus/> 

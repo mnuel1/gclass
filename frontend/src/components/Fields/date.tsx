@@ -1,15 +1,29 @@
 
+import React from 'react';
+import { DatePicker} from 'antd';
+
 type props = {
     name : string;
     
 }
 
 export const DateField:React.FC<props> = ({name}) => {
-
     return (
-        <div className='flex flex-col py-2'>
-            <label className="font-bold gap-2 flex items-center">{name} <span className="text-xs"> </span> </label>
-            <input type="date" className="px-4 py-2 outline-none"/>    
-        </div>
+        <>
+            <label
+            htmlFor={name}
+            className="block text-sm font-medium text-gray-700"
+            >
+            {name}  
+            </label>
+            <DatePicker
+                showTime
+                onChange={(value, dateString) => {
+                    console.log('Selected Time: ', value);
+                    console.log('Formatted Selected Time: ', dateString);
+                }}     
+            />
+        </>
     )
-}
+  
+};

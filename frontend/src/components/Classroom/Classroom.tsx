@@ -11,6 +11,7 @@ interface dataprops {
 
 const blockView = "md:w-[15rem] md:h-[15rem] border border-gray-300 "
 const listView = "w-full h-[5rem] border border-gray-300"
+
 export const Classroom:React.FC<{ dataprops : dataprops}> = ({dataprops}) => {
 
     const navigate = useNavigate()    
@@ -31,7 +32,7 @@ export const Classroom:React.FC<{ dataprops : dataprops}> = ({dataprops}) => {
                 <div className='bg-white h-[30%]  flex items-center'>
                     <div className='flex justify-between mx-2 my-2 relative grow'>
                         <h1 className='mx-2 cursor-pointer text-xl'onClick={() => navigateToClassroom(dataprops)}> {dataprops.name} </h1>
-                        <MoreModal/>                   
+                        <MoreModal id={dataprops.id}/>                   
                     </div>
 
                                         

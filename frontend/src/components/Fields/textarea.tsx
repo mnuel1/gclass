@@ -6,10 +6,17 @@ type props = {
 
 export const Textarea:React.FC<props> = ({name}) => {
 
-    return (
-        <div className='flex flex-col'>
-            <label className="font-bold gap-2 flex items-center">{name} <span className="text-xs text-gray-500"> </span> </label>
-            <textarea rows={4} cols={50} className="px-4 py-2 outline-none"/>    
+    return (        
+        <div>
+            <label htmlFor={name} className="block text-sm font-medium text-gray-700 "> {name} </label>
+
+            <textarea
+            id={name}
+            className="mt-2 w-full rounded-lg border-gray-200 align-top shadow-sm sm:text-sm p-4 
+            border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            rows={4}
+            placeholder="Enter description.."
+            ></textarea>
         </div>
     )
 }

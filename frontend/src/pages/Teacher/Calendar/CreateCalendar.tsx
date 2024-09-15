@@ -29,7 +29,7 @@ export const CreateSchedule:React.FC = () => {
                 <div className='w-[30%] bg-white '>
                     <ClassroomMenu item={classData}/>
                 </div>
-                <div className='w-[70%] bg-gray-200'>
+                <div className='w-[70%] bg-white'>
                     <div className='border-b-2 border-gray-300 p-6 flex justify-between items-center '>
                         <h1 className='text-2xl font-bold'>Schedule a Meeting</h1>                        
                     </div>
@@ -40,7 +40,7 @@ export const CreateSchedule:React.FC = () => {
                         <DateField name='When'/>
                         <button 
                             type='button' 
-                            className='bg-gray-600 p-2 rounded-md w-[10rem] text-white hover:bg-gray-700'> 
+                            className='bg-blue-500 p-2 rounded-md w-[10rem] text-white hover:bg-blue-600'> 
                             Schedule 
                         </button>                    
                     </div>

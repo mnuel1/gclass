@@ -33,10 +33,10 @@ export const TeacherMenu:React.FC<MainMenuProps> = ({children}) => {
 
     return (
         <>
-            <div className='flex flex-col min-h-screen'>
+            <div className='flex flex-col min-h-screen' >
                 
                 <div className='flex flex-col md:flex-row md:items-center bg-white w-full h-full md:h-[4rem] 
-                    md:justify-between p-2 md:p-6 border-b border-gray-300 shadow-xl'>
+                    md:justify-between p-2 md:p-6 border-b border-gray-300 drop-shadow-lg'>
                     
                     <div className='flex gap-4'>
                         <button onClick={() => setCollapsed(prev => !prev)}>
@@ -70,8 +70,8 @@ export const TeacherMenu:React.FC<MainMenuProps> = ({children}) => {
                 <div className='flex flex-col md:flex-row border-black grow'>
                 
                     <div className={collapsed ? `p-4 bg-white min-h-fit w-full md:max-w-[5%] flex 
-                    flex-row md:flex-col gap-2 justify-evenly md:justify-start border-r border-gray-300  ` : `p-4 bg-white min-h-fit w-full md:max-w-[15%] flex 
-                    flex-row md:flex-col gap-2 justify-evenly md:justify-start overflow-hidden border-r border-gray-300` }>
+                    flex-row md:flex-col gap-2 justify-evenly md:justify-start border-r border-gray-300 drop-shadow-lg` : `p-4 bg-white min-h-fit w-full md:max-w-[15%] flex 
+                    flex-row md:flex-col gap-2 justify-evenly md:justify-start overflow-hidden border-r border-gray-300  drop-shadow-lg` }>
                                                                             
                             <div
                                 onClick={() => handleNavBtn("class")}

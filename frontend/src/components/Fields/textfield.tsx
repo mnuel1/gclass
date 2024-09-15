@@ -7,9 +7,27 @@ type props = {
 export const Textfield:React.FC<props> = ({name}) => {
 
     return (
-        <div className='flex flex-col'>
-            <label className="font-bold gap-2 flex items-center">{name} <span className="text-xs text-gray-500"> (required) </span> </label>
-            <input type="text" className="px-4 py-2 outline-none" required/>    
-        </div>
+           
+        <label
+            htmlFor={name}
+            className="relative block overflow-hidden rounded-md border border-gray-200 
+             px-3 pt-3 shadow-sm focus-within:border-gray-600 focus-within:ring-1 focus-within:ring-gray-600"
+        >
+            <input
+            required
+            type="text"
+            id={name}
+            placeholder={name}
+            className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+
+            <span
+                className="absolute start-3 top-3 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
+            >
+                {name} <span className="text-red-600">*</span>
+            </span>
+        </label>
+        
     )
 }
+
