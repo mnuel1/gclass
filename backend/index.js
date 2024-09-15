@@ -5,8 +5,8 @@ const morgan = require("morgan");
 
 // const { setupWebSocket } = require("./src/websocket/websocket");
 
-const teacherRoute = require("./src/routes/route");
-
+const teacherRoute = require("./src/Teacher/routes/route");
+const searchRoute = require('./src/routes/route')
 
 require("dotenv").config();
 
@@ -16,7 +16,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({extended: true}))
 app.use("/teacher", teacherRoute)
-
+app.use(searchRoute)
 
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server is running on http://localhost:${process.env.PORT}`);

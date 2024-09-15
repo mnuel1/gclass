@@ -1,8 +1,5 @@
-const { 
-    Login, 
-    Register } = require("../Teacher/Controllers/Auth/auth")
-
-const VerifyTeacher = require("../middleware/verify")
+const { Search } = require("../Search/search")
+// const VerifyTeacher = require("../../middleware/verify")
 const express = require('express');
 const router = express.Router();
 
@@ -12,7 +9,6 @@ const router = express.Router();
  * 
  **/ 
 
-router.post("/login", Login);
-router.post("/register", Register);
+router.get("/search/:name", Search);
 
 module.exports = router
