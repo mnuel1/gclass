@@ -34,10 +34,17 @@ export const CreateSchedule:React.FC = () => {
                         <h1 className='text-2xl font-bold'>Schedule a Meeting</h1>                        
                     </div>
 
-                    <div className='h-full p-4 m-6 flex flex-col gap-2'>
-                        <Textfield name="Name"/>
+                    <div className='p-4 m-6 flex flex-col gap-2'>
+                        <div className='flex flex-col gap-2'>
+                            <span className='text-sm text-gray-500'>Title <span className='text-red-700'>*</span> </span>
+                            <Textfield /> 
+                        </div>
                         <Textarea name="Description"/>                       
-                        <DateField name='When'/>
+                        
+                        <div className='flex flex-col gap-2'>
+                            <span className='text-sm text-gray-500'>When <span className='text-red-700'>*</span> </span>
+                            <DateField /> 
+                        </div>
                         <button 
                             type='button' 
                             className='bg-blue-500 p-2 rounded-md w-[10rem] text-white hover:bg-blue-600'> 

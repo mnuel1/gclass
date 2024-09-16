@@ -1,15 +1,12 @@
-// src/stores/useClassroomStore.ts
-import { create } from 'zustand';
 
-interface Classroom {
-  id: string;
-  name: string;
-  description: string;
-}
+import { create } from 'zustand';
+import { ClassroomTypes } from '../../../types/classroomTypes';
+
 
 interface ClassroomState {
-  classrooms: Classroom[];
-  addClassroom: (classroom: Classroom) => void;
+  classrooms: ClassroomTypes[];
+  getClassrooms: (classrooms : ClassroomTypes[]) => void
+  addClassroom: (classroom: ClassroomTypes) => void;
   joinClassroom: (classroomId: string) => void;
   addMemberClassroom: (studentID: string[]) => void;
   editClassroom: (id: string) => void;
@@ -17,28 +14,18 @@ interface ClassroomState {
 }
 
 const useClassroomStore = create<ClassroomState>((set) => ({
-  classrooms: [
-    {
-      id: '123131313',
-      name: "Classroom 1",
-      description: 'this is classroom cool',
-    },
-    {
-      id: '123131314',
-      name: "Classroom 2",
-      description: 'this is classroom hot',
-    },
-    {
-      id: '123131315',
-      name: "Classroom 3",
-      description: 'this is classroom warm',
-    },
-  ],
+  classrooms: [],
   
-  addClassroom: (newClassroom) =>
+  getClassrooms: (classrooms) =>{      
+    set(() => ({
+      classrooms: [...classrooms],       
+    }))   
+  },      
+  addClassroom: (newClassroom) =>{
     set((state) => ({
       classrooms: [...state.classrooms, newClassroom],
-    })),
+    }))
+  },
 
   joinClassroom: (classroomId) => {
     console.log(`Joined classroom with ID: ${classroomId}`);

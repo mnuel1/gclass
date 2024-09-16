@@ -35,7 +35,7 @@ const Search = async (req, res) => {
         console.log(error);
         return res.status(500).json({ 
             title: "Internal Error", 
-            msg: "Something went wrong!" 
+            message: "Something went wrong!" 
         });
     }
 };

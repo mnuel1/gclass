@@ -9,7 +9,7 @@ const VerifyTeacher = async (req, res, next) => {
     const token = req.headers.authorization
 
     if (!token) {
-        return res.status(401).json({ title: "401 Error Code", msg: "Not Authorized!" });
+        return res.status(401).json({ title: "401 Error Code", message: "Not Authorized!" });
     }
 
     try {
@@ -17,7 +17,7 @@ const VerifyTeacher = async (req, res, next) => {
 
             if (err) {
                 if (err.name === 'TokenExpiredError') {
-                    return res.status(401).json({ title: "401 Error Code", msg: "Not Authorized!" });
+                    return res.status(401).json({ title: "401 Error Code", message: "Not Authorized!" });
                 }
                 return res.status(401).json({ title: "Error", message: "Not Authorized!", token: token });
             }
@@ -30,13 +30,13 @@ const VerifyTeacher = async (req, res, next) => {
             )
 
             if (!result) {
-                return res.status(404).json({ title: "Error", msg: "Not Authorized!!" });
+                return res.status(404).json({ title: "Error", message: "Not Authorized!!" });
             }
             next();
         })
 
     } catch (error) {
-        return res.status(500).json({ title: "Error", msg: `Something went wrong in server ${error}` });
+        return res.status(500).json({ title: "Error", message: `Something went wrong in server ${error}` });
     }
 
     

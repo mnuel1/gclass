@@ -1,4 +1,4 @@
-const db = require("../../../database/db")
+const db = require("../../database/db")
 
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
@@ -48,7 +48,7 @@ const Register = async (req, res) => {
         
         return res.status(200).json({ 
             title: "Successful Registration", 
-            msg: "!",
+            message: "!",
             teacherID: registerResult.insertId,
             firstName: firstName,
             lastName: lastName,
@@ -59,7 +59,7 @@ const Register = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ title: "Internal Error", msg: "Something went wrong!" });
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
     }
 }
 
@@ -89,7 +89,7 @@ const Login = async (req, res) => {
         
         return res.status(200).json({ 
             title: "Successful Registration", 
-            msg: "!",
+            message: "!",
             teacherID: result[0].teacher_id,
             firstName: result[0].first_name,
             lastName: result[0].last_name,
@@ -99,7 +99,7 @@ const Login = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ title: "Internal Error", msg: "Something went wrong!" });
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
     }
     
 }

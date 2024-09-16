@@ -1,4 +1,4 @@
-const db = require("../../../database/db")
+const db = require("../../database/db")
 
 
 const CreateClass = async (req, res) => {
@@ -29,7 +29,7 @@ const CreateClass = async (req, res) => {
         });
     } catch (error) {       
         console.log(error);
-        return res.status(500).json({ title: "Internal Error", msg: "Something went wrong!" });
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
     }
 
 }
@@ -62,7 +62,7 @@ const EditClass = async (req, res) => {
     } catch (error) {
        
         console.log(error);
-        return res.status(500).json({ title: "Internal Error", msg: "Something went wrong!" });
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
     }
 }
 
@@ -93,7 +93,7 @@ const RemoveClass = async (req, res) => {
     } catch (error) {
         await connection.rollback();
         console.log(error);
-        return res.status(500).json({ title: "Internal Error", msg: "Something went wrong!" });
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
     }
 }
 
@@ -105,7 +105,7 @@ const GetClasses = async (req, res) => {
             `SELECT * FROM class WHERE teacher_id = ?`,
             [teacher_id]
         )
-
+        
         if (!result.length) {
             return res.status(400).json({ 
                 title: "Get Classes failed", 
@@ -124,16 +124,16 @@ const GetClasses = async (req, res) => {
     } catch (error) {
       
         console.log(error);
-        return res.status(500).json({ title: "Internal Error", msg: "Something went wrong!" });
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
     }
 }
 
 
-exports.module = {
+
+module.exports = {
     CreateClass,
     EditClass,
-    RemoveClass,
-   
+    RemoveClass,   
     GetClasses,
 
 }

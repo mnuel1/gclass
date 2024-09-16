@@ -8,7 +8,7 @@ export const Textarea:React.FC<props> = ({name}) => {
 
     return (        
         <div>
-            <label htmlFor={name} className="block text-sm font-medium text-gray-700 "> {name} </label>
+            <label htmlFor={name} className="text-sm text-gray-500 "> {name} </label>
 
             <textarea
             id={name}

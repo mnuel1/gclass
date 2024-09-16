@@ -1,132 +1,145 @@
-import React from 'react'
+import React, {useState} from 'react'
 
-import { NavLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-export const Navbar:React.FC = () => {
-    // const {showMenu, setShowMenu} = setShowMenuToggle();
-  return (
-    <div className='w-full z-[20] flex justify-between items-center bg-primary py-5 lg:py-0 px-[2rem] md:px-[5rem] font-secondary'>
-        <div>
-            <h1 className='text-white'>RESIBO PILIPINAS</h1>
-        </div>
-        {/* <div className='hidden lg:flex items-center gap-3'>
-            
-            <NavLink 
-                to="buyer-login"
-                className={({isActive}) => 
-                isActive ? 'text-blue-500 p-5 border-b-2 border-blue-500' :
-                'text-white hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500 p-5'}
-            >
-                    Buyer Login
-            </NavLink>
-        </div> */}
-        <div className='hidden lg:flex items-center gap-5'>
-            <NavLink 
-                to={"login"} 
-                className={({isActive}) => 
-                isActive ? 'text-blue-500 border-b-2 border-blue-500 p-5' :
-                'text-white hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500 p-5'}
-            >
-                Seller Login
-            </NavLink>
-            <NavLink 
-                to={"temp-transaction"} 
-                className={({isActive}) => 
-                isActive ? 'text-blue-500 border-b-2 border-blue-500 p-5' :
-                'text-white hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500 p-5'}
-            >
-                Transaction
-            </NavLink>
-            {/* <NavLink 
-                to="buyer-login"
-                className={({isActive}) => 
-                isActive ? 'text-blue-500 border-b-2 border-blue-500 p-5' :
-                'text-white hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500 p-5'}
-            >
-                Sign In
-            </NavLink>
-            <NavLink 
-                to="/buyer-sign-up"
-                className={({isActive}) => 
-                isActive ? 'text-blue-500 border-b-2 border-blue-500 p-5' :
-                'text-white hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500 p-5'}
-            >
-                Sign Up
-            </NavLink>            */}
-        </div>
-        {/* <div className='block lg:hidden z-[50]'>
+type MainMenuProps = {
+    children: React.ReactNode
+}
 
-        <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            strokeWidth={1.5} 
-            stroke="currentColor" 
-            className={`w-6 h-6 ${showMenu ? "text-white" : "text-secondary"} cursor-pointer hover:text-white transition-all
-            delay-50 ease-in-out`}
-            onClick={setShowMenu}
-        >
-            <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" 
-            />
-        </svg>
+const active = ""
+const notActive = ""
 
-        </div> */}
-        {/* <div className={`${showMenu ? "w-[19rem]" : "w-0"} h-screen lg:hidden z-[30] fixed shadow-xl shadow-gray-400 bg-white left-0 top-0
-        overflow-hidden transition-all delay-50 ease-in-out flex flex-col justify-between py-10`}>
-            <div className=''>
-                <div className='row-span-1'>
-                    <h1 className='text-center'>RESIBO PILIPINAS</h1>
-                </div>
-                <div className='flex flex-col gap-3 mt-10 p-2'>
-                <NavLink 
-                    to="login"
-                    onClick={setShowMenu}
-                    className={({isActive}) => 
-                    isActive ? 'text-white rounded-xl bg-primary p-5 flex items-center gap-3' :
-                    'text-primary hover:text-secondary hover:border-secondary rounded-xl hover:bg-onMouse p-5 flex items-center gap-3'}
-                >
-                    <AiFillHome className='text-xl'/>
-                    Seller Login
-                </NavLink>  
-                <NavLink 
-                    to="temp-transaction" 
-                    onClick={setShowMenu}
-                    className={({isActive}) => 
-                    isActive ? 'text-white rounded-xl bg-primary p-5 flex items-center gap-3' :
-                    'text-primary hover:text-secondary hover:border-secondary rounded-xl hover:bg-onMouse p-5 flex items-center gap-3'}
-                >
-                    <AiFillHome className='text-xl'/>
-                    Transaction
-                </NavLink>  
-                <NavLink 
-                    to="buyer-login"
-                    className={({isActive}) => 
-                    isActive ? 'text-white rounded-xl bg-primary p-5 flex items-center gap-3' :
-                    'text-primary hover:text-secondary hover:border-secondary rounded-xl hover:bg-onMouse p-5 flex items-center gap-3'}
-                >
-                    <HiUserAdd className='text-xl'/>
-                    Sign In
-                </NavLink>
-                <NavLink 
-                    to="/buyer-sign-up"
-                    className={({isActive}) => 
-                    isActive ? 'text-white rounded-xl bg-primary p-5 flex items-center gap-3' :
-                    'text-primary hover:text-secondary hover:border-secondary rounded-xl hover:bg-onMouse p-5 flex items-center gap-3'}
-                >
-                    <HiUserAdd className='text-xl'/>
-                    Sign Up
-                </NavLink>
-                </div>
-            </div>
+export const Navbar:React.FC<MainMenuProps> = ({children}) => {
+    const [collapsed, setCollapsed] = useState(false)
+    const [isActive, setActive] = useState(window.location.href.split("/").pop())
+    const navigate = useNavigate()
+   
+    const handleNavBtn = (id : string) => {
 
-            <div className='row-span-2 flex flex-col items-center gap-5'>
-                <p className='font-primary'>@resibo pilipinas</p>
-            </div>
-        </div> */}
+        setActive(id)
+
+        if (window.location.href.split("/").slice(-2, -1)[0] === "teacher") {            
+            navigate(`teacher/${id}`)
+        } else {
+            navigate(`student/${id}`)
+        }
         
-    </div>
-  )
+        
+    }
+    return (
+        <>
+            <div className='flex flex-col min-h-screen' >
+                
+                <div className='flex flex-row items-center bg-white w-full h-full md:h-[4rem] 
+                    justify-between p-2 md:p-6 border-b border-gray-300 drop-shadow-lg'>
+                    
+                    <div className='flex gap-4 pl-8'>
+                        
+                        <h1 className='text-2xl'> APP NAME</h1>
+
+                    </div>                 
+                    <div className='flex gap-4 pr-8'>                     
+                        <div
+                            onClick={() => handleNavBtn("login")}
+                            className={`${isActive === 'class' ? active : notActive} 
+                            hidden cursor-pointer hover:bg-blue-400 w-[8rem] p-2 rounded-lg md:flex items-center justify-center bg-blue-300 `}
+                        >                               
+                            <span className={'text-xs sm:block md:text-lg font-bold'}> Sign-in </span>
+                        </div>
+                        <div
+                            onClick={() => handleNavBtn("signup")}
+                            className={`${isActive === 'class' ? active : notActive} 
+                            hidden cursor-pointer hover:bg-gray-200 hover:border-gray-200 w-[8rem] p-2 rounded-lg md:flex items-center 
+                            justify-center border border-blue-200`}
+                        >                            
+                            <span className={'text-xs sm:block md:text-lg font-bold'}> Sign-up </span>
+                        </div>
+                        <button onClick={() => setCollapsed(prev => !prev)} className='relative block md:hidden'>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" 
+                                className="size-12 text-black cursor-pointer rounded-full hover:bg-gray-200 p-2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                            </svg>
+
+                            {!collapsed && <div className='absolute bg-white w-[15rem] right-0'>
+                                <ul className="space-y-1 p-2">
+                                    <li>
+                                        <a href="#" className="block rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700">
+                                        General
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                        href="#"
+                                        className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                                        >
+                                        Teams
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                        href="#"
+                                        className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                                        >
+                                        Billing
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                        href="#"
+                                        className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                                        >
+                                        Invoices
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                        href="#"
+                                        className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                                        >
+                                        Account
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>}
+                        </button>
+                    </div>
+                </div>
+                
+                
+                
+                <div className='flex flex-col md:flex-row border-black grow'>
+                
+                    {/* <div className={collapsed ? `hidden p-4 bg-white min-h-fit w-full md:max-w-[5%] flex 
+                    flex-row md:flex-col gap-2 justify-evenly md:justify-start border-r border-gray-300 drop-shadow-lg` : `p-4 bg-white min-h-fit w-full md:max-w-[15%] flex 
+                    flex-row md:flex-col gap-2 justify-evenly md:justify-start overflow-hidden border-r border-gray-300  drop-shadow-lg` }>
+                                                                            
+                            <div
+                                onClick={() => handleNavBtn("teacher/login")}
+                                className={isActive === 'class' ? active : notActive}
+                            >                               
+                                <span className={collapsed ? 'hidden' : 'text-xs sm:block md:text-[16px] font-bold'}> Sign-in </span>
+                            </div>
+                            <div
+                                onClick={() => handleNavBtn("teacher/signup")}
+                                className={isActive === 'calendar' ? active : notActive}
+                            >
+                                
+
+                                <span className={collapsed ? 'hidden' : 'text-xs sm:block md:text-[16px] font-bold'}> Sign-up </span>
+                            </div>
+                                                      
+                    </div> */}
+
+
+                    <div className='bg-white w-full order-first'>
+                        {children}
+                    </div>
+                </div>
+            </div> 
+        </>       
+    )
 }

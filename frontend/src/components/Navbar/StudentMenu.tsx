@@ -23,7 +23,7 @@ export const StudentMenu:React.FC<MainMenuProps> = ({children}) => {
 
             </div>
             <div className='p-4 bg-[#F6FAFC]]'>
-                <h1 className='text-xl text-center text-primary font-bold'>RESIBO PILIPINAS</h1>
+                <h1 className='text-xl text-center text-primary font-bold'>T-CLASS</h1>
             </div>
             {children}
         </>          

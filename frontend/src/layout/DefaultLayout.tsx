@@ -5,8 +5,9 @@ import { Navbar } from '../components/Navbar/Navbar'
 export const DefaultLayout:React.FC = () => {
   return (
     <>
-        <Navbar />      
-        <Outlet />
+        <Navbar>      
+          <Outlet />
+        </Navbar>
         
     </>
   )

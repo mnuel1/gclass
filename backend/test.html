@@ -1,27 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Orders</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Detection with Screen Capture</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
 </head>
 <body>
-    <h1>Real-Time Orders</h1>
-    <ul id="orders"></ul>
+  <button id="capture">Capture Camera</button>
+  <canvas id="canvas"></canvas>
+    <script>
+    if (!navigator.mediaDevices?.enumerateDevices) {
+      console.log("enumerateDevices() not supported.");
+    } else {
+      // List cameras and microphones.
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+          let audioSource = null;
+          let videoSource = null;
+
+          devices.forEach((device) => {
+            if (device.kind === "audioinput") {
+              audioSource = device.deviceId;
+            } else if (device.kind === "videoinput") {
+              videoSource = device.deviceId;
+            }
+          });
+          sourceSelected(audioSource, videoSource);
+        })
+        .catch((err) => {
+          console.error(`${err.name}: ${err.message}`);
+        });
+    }
+
+    async function sourceSelected(audioSource, videoSource) {
+      const constraints = {
+        audio: { deviceId: audioSource },
+        video: { deviceId: videoSource },
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    }
+    </script>
+    
+    <!-- Use face-api.js from CDN -->
+    <script defer src="face-api.js"></script>
+    <script>
+    async function loadModels() {
+      const MODEL_URL = './models';
+      // Load the models from CDN
+      await faceapi.loadSsdMobilenetv1Model(MODEL_URL)
+      await faceapi.loadFaceLandmarkModel(MODEL_URL)
+      await faceapi.loadFaceRecognitionModel(MODEL_URL)
+      console.log("Models loaded");
+    }
+
+    async function detectFaces(canvas) {
+      // Detect faces from the canvas
+      const fullFaceDescriptions = await faceapi.detectAllFaces(canvas, new faceapi.SsdMobilenetv1Options())
+        .withFaceLandmarks().withFaceDescriptors();
+      
+      // Resize results to match canvas size
+      const resizedResults = faceapi.resizeResults(fullFaceDescriptions, { width: canvas.width, height: canvas.height });
+
+      // Draw the detected face boxes and landmarks
+      faceapi.draw.drawDetections(canvas, resizedResults);
+      faceapi.draw.drawFaceLandmarks(canvas, resizedResults);
+    }
+
+    </script>
 
     <script>
-        const ws = new WebSocket('ws://localhost:4000');
+       document.getElementById('capture').addEventListener('click', async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Camera capture is not supported in this browser.');
+        return;
+      }
 
-        ws.onmessage = (event) => {
-            const orders = JSON.parse(event.data);
-            const ordersList = document.getElementById('orders');
-            ordersList.innerHTML = '';
-            orders.forEach(order => {
-                const li = document.createElement('li');
-                li.textContent = `Order ID: ${order.order_id}, Customer: ${order.customer_name}, Status: ${order.order_status}, Time: ${order.created_time}`;
-                ordersList.appendChild(li);
-            });
+      try {
+        await loadModels();
+
+        const constraints = {
+          video: { facingMode: 'user' } // Use front camera
         };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+
+        video.onloadedmetadata = async () => {
+          await new Promise(resolve => video.oncanplay = resolve);
+
+          const canvas = document.getElementById('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+
+          // Draw the video frame to canvas
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          // Run face detection on the captured image
+          await detectFaces(canvas);
+
+          // Stop the video stream after capturing the frame
+          stream.getTracks().forEach(track => track.stop());
+        };
+      } catch (err) {
+        console.error('Error during camera capture:', err);
+        alert('An error occurred while capturing the camera. Check the console for more details.');
+      }
+    });
     </script>
 </body>
 </html>

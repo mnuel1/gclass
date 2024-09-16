@@ -1,27 +1,25 @@
 import React, { useState } from 'react'
 
+import { ClassroomTypes } from '../../types/classroomTypes'
 import { useNavigate } from 'react-router-dom'
 import { MoreModal } from '../Modal/More'
 
 const active = 'h-[2rem] text-sm bg-gray-200 text-gray-500 text-left px-6'
 const notActive = 'h-[2rem] text-sm hover:bg-gray-200 text-gray-500 text-left px-6'
 
-interface item {
-    id: string,
-    name: string,
-    description: string
-}
 
-
-export const ClassroomMenu:React.FC<{item: item}> = ({item}) => {
+export const ClassroomMenu:React.FC<{item: ClassroomTypes}> = ({item}) => {
 
     const navigate = useNavigate()
     
     const getLinkID = () => {
 
-        if (window.location.href.split("/").pop() === 'new'){
-            const length : number  = window.location.href.split("/").length            
-            return window.location.href.split("/")[length-2]
+        if (window.location.href.split("/").pop() === 'new' ){
+            const length : number  = window.location.href.split("/").length                        
+            return window.location.href.split("/")[length-2]            
+        } else if (window.location.href.split("/").pop() === 'view' ) {
+            const length : number  = window.location.href.split("/").length
+            return window.location.href.split("/")[length-3]   
         }
         return window.location.href.split("/").pop()
     }
@@ -29,7 +27,7 @@ export const ClassroomMenu:React.FC<{item: item}> = ({item}) => {
     const [isActive, setActive] = useState(getLinkID)
     const navigateTo = (id : string) =>{        
         setActive(id)
-        navigate(`/teacher/class/${item.id}/${id}`, {state:{item}})
+        navigate(`/teacher/class/${item.teacher_id}/${id}`, {state:{item}})
         
     }
     
@@ -41,9 +39,9 @@ export const ClassroomMenu:React.FC<{item: item}> = ({item}) => {
             border-r border-gray-200 h-full z-0'>
                 <div className='h-[15rem] bg-[green]'></div>
 
-                <div className='flex justify-between mx-6 my-2 relative'>
+                <div className='flex items-center justify-between mx-6 my-2 relative'>
                     <h1 className='text-xl font-bold'>{item.name}</h1>
-                    <MoreModal/>                   
+                    <MoreModal id={item.class_id}/>                   
                 </div>
 
                 <div className='flex flex-col '>

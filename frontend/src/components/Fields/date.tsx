@@ -2,27 +2,18 @@
 import React from 'react';
 import { DatePicker} from 'antd';
 
-type props = {
-    name : string;
-    
-}
-
-export const DateField:React.FC<props> = ({name}) => {
+export const DateField:React.FC = () => {
     return (
-        <>
-            <label
-            htmlFor={name}
-            className="block text-sm font-medium text-gray-700"
-            >
-            {name}  
-            </label>
-            <DatePicker
+        <>            
+            <DatePicker style={{zIndex:0}}
                 showTime
                 onChange={(value, dateString) => {
                     console.log('Selected Time: ', value);
                     console.log('Formatted Selected Time: ', dateString);
                 }}     
             />
+
+           
         </>
     )
   

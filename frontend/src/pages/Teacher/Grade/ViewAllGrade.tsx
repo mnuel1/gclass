@@ -1,7 +1,6 @@
 
 import React from 'react'
 
-
 import { useLocation } from 'react-router-dom'
 import { ClassroomMenu } from '../../../components/Navbar/ClassroomMenu'
 import { TableGrade } from '../../../components/Table/GradeTable'
@@ -62,20 +61,11 @@ const studentGrades : StudentsData  = {
     col: ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5' ]
 }
 
-
-
-
-  
-
-
-
 export const Grades:React.FC = () => {
 
     const location = useLocation()
     const classData : item = location.state.item
-
-    
-        
+            
     const getClassroomGrades = () => {
         console.log(location.state.id)
     }
@@ -85,23 +75,33 @@ export const Grades:React.FC = () => {
 
             <div className='flex h-full w-full'>
 
-            <div className='w-[30%] bg-white '>
-                <ClassroomMenu item={classData}/>
-            </div>
-
-            <div className='w-[70%] bg-gray-200 flex flex-col'>
-                <div className='border-b-2 border-gray-300 p-4'>
-                
-                    <h1 className='text-2xl font-bold'>{classData.name}'s Grades</h1>
+                <div className='w-[30%] bg-white '>
+                    <ClassroomMenu item={classData}/>
                 </div>
 
-                <div className='p-4 m-6 bg-white grow'>
-                    <TableGrade studentsData={studentGrades}/>
+                <div className='w-[70%] bg-white flex flex-col'>
+                    <div className='flex md:items-center justify-between flex-col md:flex-row gap-4 md:gap-0 border-b-2 border-gray-300 px-8 py-4'>
+                    
+                        <h1 className='text-2xl font-bold'>{classData.name}'s Grades</h1>
+
+                        <button 
+                            type='button' 
+                            className='p-2 rounded-md text-black flex 
+                            items-center gap-2 hover:bg-blue-200 border border-gray-300'
+                            
+                            > 
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Export Grades
+                        </button>
+                    </div>
+
+                    <div className='p-4 m-6 bg-white grow'>
+                        <TableGrade studentsData={studentGrades}/>
+                    </div>
+
                 </div>
-
-            </div>
-
-
 
 
             </div>

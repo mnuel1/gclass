@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Detection with Jitsi Meet</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+    #jaas-container {
+      height: 500px; /* Adjust as needed */
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Jitsi Meet Container -->
+  <div id="jaas-container"></div>
+
+  <canvas id="canvas"></canvas>
+  
+  <script defer src="face-api.js"></script>
+  <script src='https://8x8.vc/vpaas-magic-cookie-e0064c22ac054806b66d689c7d3af0c6/external_api.js' async></script>
+
+  <script>
+    // Function to load face-api.js models
+    async function loadModels() {
+    const MODEL_URL = './models';      
+      await faceapi.loadSsdMobilenetv1Model(MODEL_URL)
+      await faceapi.loadFaceLandmarkModel(MODEL_URL)
+      await faceapi.loadFaceRecognitionModel(MODEL_URL)
+      console.log("Models loaded");
+    }
+
+    // Function to detect faces
+    async function detectFaces(canvas) {
+      const fullFaceDescriptions = await faceapi.detectAllFaces(canvas, new faceapi.SsdMobilenetv1Options())
+        .withFaceLandmarks().withFaceDescriptors();
+      
+      const resizedResults = faceapi.resizeResults(fullFaceDescriptions, { width: canvas.width, height: canvas.height });
+
+      faceapi.draw.drawDetections(canvas, resizedResults);
+      faceapi.draw.drawFaceLandmarks(canvas, resizedResults);
+    }
+
+    window.onload = () => {
+      // Initialize Jitsi Meet API
+      const api = new JitsiMeetExternalAPI("8x8.vc", {
+        roomName: "vpaas-magic-cookie-e0064c22ac054806b66d689c7d3af0c6/SampleAppValidActsCrashMagnificently",
+        parentNode: document.querySelector('#jaas-container'),
+        // Include JWT if necessary
+        // jwt: "your-jwt-token"
+      });
+
+      // Load models and start face detection
+      loadModels().then(() => {
+        console.log('yes');
+        
+        // Set up the canvas
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Get the Jitsi Meet video element
+        api.addEventListener('videoConferenceJoined', async () => {
+
+            const captureAndDetect = async() => {
+                const constraints = {
+                    video: { facingMode: 'user' } // Use front camera
+                    };
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    const video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.play();
+
+                    video.onloadedmetadata = async () => {
+                    await new Promise(resolve => video.oncanplay = resolve);
+
+                    const canvas = document.getElementById('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+
+                    // Draw the video frame to canvas
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // Run face detection on the captured image
+                    await detectFaces(canvas);
+
+                    // Stop the video stream after capturing the frame
+                    stream.getTracks().forEach(track => track.stop());
+                    };
+            }
+            
+
+          // Run face detection every 5 seconds
+          setInterval(captureAndDetect, 5000);
+        });
+      }).catch(err => console.error('Error loading models:', err));
+    };
+  </script>
+</body>
+</html>
