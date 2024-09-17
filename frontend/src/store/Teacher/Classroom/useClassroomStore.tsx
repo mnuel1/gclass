@@ -9,8 +9,8 @@ interface ClassroomState {
   addClassroom: (classroom: ClassroomTypes) => void;
   joinClassroom: (classroomId: string) => void;
   addMemberClassroom: (studentID: string[]) => void;
-  editClassroom: (id: string) => void;
-  deleteClassroom: (id: string) => void;
+  editClassroom: (classData: ClassroomTypes) => void;
+  deleteClassroom: (class_id: string) => void;
 }
 
 const useClassroomStore = create<ClassroomState>((set) => ({
@@ -34,11 +34,22 @@ const useClassroomStore = create<ClassroomState>((set) => ({
   addMemberClassroom: (studentID) => {
       console.log('call service')
   },
-  editClassroom: (id) => {
-    console.log('call service')
+  editClassroom: (classData) => {
+    set((state) => ({
+      classrooms: state.classrooms.map((classroom) =>
+        classroom.class_id === classData.class_id
+          ? { ...classroom, ...classData }  
+          : classroom
+      ),
+    }));
   },
-  deleteClassroom: (id) => {
-    console.log('call service')
+
+  deleteClassroom: (class_id) => {
+    set((state) => ({
+      classrooms: state.classrooms.filter(
+        (classroom) => classroom.class_id !== class_id  
+      ),
+    }));
   },
 }));
 

@@ -30,18 +30,21 @@ export const ClassroomView:React.FC = () => {
         // navigate(`/teacher/class/${classData.id}/assignments/new`, {state:{item}})
         // alert('yes')
     }
+
+
+
+    
     useEffect(() => {
         
         if (isSuccess && data) {          
-            getActivity(data);  
-            console.log(activity);
-                      
+            getActivity(data);                                    
         }
-
         if (isError) {            
             showErrorAlert()
         }
     }, [data, isSuccess, getActivity, isError]);
+
+    
     return (
         <>
             {isErrorAlertVisible && <ErrorAlert isVisible={isErrorAlertVisible} onClose={hideErrorAlert} title={"Server Error"} 

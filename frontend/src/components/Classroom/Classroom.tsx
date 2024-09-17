@@ -10,7 +10,7 @@ const listView = "w-full h-[5rem] border border-gray-300"
 export const Classroom:React.FC<{ ClassroomTypes : ClassroomTypes}> = ({ClassroomTypes}) => {
 
     const navigate = useNavigate()    
-
+        
     const navigateToClassroom = (item: ClassroomTypes) => {
  
         navigate(`/teacher/class/${item.teacher_id}/posts`, {state:{item}})

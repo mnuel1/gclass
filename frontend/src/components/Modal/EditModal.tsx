@@ -2,10 +2,11 @@ import React from "react"
 
 interface ModalProps {    
     onClose: () => void;
+    onSubmit: (class_id: string) => void;
     id: string;
   }
 
-export const EditModal: React.FC<ModalProps> = ({ onClose, id }) => {
+export const EditModal: React.FC<ModalProps> = ({ onClose, id, onSubmit }) => {
     
     return(
         <>

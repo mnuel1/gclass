@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import useModalStore from '../../../store/Teacher/Modal/useModalStore'
 import useClassroomStore from '../../../store/Teacher/Classroom/useClassroomStore'
 
-import { useClassroomQuery } from '../../../hooks/useClassroomQuery'
+import { useClassroomQuery, useAddClassroom } from '../../../hooks/useClassroomQuery'
 import { Authentication } from '../../../Auth/Authentication'
 
+import { ClassroomTypes } from '../../../types/classroomTypes'
 import { Classroom } from '../../../components/Classroom/Classroom'
 import { ClassModal } from '../../../components/Modal/ClassModal'
 import { JoinModal } from '../../../components/Modal/JoinModal'
@@ -14,23 +15,40 @@ import { ErrorAlert } from '../../../components/Alert/ErrorAlert'
 
 
 export const Home:React.FC = () => {
+    const itemsPerPage = 10; // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
     // const { getID } = Authentication()
-    const id = '1'
-    const { data, isSuccess, isError, isLoading } = useClassroomQuery(id);
+    const teacher_id = '1'
+    const { data, isSuccess, isError, isLoading } = useClassroomQuery(teacher_id);
+    const addClassroomMutation = useAddClassroom(); 
 
     const { classrooms, getClassrooms } = useClassroomStore();
     const {
         classModalOpen, 
         joinModalOpen, 
+        isErrorAlertVisible,
         openClassModal, 
         closeClassModal,
         openJoinModal, 
-        closeJoinModal,
-        isErrorAlertVisible,
+        closeJoinModal,        
         showErrorAlert,
         hideErrorAlert } = useModalStore()
     
-    
+    const submitHandler = (data: ClassroomTypes) => {                
+        addClassroomMutation.mutate(data);
+    };
+
+    const totalPages = Math.ceil(classrooms.length / itemsPerPage);
+
+    // Get the classrooms for the current page
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentClassrooms = classrooms.slice(startIndex, startIndex + itemsPerPage);
+
+    const handlePageChange = (pageNumber : number) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
 
     useEffect(() => {
         
@@ -48,7 +66,7 @@ export const Home:React.FC = () => {
         <>
             {isErrorAlertVisible && <ErrorAlert isVisible={isErrorAlertVisible} onClose={hideErrorAlert} title={"Server Error"} 
             body={"An issue occurred. Please try again later. If the problem continues, please contact customer service. Thank you."}/>}
-            {classModalOpen && <ClassModal onClose={closeClassModal} id=''/>}
+            {classModalOpen && <ClassModal onClose={closeClassModal} teacher_id={teacher_id} onSubmit={submitHandler}/>}
             {joinModalOpen && <JoinModal onClose={closeJoinModal} id=''/>}
            
                 <Spinner isLoading={isLoading || isError}>
@@ -88,34 +106,66 @@ export const Home:React.FC = () => {
                             </div>
                         </div>
                         <div className='flex flex-wrap gap-4 flex-col md:flex-row p-6 bg-white grow'>
-
                             {classrooms.length === 0 ? (
-                                <>
-                                    <div className='flex flex-col gap-2'>
-                                        <h1 className='text-lg'>No classes yet. Start creating one now.</h1> 
-                                        <button
-                                            onClick={openClassModal}
-                                            type='button' 
-                                            className='flex items-center bg-blue-200 hover:bg-blue-300 rounded-lg p-2 gap-2'
-                                            > 
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                                <div className='flex flex-col gap-2'>
+                                    <h1 className='text-lg'>No classes yet. Start creating one now.</h1>
+                                    <button
+                                        onClick={openClassModal}
+                                        type='button'
+                                        className='flex items-center bg-blue-200 hover:bg-blue-300 rounded-lg p-2 gap-2'
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             strokeWidth={1.5} stroke="currentColor" className="size-6 text-black">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                            </svg>
-
-                                            Create Class
-                                        </button>
-                                    </div>
-                                    
-                                
-                                </>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                        </svg>
+                                        Create Class
+                                    </button>
+                                </div>
                             ) : (
-                                <>
-                                    {classrooms.map((item, index) => (                    
-                                        <Classroom key={index} ClassroomTypes={item}/>                    
-                                    ))} 
-                                </>
+                                currentClassrooms.map((item, index) => (
+                                    <Classroom key={index} ClassroomTypes={item} />
+                                ))
                             )}
+                        </div>
+                        <div className='flex justify-center p-6'>
+                            <ol className="flex gap-1 text-xs font-medium">
+                                <li>
+                                    <button
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+                                    >
+                                        <span className="sr-only">Prev Page</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </li>
+
+                                {[...Array(totalPages).keys()].map((pageNumber) => (
+                                    <li key={pageNumber + 1}>
+                                        <button
+                                            onClick={() => handlePageChange(pageNumber + 1)}
+                                            className={`block size-8 rounded text-center leading-8 ${currentPage === pageNumber + 1 ? 'border-blue-600 bg-blue-600 text-white' : 'border border-gray-100 bg-white text-gray-900'}`}
+                                        >
+                                            {pageNumber + 1}
+                                        </button>
+                                    </li>
+                                ))}
+
+                                <li>
+                                    <button
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                        className="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+                                    >
+                                        <span className="sr-only">Next Page</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </li>
+                            </ol>
                         </div>
                     </div>
                 </Spinner>

@@ -2,10 +2,11 @@ import React from "react"
 
 interface ModalProps {    
     onClose: () => void;
+    onSubmit: (class_id : string) => void
     id: string;
   }
 
-export const DeleteModal: React.FC<ModalProps> = ({ onClose, id }) => {
+export const DeleteModal: React.FC<ModalProps> = ({ onClose, id, onSubmit}) => {
     
     return(
         <>
@@ -40,7 +41,7 @@ export const DeleteModal: React.FC<ModalProps> = ({ onClose, id }) => {
                                 <div className="bg-gray-200 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                     <button
                                         type="button"
-                                        onClick={onClose}
+                                        onClick={() => onSubmit(id)}
                                         className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                     >
                                         Deactivate
