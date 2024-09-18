@@ -3,6 +3,7 @@ import { useState } from 'react'
 export const Authentication = () => {
     
     const [user, setUser] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [id, setID] = useState<number | null>(null);
 
@@ -18,18 +19,26 @@ export const Authentication = () => {
         return user;
     }
 
+    const getEmail = () => {
+        const emailString = sessionStorage.getItem('email');
+        const email = emailString ? JSON.parse(emailString) : null;
+        return email;
+    }
+
     const getID = () => {
         const idString = sessionStorage.getItem('id');
         const id = idString ? JSON.parse(idString) : null;
         return id;
     }
 
-    const login = (user: string, token: string, id: number) => {
+    const login = (user: string, token: string, id: number, email: string) => {
         sessionStorage.setItem('token', JSON.stringify(token));
         sessionStorage.setItem('user', JSON.stringify(user));
         sessionStorage.setItem('id', JSON.stringify(id));
+        sessionStorage.setItem('email', JSON.stringify(email));
         setUser(user);
         setToken(token);
+        setEmail(email)
         setID(id)
     }
 
@@ -37,8 +46,10 @@ export const Authentication = () => {
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('id');
+        sessionStorage.removeItem('email');
         setUser(null);
         setToken(null);
+        setEmail(null)
         setID(null)
     }
 
@@ -46,8 +57,9 @@ export const Authentication = () => {
         const user = getUser();
         const token = getToken();
         const id = getID()
+        const email = getEmail()
 
-        return token !== null && user !== null && id !== null;
+        return token !== null && user !== null && id !== null && email !== null;
     }
 
 
@@ -55,11 +67,13 @@ export const Authentication = () => {
         id,
         user,
         token,
+        email,
         login,
         logout,
         isAuthenticated,
         getUser,
         getToken,
-        getID
+        getID,
+        getEmail
     }
 }

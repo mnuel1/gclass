@@ -1,4 +1,4 @@
-const { Search } = require("../Search/search")
+const { SearchAll, SearchStudents } = require("../Search/search")
 // const VerifyTeacher = require("../../middleware/verify")
 const express = require('express');
 const router = express.Router();
@@ -9,6 +9,7 @@ const router = express.Router();
  * 
  **/ 
 
-router.get("/search/:name", Search);
+router.get("/search/:name", SearchAll);
+router.get("/search/students/:name", SearchStudents);
 
 module.exports = router

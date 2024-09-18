@@ -3,10 +3,10 @@ import React from "react"
 interface ModalProps {    
     onClose: () => void;
     onSubmit: (class_id : string) => void
-    id: string;
+    class_id: string;
   }
 
-export const DeleteModal: React.FC<ModalProps> = ({ onClose, id, onSubmit}) => {
+export const DeleteModal: React.FC<ModalProps> = ({ onClose, class_id, onSubmit}) => {
     
     return(
         <>
@@ -31,7 +31,7 @@ export const DeleteModal: React.FC<ModalProps> = ({ onClose, id, onSubmit}) => {
                                         <h1 className="text-2xl font-bold leading-6 text-gray-900">Delete class</h1>
                                         <div className="mt-2">
                                             <p className="text-sm text-gray-500">
-                                            Are you sure you want to deactivate this class? All of data or records in this class will be permanently removed.
+                                            Are you sure you want to delete this class? All of data or records in this class will be permanently removed.
                                             This action cannot be undone.
                                             </p>
                                         </div>
@@ -41,10 +41,10 @@ export const DeleteModal: React.FC<ModalProps> = ({ onClose, id, onSubmit}) => {
                                 <div className="bg-gray-200 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                     <button
                                         type="button"
-                                        onClick={() => onSubmit(id)}
+                                        onClick={() => onSubmit(class_id)}
                                         className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                     >
-                                        Deactivate
+                                        Delete
                                     </button>
                                     <button
                                         type="button"

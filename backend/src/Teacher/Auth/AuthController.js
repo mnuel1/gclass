@@ -7,41 +7,39 @@ require('dotenv').config();
 
 const Register = async (req, res) => {
     
-    const {email, password, firstName, lastName, middleName} = req.body
+    const {email_address, password, first_name, last_name, middle_name} = req.body
 
     const salt = await bcrypt.genSalt(10);
 
     const hashedPassword = await bcrypt.hash(password, salt);
-
+    
     try {
     
         const [checkEmailExist] = await db.query(
             "SELECT * FROM teachers WHERE email_address = ?",
-            [email]
+            [email_address]
         )
 
-        if (checkEmailExist) {
-            return res.status(40).json({ 
+        if (checkEmailExist.affectedRows) {
+            return res.status(400).json({ 
                 title: "Registration Failed.", 
                 message: "The email address you entered is already belong to an existing account" 
             });
-        }
-
+        }       
         const [registerResult] = await db.query(
             `INSERT INTO teachers (first_name, last_name, middle_name, 
             email_address, password) VALUES (?, ?, ?, ?, ?)`, 
-            [firstName, lastName, middleName, email, hashedPassword]
+            [first_name, last_name, middle_name, email_address, hashedPassword]
         )
-
+        
         if (!registerResult) {
             return res.status(400).json({ 
                 title: "Registration Failed", 
                 message: "Something went wrong. Please try again later. " 
             });
-        }
-
+        }       
         const token = jwt.sign(
-            {username: email},
+            {username: email_address},
             process.env.JWT_TOKEN,
             {expiresIn: '1d'}
         )
@@ -49,11 +47,11 @@ const Register = async (req, res) => {
         return res.status(200).json({ 
             title: "Successful Registration", 
             message: "!",
-            teacherID: registerResult.insertId,
-            firstName: firstName,
-            lastName: lastName,
-            middleName: middleName,
-            email: email,
+            teacher_id: registerResult.insertId,
+            first_name: first_name,
+            last_name: last_name,
+            middle_name: middle_name,
+            email_address: email_address,
             token: token
         });
 
@@ -65,38 +63,56 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
 
-    const {email, password} = req.body
+    const {email_address, password} = req.body
 
     try {
         
         const [result] = await db.query(
-            "SELECT * FROM admin WHERE email = ? AND password = ?", 
-            [email, password]
+            "SELECT * FROM teachers WHERE email_address = ?", 
+            [email_address]
         )
 
         if (!result) {
             return res.status(401).json({ 
-                title: "Wrong Credentials", 
-                message: "Wrong username and password" 
+                title: "Login Failed", 
+                message: "Wrong username!",                
             });
         }
+        bcrypt.compare(password, result[0].password, 
+            async (err, passResult) => {
+                if (err) {
+                    console.error("Error comparing passwords:", err);
+                    return res.status(404).json({ title: "Internal Error", msg: "Something went wrong. Please try again later!" });
+                }
+                if (!passResult) {
+                    return res.status(401).json({ 
+                        title: "Login Failed", 
+                        msg: "Wrong Password!",                        
+                    });
+                }
 
-        const token = jwt.sign(
-            {username: result[0].email_address},
-            process.env.JWT_TOKEN,
-            {expiresIn: '1d'}
+                const token = jwt.sign(
+                    {username: result[0].email_address},
+                    process.env.JWT_TOKEN,
+                    {expiresIn: '1d'}
+                )
+
+                
+                
+                return res.status(200).json({ 
+                    title: "Successful Registration", 
+                    message: "!",
+                    teacher_id: result[0].teacher_id,
+                    first_name: result[0].first_name,
+                    last_name: result[0].last_name,
+                    middle_name: result[0].middle_name,
+                    email_address: result[0].email_address,
+                    token: token
+                });
+            }
         )
+
         
-        return res.status(200).json({ 
-            title: "Successful Registration", 
-            message: "!",
-            teacherID: result[0].teacher_id,
-            firstName: result[0].first_name,
-            lastName: result[0].last_name,
-            middleName: result[0].middleName,
-            email: result[0].email_address,
-            token: token
-        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });

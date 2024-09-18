@@ -1,16 +1,18 @@
 import React, { useState } from "react"
-import { ClassroomTypes } from "../../types/classroomTypes";
+import { ClassroomTypes } from "../../process/Classroom/classroomTypes";
+import { Authentication } from "../../Auth/Authentication";
+
 interface ModalProps {    
     onClose: () => void;
     onSubmit: (data: ClassroomTypes) => void;
-    teacher_id: string;
-
+    
 }
 
-export const ClassModal: React.FC<ModalProps> = ({ onClose, teacher_id, onSubmit }) => {
+export const ClassModal: React.FC<ModalProps> = ({ onClose,  onSubmit }) => {
+    const { getID } = Authentication()
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-
+    const teacher_id = getID()
     
     const handleSubmit = () => {
         const class_id = ""

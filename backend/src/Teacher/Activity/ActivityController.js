@@ -12,11 +12,11 @@ const GetActivities = async (req, res) => {
         if (!getActivityResult.succesfull) {
             return res.status(200).json({ 
                 title: "No Activity Found", 
-                message: "There's no record for activity yet." 
+                message: "There's no record for activity yet.", 
+                data: []
             });
         }
-        console.log(getActivityResult);
-        
+           
         return res.status(200).json({ 
             title: "Activity Found", 
             message: "There's a record for activity.",

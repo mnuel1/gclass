@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState ,useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Authentication } from '../../Auth/Authentication'
 import { AiOutlineSearch } from "react-icons/ai"
@@ -14,9 +14,16 @@ export const TeacherMenu:React.FC<MainMenuProps> = ({children}) => {
     
     const [collapsed, setCollapsed] = useState(false)
     const [isActive, setActive] = useState(window.location.href.split("/").pop())
-
+    
     const navigate = useNavigate()
-    const { logout, getUser } = Authentication()
+    const { logout, getUser, getID } = Authentication()
+   
+    useEffect(() => {
+        if (getID() === null) {
+            navigate("/teacher/login")
+        }
+    }, [])
+    
     const user = getUser();
 
     const firstLetter = user ? user.charAt(0).toUpperCase() : '';
@@ -48,10 +55,10 @@ export const TeacherMenu:React.FC<MainMenuProps> = ({children}) => {
                         </button>
 
                         <div className='flex items-center gap-2 my-4 cursor-pointer p-2'>
-                            <div className='rounded-full w-[40px] flex justify-center p-2 bg-gray-200 font-bold'> U </div>
+                            <div className='rounded-full w-[40px] flex justify-center p-2 bg-gray-200 font-bold'> { firstLetter } </div>
                             <div className='flex flex-col'>
-                                <h3 className='font-bold text-lg text-black'>Username</h3>
-                                <span className='text-xs text-gray-400'>Role</span>
+                                <h3 className='font-bold text-lg text-black'>user</h3>
+                                <span className='text-xs text-gray-400'>Teacher</span>
                             </div>                                
                         </div>
 
@@ -75,8 +82,8 @@ export const TeacherMenu:React.FC<MainMenuProps> = ({children}) => {
                     flex-row md:flex-col gap-2 justify-evenly md:justify-start overflow-hidden border-r border-gray-300  drop-shadow-lg` }>
                                                                             
                             <div
-                                onClick={() => handleNavBtn("class")}
-                                className={isActive === 'class' ? active : notActive}
+                                onClick={() => handleNavBtn(`/teacher/${getID()}`)}
+                                className={isActive === '/teacher' ? active : notActive}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" 
                                 className="size-12 text-black rounded-full p-2">

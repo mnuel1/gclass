@@ -16,15 +16,14 @@ const formatDateTimeForFullDetail = (date) => {
 const CreateAssignmentService = async(assignmentData) => {
 
     try {
-
         const { 
             name,
             instruction,
             attachment,
             points,
-            dueDate,
-            classId,
-            studentIds,
+            due_date,
+            class_id,
+            student_ids,
             formId } = assignmentData
         
         const connection = await db.getConnection()
@@ -32,34 +31,55 @@ const CreateAssignmentService = async(assignmentData) => {
         await connection.beginTransaction()
 
         const [assignmentResult] = await connection.query(
-            `INSERT INTO assignments (name, instruction, attachment, points, due_date)
-            VALUES (?, ?, ?, ?, ?)`,
-            [name, instruction, attachment, points, dueDate]
+            `INSERT INTO assignments (class_id, name, instruction, attachment, points, due_date)
+            VALUES (?, ?, ?, ?, ?, ?)`,
+            [class_id, name, instruction, attachment, points, due_date]
         )
-
-        if (!assignmentResult.length) {
+       
+        if (!assignmentResult.affectedRows) {
             await connection.rollback();
             return { 
                 error: false,
                 succesfull: false   
             };            
         }
-
-        for (const id of studentIds) {
+       
+        for (const student of student_ids) {
             // assign the assignment to the selected students
             await connection.query(
-                `INSERT INTO class_assignments (assignment_id, class_id, student_id, form_id)
-                VALUES (?, ?, ?, ?)`,
-                [assignmentResult.insertId, classId, id, formId]
+                `INSERT INTO class_assignments (assignment_id, student_id, form_id)
+                VALUES (?, ?, ?)`,
+                [assignmentResult.insertId, student.student_id, formId]
             )
         }
-
+       
         await connection.commit();
-
         
+        const assignment_id = assignmentResult.insertId;
+
+        const [insertedData] = await connection.query(
+            `SELECT * FROM assignments WHERE assignment_id = ?`,
+            [assignment_id]
+        );
+        
+        const res = insertedData.map((assignment) => {            
+            const startDate = new Date(assignment.start_date);  
+            const dueDate = formatDateTimeForFullDetail(new Date(assignment.due_date));
+            const dateStart = formatDateForGrouping(new Date(assignment.start_date));
+            formatDateForGrouping
+            assignment.due_date = dueDate;
+            assignment.start_date = dateStart;
+            assignment.formatted_start_date = formatDateTimeForAssignment(startDate);
+        
+            return assignment;
+        });
+        console.log(res);
+        
+
         return {
             error: false,
             succesfull: true,
+            data: res
         };
 
     } catch (error) {
@@ -73,13 +93,13 @@ const CreateAssignmentService = async(assignmentData) => {
 const EditAssignmentService = async(assignmentData) => {
     try {
         const { 
-            name, 
-            instruction, 
-            attachment, 
+            name,
+            instruction,
+            attachment,
             points,
-            dueDate, 
-            classId, 
-            studentIds, 
+            due_date,
+            class_id,
+            student_ids,
             formId } = assignmentData
 
         
@@ -106,11 +126,11 @@ const RemoveAssignmentService = async(assignment_id) => {
         await connection.beginTransaction();
 
         const [result] = await connection.query(
-            "DELETE FROM class_assignments WHERE assignment_id = ?"
+            "DELETE FROM assignments WHERE assignment_id = ?"
             , [assignment_id]
         )
-
-        if (result.affectedRows) {
+                
+        if (!result.affectedRows) {
             await connection.rollback();
             return { 
                 error: false,
@@ -133,20 +153,27 @@ const RemoveAssignmentService = async(assignment_id) => {
     }
 }
 
-const GetAssignStudentsService = async(assignment_id) => {
+const GetAssignStudentsWorkService = async(assignment_id) => {
     try {
         
         const [result] = await db.query(
             `
-            SELECT                 
-                class_assignments.*,
-                students.student_id,
-                students.student_string_id,
-                CONCAT(students.last_name, students.first_name, students.middle_name) AS fullname,
-                students.email_address
-            FROM class_assignments            
+            SELECT                
+                GROUP_CONCAT(
+                    CONCAT(
+                        '{"',
+                            'student_id": "', students.student_id, '",',                            
+                            '"student_code": "', students.student_string_id, '",',
+                            '"fullname": "', CONCAT(students.last_name, ' ' ,students.first_name, ' ' ,students.middle_name), '",',
+                            '"email_address": "', students.email_address, '"'                            
+                        '}'
+                    )
+                    SEPARATOR ','
+                ) AS students                            
+            FROM assignments
+            LEFT JOIN class_assignments ON class_assignments.assignment_id = assignments.assignment_id            
             LEFT JOIN students ON students.student_id = class_assignments.student_id
-            WHERE class_assignments.assignment_id = ?
+            WHERE assignments.assignment_id = ?
             `, [assignment_id]
         )
 
@@ -157,10 +184,24 @@ const GetAssignStudentsService = async(assignment_id) => {
             };
         }
 
+        result[0].students = JSON.parse(`[${result[0].students}]`);
+        
+        const res = result.map((assignment) => {
+            const startDate = new Date(assignment.start_date);  
+            const dueDate = formatDateTimeForFullDetail(new Date(assignment.due_date));
+            const dateStart = formatDateTimeForFullDetail(new Date(assignment.start_date));
+        
+            assignment.due_date = dueDate;
+            assignment.start_date = dateStart;
+            assignment.formatted_start_date = formatDateTimeForAssignment(startDate);
+        
+            return assignment;
+        });
+
         return {
             error: false,
             succesfull: true,
-            data: result
+            data: res
         };
     } catch (error) {
         console.error(error);
@@ -169,7 +210,6 @@ const GetAssignStudentsService = async(assignment_id) => {
         }            
     }
 }
-
 
 const GradeAssignmentService = async(assignmentData) => {
     try {
@@ -185,7 +225,19 @@ const GradeAssignmentService = async(assignmentData) => {
     }
 }
 
-
+const GetGradeAssignmentService = async(assignmentData) => {
+    try {
+        return {
+            error: false,
+            succesfull: true,
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            error: true
+        }            
+    }
+}
 
 const GetAssignmentsService = async (class_id) => {
 
@@ -199,7 +251,7 @@ const GetAssignmentsService = async (class_id) => {
         if (!result.length) {
             return { 
                 error: false,
-                succesfull: false   
+                succesfull: false
             };
         }
         
@@ -234,17 +286,12 @@ const GetAssignmentsService = async (class_id) => {
     }
 };
 
-module.exports = {
-    GetAssignmentsService
-};
-
-
 
 module.exports = {
     CreateAssignmentService,
     EditAssignmentService,
     RemoveAssignmentService,
-    GetAssignStudentsService,
+    GetAssignStudentsWorkService,
     GradeAssignmentService,
     GetAssignmentsService
 }

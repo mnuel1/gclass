@@ -10,13 +10,13 @@ export const ErrorAlert: React.FC<Props> = ({isVisible, onClose, title, body}) =
     useEffect(() => {
         if (!isVisible) return;
     
-        // // Set up a timer to automatically close the ad
-        // const timer = setTimeout(() => {
-        //   onClose();
-        // }, 10000);
+        // Set up a timer to automatically close the ad
+        const timer = setTimeout(() => {
+          onClose();
+        }, 10000);
     
-        // // Clear the timer if the component is unmounted or if isVisible changes
-        // return () => clearTimeout(timer);
+        // Clear the timer if the component is unmounted or if isVisible changes
+        return () => clearTimeout(timer);
       }, [isVisible, 10000, onClose]);
     
     return (

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 
-import useModalStore from '../../../store/Teacher/Modal/useModalStore'
-import useClassroomStore from '../../../store/Teacher/Classroom/useClassroomStore'
+import useModalStore from '../../../process/Modal/useModalStore'
+import useClassroomStore from '../../../process/Classroom/useClassroomStore'
 
-import { useClassroomQuery, useAddClassroom } from '../../../hooks/useClassroomQuery'
-import { Authentication } from '../../../Auth/Authentication'
+import { useClassroomQuery, useAddClassroom } from '../../../process/Classroom/useClassroomQuery'
 
-import { ClassroomTypes } from '../../../types/classroomTypes'
+import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
 import { Classroom } from '../../../components/Classroom/Classroom'
 import { ClassModal } from '../../../components/Modal/ClassModal'
 import { JoinModal } from '../../../components/Modal/JoinModal'
@@ -17,9 +16,8 @@ import { ErrorAlert } from '../../../components/Alert/ErrorAlert'
 export const Home:React.FC = () => {
     const itemsPerPage = 10; // Number of items per page
     const [currentPage, setCurrentPage] = useState(1);
-    // const { getID } = Authentication()
-    const teacher_id = '1'
-    const { data, isSuccess, isError, isLoading } = useClassroomQuery(teacher_id);
+    
+    const { data, isSuccess, isError, isLoading } = useClassroomQuery();
     const addClassroomMutation = useAddClassroom(); 
 
     const { classrooms, getClassrooms } = useClassroomStore();
@@ -66,7 +64,7 @@ export const Home:React.FC = () => {
         <>
             {isErrorAlertVisible && <ErrorAlert isVisible={isErrorAlertVisible} onClose={hideErrorAlert} title={"Server Error"} 
             body={"An issue occurred. Please try again later. If the problem continues, please contact customer service. Thank you."}/>}
-            {classModalOpen && <ClassModal onClose={closeClassModal} teacher_id={teacher_id} onSubmit={submitHandler}/>}
+            {classModalOpen && <ClassModal onClose={closeClassModal} onSubmit={submitHandler}/>}
             {joinModalOpen && <JoinModal onClose={closeJoinModal} id=''/>}
            
                 <Spinner isLoading={isLoading || isError}>
@@ -123,7 +121,7 @@ export const Home:React.FC = () => {
                                 </div>
                             ) : (
                                 currentClassrooms.map((item, index) => (
-                                    <Classroom key={index} ClassroomTypes={item} />
+                                    <Classroom key={index} classroom={item} />
                                 ))
                             )}
                         </div>

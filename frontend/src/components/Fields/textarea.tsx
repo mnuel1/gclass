@@ -1,10 +1,11 @@
 
 type props = {
     name : string;
-    
+    value: string;
+    setValue: (value: string) => void;
 }
 
-export const Textarea:React.FC<props> = ({name}) => {
+export const Textarea:React.FC<props> = ({name, value, setValue}) => {
 
     return (        
         <div>
@@ -12,8 +13,10 @@ export const Textarea:React.FC<props> = ({name}) => {
 
             <textarea
             id={name}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
             className="mt-2 w-full rounded-lg border-gray-200 align-top shadow-sm sm:text-sm p-4 
-            border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            border focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             rows={4}
             placeholder="Enter description.."
             ></textarea>

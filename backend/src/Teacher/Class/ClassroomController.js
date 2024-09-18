@@ -12,7 +12,7 @@ const CreateClass = async (req, res) => {
         const createClassResult = await CreateClassService(req.body)
 
         if (!createClassResult.succesfull) {
-            return res.status(200).json({ 
+            return res.status(400).json({ 
                 title: "Creating new  Class failed", 
                 message: "Something went wrong." 
             });
@@ -40,7 +40,7 @@ const EditClass = async (req, res) => {
         
 
         if (!editClassResult.succesfull) {
-            return res.status(200).json({ 
+            return res.status(400).json({ 
                 title: "Edit Class failed", 
                 message: "Something went wrong." 
             });
@@ -50,8 +50,7 @@ const EditClass = async (req, res) => {
             message: `The class was edited successfully.`,
         });
 
-    } catch (error) {
-       
+    } catch (error) {       
         console.error(error);
         return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
     }
@@ -67,7 +66,7 @@ const RemoveClass = async (req, res) => {
         const removeClassResult = await RemoveClassService(class_id)
 
         if (!removeClassResult.succesfull) {
-            return res.status(200).json({ 
+            return res.status(400).json({ 
                 title: "Remove Class Failed", 
                 message: "Something went wrong." 
             });
@@ -94,7 +93,8 @@ const GetClasses = async (req, res) => {
         if (!getClassesResult.succesfull) {
             return res.status(200).json({ 
                 title: "Get Classes failed", 
-                message: "Something went wrong." 
+                message: "Something went wrong.", 
+                data: []
             });
         }
         

@@ -54,7 +54,7 @@ router.get("/class/:teacher_id", GetClasses)
  **/
 router.post("/assignment", CreateAssignment)
 router.post("/assignment/edit", EditAssignment)
-router.post("/assigment/remove/:assignment_id", RemoveAssignment)
+router.post("/assignment/remove/:assignment_id", RemoveAssignment)
 router.post("/assignment/grade/:class_assignment_id ", GradeAssignment) 
 router.get("/assignment/:assignment_id/view", GetAssignStudents) 
 router.get("/assignment/:class_id", GetAssignments) 

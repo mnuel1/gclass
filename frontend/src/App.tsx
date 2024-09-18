@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-
+import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom'
+import { ProtectedRoute } from './Auth/ProtectedRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
@@ -10,7 +10,7 @@ const queryClient = new QueryClient();
 import { DefaultLayout } from './layout/DefaultLayout'
 import { TeacherLayout } from './layout/TeacherLayout'
 import { StudentLayout } from './layout/StudentLayout'
-
+import { TeacherClassLayout } from './layout/TeacherClassLayout';
 
 /**
  * LANDING PAGE
@@ -40,7 +40,6 @@ import { RemoveMember } from './pages/Teacher/Members/RemoveMember';
 // TEACHER SETTINGS
 import { AccountSettings } from './pages/Teacher/Account/Account';
 
-
 /**
  * TEACHER AUTH
  * 
@@ -61,7 +60,7 @@ import { VideoConference } from './pages/Video Conference/VideoConference';
 
 import { NotFound } from './components/Not Found Page/404'
 function App() {
-
+      
   return (
     <>
       <QueryClientProvider client={queryClient}>
@@ -69,31 +68,40 @@ function App() {
           <Routes>
             <Route path='/' element={<DefaultLayout />}>
               <Route index element={<LandingPage/>} />
-              <Route path='teacher/login' element={<TeacherLogin/>} />
-              <Route path='teacher/signup' element={<TeacherSignup/>} />
-              <Route path='video' element={<VideoConference/>} />
+              <Route path='teacher/login' element={
+                <ProtectedRoute>
+                  <TeacherLogin/>
+                </ProtectedRoute>
+              } />
+              <Route path='teacher/signup' element={
+                <ProtectedRoute>
+                  <TeacherSignup/>
+                </ProtectedRoute>
+              } />
+              
             </Route>
-            <Route path='/teacher' element={<TeacherLayout />} >
-              
-              
-              <Route path='class' element={<Home/>} />
-              <Route path='calendar' element={<Calendar/>} />
-              {/* <Route path='assignments' element={<ViewAllAssignments/>} /> */}
-              <Route path='class/:id/assignments/new' element={<CreateAssignment/>} />
-              <Route path='class/:id/schedule' element={<CreateSchedule/>} />
-              
-              <Route path='class/:id/assignments' element={<Assignments/>} />
-              <Route path='class/:id/assignments/:assignment_id/view' element={<ViewAssignment/>} />
-              <Route path='class/:id/grades' element={<Grades/>} />
-              <Route path='class/:id/posts' element={<ClassroomView/>} />
-          
-              <Route path='class/:id/members' element={<Members/>} />
-              <Route path='class/:id/members/new' element={<AddMember/>} />
-              <Route path='class/:id/members/remove' element={<RemoveMember/>} />
+                        
+              <Route path={`/teacher`} element={<Navigate to={`login`} replace />} />
+              <Route path={`/teacher/:teacher_id`} element={<TeacherLayout />} >            
+                <Route index element={<Home/>} />
+                <Route path='class' element={<TeacherClassLayout />} >
+                  <Route path=':class_id/posts' element={<ClassroomView/>} />
+                  <Route path=':class_id/assignments' element={<Assignments/>} />
+                  <Route path=':class_id/grades' element={<Grades/>} />
+                  <Route path=':class_id/members' element={<Members/>} />
 
-              <Route path='account' element={<AccountSettings/>} />
-              
-            </Route>
+                  <Route path=':class_id/assignments/:assignment_id/view' element={<ViewAssignment/>} />
+                  <Route path=':class_id/assignments/new' element={<CreateAssignment/>} />
+                  <Route path=':class_id/schedule' element={<CreateSchedule/>} />
+
+                  <Route path=':class_id/members/new' element={<AddMember/>} />
+                  <Route path=':class_id/members/remove' element={<RemoveMember/>} />                                
+                </Route>
+                <Route path='calendar' element={<Calendar/>} />
+                <Route path='account' element={<AccountSettings/>} /> 
+                <Route path='video' element={<VideoConference/>} />
+              </Route>
+            
             <Route path='/student' element={<StudentLayout />} >
               
             </Route>

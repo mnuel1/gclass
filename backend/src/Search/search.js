@@ -1,6 +1,6 @@
 const db = require("../database/db");
 
-const Search = async (req, res) => {
+const SearchAll = async (req, res) => {
     try {
         const { name } = req.params;
         const searchTerm = `%${name}%`; 
@@ -15,7 +15,43 @@ const Search = async (req, res) => {
             FROM teachers 
             WHERE CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?
             `,
-            [searchTerm, searchTerm] // Use searchTerm for both LIKE conditions
+            [searchTerm, searchTerm] 
+        );
+
+        if (!result.length) {
+            return res.status(200).json({ 
+                title: "Not Found", 
+                message: "The name is not found." 
+            });
+        }
+
+            return res.status(200).json({ 
+            title: "Name found", 
+            message: "The name is found.", 
+            data: result 
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ 
+            title: "Internal Error", 
+            message: "Something went wrong!" 
+        });
+    }
+};
+
+const SearchStudents = async (req, res) => {
+    try {
+        const { name } = req.params;
+        const searchTerm = `%${name}%`; 
+
+        const [result] = await db.query(
+            `
+            SELECT 'student' AS type, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) AS full_name, student_id, student_string_id, email_address 
+            FROM students 
+            WHERE CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?            
+            `,
+            [searchTerm, searchTerm] 
         );
 
         if (!result.length) {
@@ -41,5 +77,6 @@ const Search = async (req, res) => {
 };
 
 module.exports = {
-  Search
+    SearchAll,
+    SearchStudents
 };

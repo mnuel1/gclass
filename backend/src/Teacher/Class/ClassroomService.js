@@ -57,7 +57,7 @@ const EditClassService = async (classData) => {
         const { name, description, class_id } = classData 
     
         const [result] = await db.query(
-            `UPDATE class SET name = ?, description = ?, WHERE class_id = ?`,
+            `UPDATE class SET name = ?, description = ? WHERE class_id = ?`,
             [name, description, class_id]
         )
 
