@@ -18,7 +18,8 @@ export const getAssignStudentsWorkService = async (assignment_id: string) => {
 }
 
 export const editAssignmentService = async (data: AssignmentType) => {
-    return await api.post(`teacher/assignment/edit`, data)
+    const response = await api.post(`teacher/assignment/edit`, data)
+    return response;
 }
 
 export const deleteAssignmentService = async (assignment_id: string) => {

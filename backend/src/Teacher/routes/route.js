@@ -1,6 +1,8 @@
 const { 
     Login, 
-    Register } = require("../Auth/AuthController")
+    Register, 
+    EditAccount,
+    ChangePassword } = require("../Auth/AuthController")
 
 const {
     CreateClass,
@@ -28,6 +30,7 @@ const VerifyTeacher = require("../../middleware/verify")
 const express = require('express');
 const router = express.Router();
 
+
 /* 
  * AUTHENTICATION ROUTE
  * 
@@ -36,6 +39,10 @@ const router = express.Router();
 
 router.post("/login", Login);
 router.post("/register", Register);
+
+
+router.post("/edit/account", EditAccount);
+router.post("/change/password", ChangePassword);
 
 /* 
  * CLASS ROUTE
@@ -60,7 +67,6 @@ router.get("/assignment/:assignment_id/view", GetAssignStudents)
 router.get("/assignment/:class_id", GetAssignments) 
 
 
-
 /* 
  * MEMBER ROUTE
  * 
@@ -77,5 +83,8 @@ router.get("/member/:class_id", GetMembers)
  * 
  **/
 router.get("/class/:class_id/activity", GetActivities) 
+
+
+
 
 module.exports = router

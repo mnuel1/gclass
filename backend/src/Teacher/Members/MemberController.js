@@ -10,7 +10,8 @@ const AddMembers = async (req, res) => {
 
     try {
         const memberData = req.body
-
+        console.log(memberData);
+        
         const addMemberResult = await CreateMemberService(memberData)
 
         if (addMemberResult.error) {

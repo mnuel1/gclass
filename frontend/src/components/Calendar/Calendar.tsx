@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-
 type Event = {
 	date: Date;
 	description: string;
@@ -20,6 +19,7 @@ const getDaysInMonth = (year: number, month: number): Date[] => {
 };
 
 export const CalendarView: React.FC = () => {
+
 	const today = new Date();	
 	const [currentMonth, setCurrentMonth] = useState<number>(today.getMonth());
 	const [currentYear, setCurrentYear] = useState<number>(today.getFullYear());
@@ -80,16 +80,7 @@ export const CalendarView: React.FC = () => {
 								{year}
 							</option>
 						))}
-					</select>									
-					<button 
-						type='button' 
-						className='flex items-center hover:bg-blue-200 rounded-lg p-2 gap-2 w-fit lg:w-[62%] border border-gray-200'                        
-					> 
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-black">
-							<path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
-						</svg>
-						<span className='hidden lg:block '>Schedule Meeting</span>
-					</button>				
+					</select>
 				</div>
 			</div>
 

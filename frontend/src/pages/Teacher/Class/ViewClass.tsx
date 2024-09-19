@@ -9,7 +9,7 @@ import useModalStore from '../../../process/Modal/useModalStore'
 import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
 
 import { PostBlock } from '../../../components/PostBlock/PostBlock'
-
+import { FailedToast } from '../../../components/Toast/FailedToast'
 
 
 export const ClassroomView: React.FC = () => {
@@ -24,8 +24,7 @@ export const ClassroomView: React.FC = () => {
     const { activity, getActivity } = useActivityStore()
     const {
         startLoading,
-        stopLoading,        
-        showErrorAlert } = useModalStore()
+        stopLoading } = useModalStore()
         
     const handleScheduleMeeting = () => {
         stopLoading()
@@ -43,7 +42,7 @@ export const ClassroomView: React.FC = () => {
             getActivity(data);                                    
         }
         if (isError) {            
-            showErrorAlert()
+            FailedToast("Something went wrong!")
         }
     }, [data, isSuccess, getActivity, isError]);
 
@@ -89,7 +88,7 @@ export const ClassroomView: React.FC = () => {
                 ))) : (
                     <>
                         <h1 className='m-2 p-2 text-gray-400 text-sm'> No post yet. <br /> 
-                        Create a post by creating an assignment or creating/scheduling a meeting.
+                            Create a post by creating an assignment or creating/scheduling a meeting.
                         </h1>
                     </>
                 )}

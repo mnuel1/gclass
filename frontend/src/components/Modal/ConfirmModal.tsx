@@ -2,10 +2,11 @@ import React from "react"
 
 interface ModalProps {    
     onClose: () => void;
+    onConfirm: () => void;
     id: string;
   }
 
-export const ConfirmModal: React.FC<ModalProps> = ({ onClose, id }) => {
+export const ConfirmModal: React.FC<ModalProps> = ({ onClose, id, onConfirm }) => {
     
     return(
         <>
@@ -37,10 +38,10 @@ export const ConfirmModal: React.FC<ModalProps> = ({ onClose, id }) => {
                                 <div className="bg-gray-200 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                     <button
                                         type="button"
-                                        onClick={onClose}
+                                        onClick={onConfirm}
                                         className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
                                     >
-                                        Save
+                                        Proceed
                                     </button>
                                     <button
                                         type="button"

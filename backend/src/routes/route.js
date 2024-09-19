@@ -10,6 +10,6 @@ const router = express.Router();
  **/ 
 
 router.get("/search/:name", SearchAll);
-router.get("/search/students/:name", SearchStudents);
+router.get("/search/students/:name/:class_id", SearchStudents);
 
 module.exports = router

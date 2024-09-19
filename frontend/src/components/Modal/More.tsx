@@ -2,20 +2,16 @@ import React from 'react';
 
 import { DeleteModal } from './DeleteModal';
 import { EditModal } from './EditModal';
-import { SuccessAlert } from '../Alert/SuccessAlert';
+import { SuccessToast } from '../Toast/SuccessToast';
 import useModalStore from '../../process/Modal/useModalStore';
 import { useRemoveClassroom, useEditClassroom } from '../../process/Classroom/useClassroomQuery';
 import { ClassroomTypes } from '../../process/Classroom/classroomTypes';
 
 export const MoreModal: React.FC<({class_id: string})> = ({class_id}) => {
-  const {
-    activeModalId,
-    isSuccessAlertVisible,
+  const {    
     isDeleteModalOpen,
     isEditModalOpen,
     moreModalOpen,
-    showSuccessAlert,
-    hideSuccessAlert,
     openDeleteModal,
     closeDeleteModal,
     openEditModal,
@@ -44,15 +40,7 @@ export const MoreModal: React.FC<({class_id: string})> = ({class_id}) => {
   
 
   return (
-    <>
-      {isSuccessAlertVisible && (
-        <SuccessAlert
-          title="Deleted Successfully"
-          body="The class was deleted successfully."
-          isVisible={isSuccessAlertVisible}
-          onClose={hideSuccessAlert}
-        />
-      )}
+    <>      
       <button onClick={() => handleMoreModal(class_id)}>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" 
           className="size-8 cursor-pointer z-50 hover:bg-gray-200 rounded-full">

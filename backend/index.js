@@ -5,6 +5,7 @@ const morgan = require("morgan");
 
 // const { setupWebSocket } = require("./src/websocket/websocket");
 
+const uploadFileTeacherRoute = require("./src/Teacher/upload")
 const teacherRoute = require("./src/Teacher/routes/route");
 const searchRoute = require('./src/routes/route')
 
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({extended: true}))
 app.use("/teacher", teacherRoute)
+app.use("/teacher", uploadFileTeacherRoute)
 app.use(searchRoute)
 
 

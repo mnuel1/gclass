@@ -55,13 +55,13 @@ const EditClassService = async (classData) => {
     
     try {
         const { name, description, class_id } = classData 
-    
+
         const [result] = await db.query(
             `UPDATE class SET name = ?, description = ? WHERE class_id = ?`,
             [name, description, class_id]
         )
 
-        if (!result.length) {
+        if (!result.affectedRows) {
             return {
                 error: false,
                 succesfull: false,
@@ -89,7 +89,7 @@ const RemoveClassService = async (class_id) => {
             [class_id]
         )
 
-        if (!result.length) {
+        if (!result.affectedRows) {
             return {
                 error: false,
                 succesfull: false,

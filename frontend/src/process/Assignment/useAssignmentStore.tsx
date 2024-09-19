@@ -21,9 +21,7 @@ const useAssignmentStore = create<AssignmentState>((set) => ({
             assignment: {...assignment},
         }))
     },
-    createAssignment: (newAssignment: AssignmentType) => set((state) => {       
-        console.log(newAssignment.start_date);
-        
+    createAssignment: (newAssignment: AssignmentType) => set((state) => {
         return {
             assignment: {
                 ...state.assignment,
@@ -39,7 +37,14 @@ const useAssignmentStore = create<AssignmentState>((set) => ({
         const date = updatedAssignment.start_date.split('T')[0];
         const updatedAssignments = state.assignment[date]?.map((assignment) =>
             assignment.assignment_id === updatedAssignment.assignment_id
-                ? updatedAssignment
+                ? {
+                    name: updatedAssignment.name,
+                    instruction: updatedAssignment.instruction,
+                    attachment: updatedAssignment.attachment,
+                    students: updatedAssignment.students,
+                    points: updatedAssignment.points,
+                    due_date: updatedAssignment.due_date,
+                }
                 : assignment
         ) || [];
 

@@ -2,21 +2,13 @@ import { create } from 'zustand';
 
 interface ModalState {
   isLoading: boolean
-  activeModalId: string | null; 
-  isSuccessAlertVisible: boolean;
-  isErrorAlertVisible: boolean;
+  activeModalId: string | null;   
   isDeleteModalOpen: string | null; 
   isEditModalOpen: string | null;   
   moreModalOpen: string | null;     
   
   classModalOpen: boolean;
   joinModalOpen: boolean;
-
-  showSuccessAlert: () => void;
-  hideSuccessAlert: () => void;
-
-  showErrorAlert: () => void;
-  hideErrorAlert: () => void;
   
   openDeleteModal: (id: string) => void;
   closeDeleteModal: () => void;
@@ -39,21 +31,13 @@ interface ModalState {
 
 const useModalStore = create<ModalState>((set) => ({
   isLoading: false,
-  activeModalId: null, // No modal open by default
-  isSuccessAlertVisible: false,
-  isErrorAlertVisible: false,
+  activeModalId: null,   
   isDeleteModalOpen: null,
   isEditModalOpen: null,
   moreModalOpen: null,
   classModalOpen: false,
   joinModalOpen: false,
-
-  showSuccessAlert: () => set({ isSuccessAlertVisible: true }),
-  hideSuccessAlert: () => set({ isSuccessAlertVisible: false }),
-  
-  showErrorAlert: () => set({ isErrorAlertVisible: true }),
-  hideErrorAlert: () => set({ isErrorAlertVisible: false }),
-  
+   
   openDeleteModal: (id: string) => set({ isDeleteModalOpen: id }),
   closeDeleteModal: () => set({ isDeleteModalOpen: null }),
 

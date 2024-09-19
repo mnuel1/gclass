@@ -7,6 +7,7 @@ import { useAddAssignment } from '../../../process/Assignment/useAssignmentQuery
 import { Member } from '../../../process/Member/memberType'
 import { useMemberQuery } from '../../../process/Member/useMemberQuery'
 import { Accordion } from '../../../components/Accordion/Accordion'
+import { FailedToast } from '../../../components/Toast/FailedToast'
 interface FormState {
     name: string;
     instructions?: string;
@@ -50,8 +51,7 @@ export const CreateAssignment:React.FC = () => {
     const [errors, setErrors] = useState<ErrorsState>({});
     const {        
         startLoading,
-        stopLoading,
-        showErrorAlert } = useModalStore()
+        stopLoading } = useModalStore()
     
     useEffect(() => {
         if (isLoading){
@@ -68,7 +68,7 @@ export const CreateAssignment:React.FC = () => {
         }
 
         if (isError) {            
-            showErrorAlert()
+            FailedToast("Something went wrong!")
         }
     }, [data, isSuccess, getMember, isError]);
     
@@ -92,11 +92,11 @@ export const CreateAssignment:React.FC = () => {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value)
     }
-    const handleAddMembers = (memberr: Member) => {
-        console.log(memberr);
+    const handleAddMembers = (newMember: Member) => {
         
-        if (!members.some(member => member.student_id === memberr.student_id)) {
-            setMembers([...members, memberr])
+        
+        if (!members.some(member => member.student_id === newMember.student_id)) {
+            setMembers([...members, newMember])
         }
         setSearch('')
     } 

@@ -11,7 +11,7 @@ const CreateAssignment = async (req, res) => {
     
     try {
         const assignmentData = req.body;
-                
+            
         const createAssignmentResult = await CreateAssignmentService(assignmentData)
 
         if (!createAssignmentResult.succesfull) {
@@ -42,10 +42,45 @@ const CreateAssignment = async (req, res) => {
 
 
 const EditAssignment = async (req, res) => {
-
-    const { name, instruction, attachment, points, startDate, 
-        dueDate, classId, studentIds, formId } = req.body 
+    
     try {
+        const {
+            assignment_id,
+            name,
+            instruction,            
+            points,
+            due_date,            
+            student_ids,
+            past_student_ids,
+            formId } = req.body
+               
+        const assignmentData = {
+            assignment_id,
+            name,
+            instruction,           
+            points,
+            due_date,            
+            student_ids,
+            past_student_ids,
+            formId,       
+        }
+
+        const editAssignmentResult = await EditAssignmentService(assignmentData)
+
+        if (!editAssignmentResult.succesfull) {
+            return res.status(400).json({ 
+                title: "Edit Assignment Failed", 
+                message: "Assignment was not edited.",
+                data: []
+            });
+        }
+
+        return res.status(200).json({ 
+            title: "Assignment Edited", 
+            message: `The assignment was succesfully edited`,
+            data: editAssignmentResult.data
+            
+        });
 
     } catch (error) {
        

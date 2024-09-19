@@ -2,10 +2,12 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { Authentication } from "../../../Auth/Authentication";
 import { authapi } from "../../../process/axios"
-import { SuccessAlert } from "../../../components/Alert/SuccessAlert";
-import { ErrorAlert } from "../../../components/Alert/ErrorAlert";
+import { SuccessToast } from "../../../components/Toast/SuccessToast";
+import { FailedToast } from "../../../components/Toast/FailedToast";
 import { Spinner } from "../../../components/Spinner/spinner";
 import useModalStore from "../../../process/Modal/useModalStore";
+
+
 interface FormState {  
     email_address: string;
     password: string; 
@@ -19,22 +21,16 @@ interface ErrorsState {
 export const TeacherLogin:React.FC = () => {
     const { login } = Authentication()
     const navigate = useNavigate()
+    
     const [form, setForm] = useState<FormState>({
         email_address: '',
         password: '',      
     });
-    const [wrongCred, setWrongCred] = useState(false)
-    const [wrongCredMsg, setWrongCredMsg] = useState("")
+
     const [errors, setErrors] = useState<ErrorsState>({});
     const [show, setShow] = useState(false)
     const {
-        isLoading,
-        isErrorAlertVisible,
-        isSuccessAlertVisible,
-        showErrorAlert, 
-        hideErrorAlert, 
-        showSuccessAlert,
-        hideSuccessAlert,
+        isLoading,        
         startLoading,
         stopLoading } = useModalStore()
 
@@ -72,11 +68,10 @@ export const TeacherLogin:React.FC = () => {
             
             if (response.status === 401) {
 
-                setWrongCred(true)
-                setWrongCredMsg(response.data.message)
+                FailedToast(response.data.message)
             }
             if (response.status !== 200) {
-                showErrorAlert()
+                FailedToast("Login Failed")
                 return;
             }
 
@@ -85,10 +80,11 @@ export const TeacherLogin:React.FC = () => {
             const id = response.data.teacher_id
             const email = response.data.email_address
                         
-            login( user, token, id, email )
-            showSuccessAlert()
+            login( user, token, id, email )     
+            SuccessToast("Login Success")       
             stopLoading()
-            navigate(`/teacher/${response.data.teacher_id}`)           
+            
+            navigate(`/teacher/${response.data.teacher_id}/class`)           
 
         } else {
             setErrors(validationErrors);
@@ -96,16 +92,8 @@ export const TeacherLogin:React.FC = () => {
     }
 
     return (
-        <>
-
-            {isErrorAlertVisible && <ErrorAlert isVisible={isErrorAlertVisible} onClose={hideErrorAlert} title={"Server Error"} 
-            body={"An issue occurred. Please try again later. If the problem continues, please contact customer service. Thank you."}/>}
-            
-            {wrongCred && <ErrorAlert isVisible={isErrorAlertVisible} onClose={hideErrorAlert} title={"Login Failed"} 
-            body={wrongCredMsg}/>}
-
-            {isSuccessAlertVisible && <SuccessAlert isVisible={isSuccessAlertVisible} onClose={hideSuccessAlert} title={"Login Succesful"} 
-            body={"Please wait while we prepare everything for you. Thank you!"}/>}
+        <>  
+                                    
             <Spinner isLoading={isLoading}>        
                 <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-lg">

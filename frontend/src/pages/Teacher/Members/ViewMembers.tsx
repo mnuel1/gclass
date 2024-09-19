@@ -7,7 +7,7 @@ import { Authentication } from '../../../Auth/Authentication'
 
 import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
 
-
+import { FailedToast } from '../../../components/Toast/FailedToast'
 import { Accordion } from '../../../components/Accordion/Accordion'
 
 
@@ -23,8 +23,7 @@ export const Members:React.FC = () => {
     const { member, getMember } = useMemberStore()
     const {    
         startLoading,
-        stopLoading,
-        showErrorAlert } = useModalStore()
+        stopLoading } = useModalStore()
     // const handleFilter = (name : string) => {
     //     setActive(name)
     // }
@@ -33,7 +32,7 @@ export const Members:React.FC = () => {
 
     const handleAddMember = () => {
         stopLoading()
-        navigate(`new`, {state:{ member: member}})
+        navigate(`new`, {state:{ classroom: classroom}})
     }
 
     const handleRemoveMember = () => {
@@ -52,7 +51,7 @@ export const Members:React.FC = () => {
         }
 
         if (isError) {            
-            showErrorAlert()
+            FailedToast("Something went wrong!")
         }
     }, [data, isSuccess, getMember, isError]);
 
@@ -129,7 +128,8 @@ export const Members:React.FC = () => {
                         <>       
                             <div key={index} className='flex items-center justify-between my-2 p-2 '>
                                 <div className='flex gap-2 items-center '>
-                                    <div className='rounded-full w-[40px] flex justify-center p-2 bg-[green] font-bold flex-none self-start'> T </div>
+                                    <div className='rounded-full w-[40px] flex justify-center p-2 
+                                    bg-green-400 font-bold flex-none self-start'> {student.fullname[0].toUpperCase()} </div>
                                     <span className='font-semibold'>{student.fullname} </span>
                                 </div>
 

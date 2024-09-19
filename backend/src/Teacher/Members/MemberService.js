@@ -8,12 +8,12 @@ const CreateMemberService = async (memberData) => {
     
     try {
         
-        const {class_id, student_ids} = memberData
+        const {class_id, members} = memberData
 
-        for (const student_id of student_ids) {
+        for (const student_id of members) {
             await db.query(
                 `INSERT INTO class_students (class_id, student_id) VALUES (?, ?)`,
-                [class_id, student_id]
+                [class_id, student_id.student_id]
             )
         }
 
@@ -73,12 +73,12 @@ const GetMemberService = async (class_id) => {
 
 const RemoveMemberService = async (memberData) => {
     try {
-        const {class_id, student_ids} = memberData
+        const {class_id, members} = memberData
 
-        for (const student_id of student_ids ) {
+        for (const member of members ) {
             await db.query(
                 `DELETE FROM class_students WHERE class_id = ? AND student_id = ?`,
-                [class_id, student_id]
+                [class_id, member.student_id]
             )
         }
         return {

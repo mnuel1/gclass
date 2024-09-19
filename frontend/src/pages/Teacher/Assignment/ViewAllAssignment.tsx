@@ -5,7 +5,7 @@ import useModalStore from '../../../process/Modal/useModalStore'
 import useAssignmentStore from '../../../process/Assignment/useAssignmentStore'
 import { useAssignmentQuery } from '../../../process/Assignment/useAssignmentQuery'
 
-
+import { FailedToast } from '../../../components/Toast/FailedToast'
 import { AssignmentBlock } from '../../../components/AssignmentBlock/AssignmentBlock'
 import { AssignmentType } from '../../../process/Assignment/assignmentType'
 
@@ -21,8 +21,7 @@ export const Assignments:React.FC = () => {
     
     const { data, isSuccess, isError, isLoading, isEmpty } = useAssignmentQuery(classroom.class_id);
     const { assignment, getAssignment } = useAssignmentStore()
-    const {            
-        showErrorAlert,
+    const {
         startLoading,
         stopLoading } = useModalStore()
 
@@ -52,7 +51,7 @@ export const Assignments:React.FC = () => {
         }
 
         if (isError) {            
-            showErrorAlert()
+            FailedToast("Something went wrong!")
         }
     }, [data, isSuccess, getAssignment, isError, isLoading]);
     return (

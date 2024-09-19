@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authapi } from "../../../process/axios";
 import { Authentication } from "../../../Auth/Authentication";
-import { SuccessAlert } from "../../../components/Alert/SuccessAlert";
-import { ErrorAlert } from "../../../components/Alert/ErrorAlert";
 import { Spinner } from "../../../components/Spinner/spinner";
 import useModalStore from "../../../process/Modal/useModalStore";
+import { FailedToast } from "../../../components/Toast/FailedToast";
+import { SuccessToast } from "../../../components/Toast/SuccessToast";
 
 interface FormState {
     first_name: string;
@@ -24,18 +24,11 @@ interface ErrorsState {
     confirm_password?: string;
 }
 
-
 export const TeacherSignup: React.FC = () => {
     const { login } = Authentication()
     const navigate = useNavigate()
     const {
-        isLoading,
-        isErrorAlertVisible,
-        isSuccessAlertVisible,
-        showErrorAlert, 
-        hideErrorAlert, 
-        showSuccessAlert,
-        hideSuccessAlert,
+        isLoading,        
         startLoading,
         stopLoading } = useModalStore()
         
@@ -91,7 +84,7 @@ export const TeacherSignup: React.FC = () => {
             const response = await authapi.post('/teacher/register', form)
                      
             if (response.status !== 200) {
-                showErrorAlert()
+                FailedToast("Sign up Failed")
                 return;
             } 
             const user = `${response.data.last_name}, ${response.data.first_name} ${response.data.middle_name}`
@@ -100,9 +93,9 @@ export const TeacherSignup: React.FC = () => {
             const email = response.data.email_address
 
             login( user, token, id, email )
-            showSuccessAlert()
+            SuccessToast("Success! Setting up your account. Please wait for a minute")
             stopLoading()
-            navigate(`/teacher/${id}`)
+            navigate(`/teacher/${id}/class`)
            
 
         } else {
@@ -111,13 +104,7 @@ export const TeacherSignup: React.FC = () => {
     };
 
     return (
-        <>
-
-            {isErrorAlertVisible && <ErrorAlert isVisible={isErrorAlertVisible} onClose={hideErrorAlert} title={"Server Error"} 
-            body={"An issue occurred. Please try again later. If the problem continues, please contact customer service. Thank you."}/>}
-
-            {isSuccessAlertVisible && <SuccessAlert isVisible={isSuccessAlertVisible} onClose={hideSuccessAlert} title={"Login Succesful"} 
-            body={"Please wait while we prepare everything for you. Thank you!"}/>}
+        <>    
             <Spinner isLoading={isLoading}>
             
                 <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">

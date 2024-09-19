@@ -1,3 +1,5 @@
+import { Bounce, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom'
 import { ProtectedRoute } from './Auth/ProtectedRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -63,6 +65,19 @@ function App() {
       
   return (
     <>
+      <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce}
+      />
       <QueryClientProvider client={queryClient}>
         <Router>
           <Routes>
@@ -82,8 +97,9 @@ function App() {
             </Route>
                         
               <Route path={`/teacher`} element={<Navigate to={`login`} replace />} />
+              <Route path={`/teacher/:teacher_id`} element={<Navigate to={`class`} replace />} />
               <Route path={`/teacher/:teacher_id`} element={<TeacherLayout />} >            
-                <Route index element={<Home/>} />
+                <Route path='class' element={<Home/>} />
                 <Route path='class' element={<TeacherClassLayout />} >
                   <Route path=':class_id/posts' element={<ClassroomView/>} />
                   <Route path=':class_id/assignments' element={<Assignments/>} />

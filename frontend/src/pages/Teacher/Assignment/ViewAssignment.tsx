@@ -4,12 +4,12 @@ import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
 import { AssignmentType } from '../../../process/Assignment/assignmentType'
 import useMemberStore from '../../../process/Member/useMemberStore'
 import useModalStore from '../../../process/Modal/useModalStore'
-import { useAddAssignment, useDeleteAssignment } from '../../../process/Assignment/useAssignmentQuery'
+import { useEditAssignment, useDeleteAssignment } from '../../../process/Assignment/useAssignmentQuery'
 import { Member } from '../../../process/Member/memberType'
 import { useMemberQuery } from '../../../process/Member/useMemberQuery'
 import { Accordion } from '../../../components/Accordion/Accordion'
 import { DeleteAssignmentModal } from '../../../components/Modal/DeleteAssignmentModal'
-
+import { FailedToast } from '../../../components/Toast/FailedToast'
 interface ErrorsState {
     name?: string,        
     instructions?: string,
@@ -22,16 +22,14 @@ interface ErrorsState {
 }
 
 export const ViewAssignment:React.FC = () => {
-    const { member, getMember } = useMemberStore()
-    const [search, setSearch] = useState<string>('')
-    const [members, setMembers] = useState<Member[]>([])    
-    const isInitialized = useRef(false);
     const location = useLocation()
     const navigate = useNavigate()    
     const classroom : ClassroomTypes = location.state.classroom
     const ass : AssignmentType = location.state.assignment
-    
-    
+    const { member, getMember } = useMemberStore()
+    const [search, setSearch] = useState<string>('')
+    const [members, setMembers] = useState(ass.students)    
+       
     const [edit, setEdit] = useState(false)
     const [del, setDel] = useState(false)
     
@@ -49,8 +47,7 @@ export const ViewAssignment:React.FC = () => {
     const [errors, setErrors] = useState<ErrorsState>({});
     const {        
         startLoading,
-        stopLoading,
-        showErrorAlert } = useModalStore()
+        stopLoading } = useModalStore()
     
     useEffect(() => {
         if (isLoading){
@@ -59,15 +56,11 @@ export const ViewAssignment:React.FC = () => {
             stopLoading()
         }
         if (isSuccess && data) {          
-            getMember(data);
-            if (!isInitialized.current) {
-                setMembers(data);
-                isInitialized.current = true;
-            }
+            getMember(data);           
         }
 
         if (isError) {            
-            showErrorAlert()
+            FailedToast("Something went wrong!")
         }
     }, [data, isSuccess, getMember, isError]);
     
@@ -92,16 +85,15 @@ export const ViewAssignment:React.FC = () => {
         setSearch(event.target.value)
     }
     const handleAddMembers = (memberr: Member) => {
-        console.log(memberr);
-        
-        if (!members.some(member => member.student_id === memberr.student_id)) {
-            setMembers([...members, memberr])
+
+        if (!members?.some(member => member.student_id === memberr.student_id)) {
+            setMembers([...(members ?? []), memberr]);
         }
         setSearch('')
     } 
 
     const handleRemoveMember = (student_id: string) => {
-        setMembers(members.filter(member => member.student_id !== student_id))                
+        setMembers(members?.filter(member => member.student_id !== student_id))                
     }
 
     const validate = () => {
@@ -123,7 +115,7 @@ export const ViewAssignment:React.FC = () => {
             newErrors.date = "Date is required";
         }
 
-        if(members.length <= 0) {
+        if(members && members.length <= 0) {
             newErrors.student_ids = "You need to assigned a student to this assignment ";
         }
         
@@ -131,7 +123,7 @@ export const ViewAssignment:React.FC = () => {
     };
 
     
-    const addAssignmentMutation = useAddAssignment()
+    const editAssignmentMutation = useEditAssignment()
     const createTimestamp = () => {
         
         const formattedDate = form.date.replace(/\//g, '-'); 
@@ -147,32 +139,45 @@ export const ViewAssignment:React.FC = () => {
     
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
-        
-
+  
     const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const validationErrors = validate();
                 
-        if (Object.keys(validationErrors).length === 0) {
-            startLoading()
+        if (Object.keys(validationErrors).length === 0) {         
+       
+            
             const data = {                
-                assignment_id: "",
-                class_id: classroom.class_id,
+                assignment_id: ass.assignment_id,
+                class_id: ass.class_id,
                 name: form.name,
                 instruction: form.instructions,
-                attachment: form.attachment,
+                
                 points: form.points,
                 start_date: "",
                 due_date: `${createTimestamp()}`,
                 modified_time: "",
                 formatted_start_date: "",
-                student_ids: members
+                students: members,
+                student_ids: members,
+                past_student_ids: ass.students
+            }
+                                                
+            const formData = new FormData();
+            formData.append('assignment_id', ass.assignment_id); 
+            formData.append('attachment', form.attachment); 
 
-            }      
-            addAssignmentMutation.mutate(data)
-            navigate(-1);
-            stopLoading()
-
+            try {
+                const response = await fetch(`http://localhost:4000/teacher/upload/assignment`, {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await response.json();
+                editAssignmentMutation.mutate(data)
+                navigate(-1)
+            } catch (error) {
+                FailedToast("Something went wrong!")
+            }
 
         } else {
             setErrors(validationErrors);
@@ -300,7 +305,7 @@ export const ViewAssignment:React.FC = () => {
                    
                         
                         <Accordion name='Added Members'>
-                            {!members.length ? (
+                            {!members?.length ? (
                                     <div className='text-xl my-2 p-4 '> No members yet</div>
                                 ) : (
                                     

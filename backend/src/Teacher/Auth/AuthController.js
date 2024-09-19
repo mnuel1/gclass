@@ -120,7 +120,87 @@ const Login = async (req, res) => {
     
 }
 
+const ChangePassword = async (req, res) => {
+
+    try {
+        const {password, teacher_id} = req.body
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const [ result ] = await db.query(
+            `UPDATE teachers SET password = ? WHERE teacher_id = ?`,
+            [hashedPassword, teacher_id]
+        )
+
+        if (!result.affectedRows) {
+            return res.status(400).json({ 
+                title: "", 
+                message: "" 
+            });
+        }
+
+        return res.status(200).json({ 
+            title: "Done", 
+            message: "" 
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
+    }
+
+}
+
+const EditAccount = async (req, res) => {
+
+    try {
+
+        const {first_name, middle_name, last_name, email_address, teacher_id} = req.body
+        
+        console.log(teacher_id);
+        
+
+        const [ result ] = await db.query(
+            `UPDATE teachers SET first_name = ?, middle_name = ?, last_name = ?, email_address = ? WHERE teacher_id = ?`,
+            [first_name, middle_name, last_name, email_address, teacher_id]
+        )
+
+        if (!result.affectedRows) {
+            return res.status(400).json({ 
+                title: "", 
+                message: "" 
+            });
+        }
+
+        const token = jwt.sign(
+            {username: email_address},
+            process.env.JWT_TOKEN,
+            {expiresIn: '1d'}
+        )
+
+        return res.status(200).json({ 
+            title: "Done", 
+            message: "",
+            teacher_id: teacher_id,
+            first_name: first_name,
+            last_name: last_name,
+            middle_name: middle_name,
+            email_address: email_address,
+            token: token
+        });
+
+
+        
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
+    }
+}
 module.exports = { 
     Login,
-    Register
+    Register,
+    ChangePassword,
+    EditAccount
 };

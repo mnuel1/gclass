@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { MoreModal } from '../Modal/More'
 import { ClassroomTypes } from '../../process/Classroom/classroomTypes'
 import useClassroomStore from '../../process/Classroom/useClassroomStore'
+
 const blockView = "md:w-[15rem] md:h-[15rem] border border-gray-300 "
 const listView = "w-full h-[5rem] border border-gray-300"
 
@@ -13,7 +14,7 @@ export const Classroom:React.FC<{ classroom : ClassroomTypes}> = ({classroom}) =
     
     const navigateToClassroom = (classroom: ClassroomTypes) => {
         selectClassroom(classroom)                
-        navigate(`class/${classroom.class_id}/posts`, {state:{classroom}})
+        navigate(`${classroom.class_id}/posts`, {state:{classroom}})
     }
     
     return (

@@ -262,7 +262,7 @@ export const ViewAllAssignments:React.FC = () => {
                                     </div>
                                     <button key={startDate} onClick={handleAssignmentbutton}>
                                         {assigments.map((assigment, index) => (
-                                            <AssignmentBlock key={index} name={assigment.name} date={assigment.startDate}/>
+                                            <AssignmentBlock key={index} description={assigment.instructions} name={assigment.name} date={assigment.startDate}/>
                                         ))}
                                         
                                     </button>
