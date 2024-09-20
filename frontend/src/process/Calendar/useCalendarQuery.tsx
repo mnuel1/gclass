@@ -1,18 +1,20 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { 
-    fetchAssignmentService, 
-    createAssignmentService, 
-    editAssignmentService, 
-    deleteAssignmentService } from "./calendarService";
-import { AssignmentType } from "./calendarType";
-import useAssignmentStore from "./useCalendarStore";
-import useModalStore from "../Modal/useModalStore";
+    fetchMeetingService, 
+    createMeetingService, 
+    editMeetingService, 
+    deleteMeetingService } from "./calendarService";
+import { Event } from "./calendarType";
 
-export const useAssignmentQuery = (class_id: string) => {
+import useModalStore from "../Modal/useModalStore";
+import { useNavigate } from "react-router-dom";
+import { FailedToast } from "../../components/Toast/FailedToast";
+import { SuccessToast } from "../../components/Toast/SuccessToast";
+export const useMeetingQuery = (class_id: string) => {
 
     const {data, isSuccess, isError, error, isLoading} = useQuery({
-        queryKey: ['assignment', class_id],
-        queryFn: () => fetchAssignmentService(class_id),
+        queryKey: ['meeting', class_id],
+        queryFn: () => fetchMeetingService(class_id),
         staleTime: 1000 * 60 * 5,
         // refetchOnWindowFocus: false,
     })
@@ -22,13 +24,14 @@ export const useAssignmentQuery = (class_id: string) => {
  
 };
 
-export const useAddAssignment = (data : AssignmentType) => {
-    const { createAssignment } = useAssignmentStore()
-    const { showErrorAlert } = useModalStore()
-
+export const useAddMeeting = () => {
+    
+    const { startLoading, stopLoading } = useModalStore()
+    const navigate = useNavigate()
     return useMutation({
-        mutationFn: async (data: AssignmentType) => {
-            const response = await createAssignmentService(data)
+        mutationFn: async (data: Event) => {
+            startLoading()
+            const response = await createMeetingService(data)
             
             if (response.status !== 200) {
                 throw new Error('Server error occurred')
@@ -41,49 +44,76 @@ export const useAddAssignment = (data : AssignmentType) => {
         },
         onError: (error, variables, context) => {           
             console.log(`Error occurred, rolling back optimistic update with id ${error}`);
-            showErrorAlert()
+            FailedToast("Schedule Meeting Failed")
+            stopLoading()
         },
-        onSuccess: (data, variables, context) => {           
-            createAssignment(data)
-                        
+        onSuccess: (data, variables, context) => {
             console.log("Classroom successfully added:", data);
+            SuccessToast("Schedule Meeting Success!")
+            stopLoading()
+            navigate(-1)
         }
     });
 }
 
-export const useEditAssignment = (data : AssignmentType) => {
-    
+export const useEditMeeting = () => {
+    const { startLoading, stopLoading } = useModalStore()
+    const navigate = useNavigate()
+    return useMutation({
+        mutationFn: async (data : any) => {
+            startLoading()
+            const response = await editMeetingService(data)
+            
+            if (response.status !== 200) {
+                throw new Error('Server error occurred')
+            }   
+            
+            return response.data.data;
+        },
+        onMutate: (variables) => {                    
+            return { id: 1 };
+        },
+        onError: (error, variables, context) => {           
+            console.log(`Error occurred, rolling back optimistic update with id ${error}`);
+            FailedToast("Edit Meeting Failed")
+            stopLoading()
+        },
+        onSuccess: (data, variables, context) => {
+            console.log("Classroom successfully added:", data);
+            SuccessToast("Edit Meeting Success!")
+            stopLoading()            
+            navigate(-1)
+        }
+    });
 }
 
-export const useDeleteAssignment = (data : AssignmentType) => {
-    
+export const useDeleteMeeting = () => {
+    const { startLoading, stopLoading } = useModalStore()
+    const navigate = useNavigate()
+    return useMutation({
+        mutationFn: async (class_meeting_id: string) => {
+            startLoading()
+            const response = await deleteMeetingService(class_meeting_id)
+            
+            if (response.status !== 200) {
+                throw new Error('Server error occurred')
+            }   
+            
+            return response.data.data;
+        },
+        onMutate: (variables) => {                    
+            return { id: 1 };
+        },
+        onError: (error, variables, context) => {           
+            console.log(`Error occurred, rolling back optimistic update with id ${error}`);
+            FailedToast("Delete Meeting Failed")
+            stopLoading()
+        },
+        onSuccess: (data, variables, context) => {
+            console.log("Classroom successfully added:", data);
+            SuccessToast("Delete Meeting Success!")
+            stopLoading()
+            navigate(-1)
+        }
+    });
 }
-
-// export const useAddClassroom = () => {
-//     const { addClassroom } = useClassroomStore()
-//     const { showErrorAlert } = useModalStore()
-//     return useMutation({
-//         mutationFn: async (data: ClassroomTypes) => {
-//             const response = await addClassroomService(data)
-            
-//             if (response.status !== 200) {
-//                 throw new Error('Server error occurred')
-//             }   
-            
-//             return response.data.data;
-//         },
-//         onMutate: (variables) => {                    
-//             return { id: 1 };
-//         },
-//         onError: (error, variables, context) => {           
-//             console.log(`Error occurred, rolling back optimistic update with id ${error}`);
-//             showErrorAlert()
-//         },
-//         onSuccess: (data, variables, context) => {           
-//             addClassroom(data)
-            
-            
-//             console.log("Classroom successfully added:", data);
-//         }
-//     });
-// };

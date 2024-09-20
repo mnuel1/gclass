@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
-import useModalStore from '../../../process/Modal/useModalStore'
+
 
 interface FormState {
     title: string;
@@ -36,10 +36,7 @@ export const CreateSchedule:React.FC = () => {
     const location = useLocation()
     const classroom : ClassroomTypes = location.state.classroom
 
-    const {        
-        startLoading,
-        stopLoading } = useModalStore()
-        
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setForm(prevForm => ({
@@ -120,18 +117,7 @@ export const CreateSchedule:React.FC = () => {
                         </div>
                         
                     </div>
-                    <div>
-                    <span className='text-sm text-gray-500'>Description <span className='text-red-700'>*</span> </span>
-                    <textarea                        
-                        name="description"
-                        value={form.description}
-                        onChange={handleChange}
-                        className="w-full rounded-lg border border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                        placeholder="Enter description"
-                    />                        
-                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
-                    </div>
-                    
+                                                          
                     <div className='flex flex-col gap-2'>
                         <span className='text-sm text-gray-500'>When <span className='text-red-700'>*</span> </span>
                         <div className='flex max-w-md gap-2'>

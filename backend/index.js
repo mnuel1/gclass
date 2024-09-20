@@ -7,6 +7,8 @@ const morgan = require("morgan");
 
 const uploadFileTeacherRoute = require("./src/Teacher/upload")
 const teacherRoute = require("./src/Teacher/routes/route");
+const studentRoute = require("./src/Student/routes/route")
+
 const searchRoute = require('./src/routes/route')
 
 require("dotenv").config();
@@ -17,6 +19,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({extended: true}))
 app.use("/teacher", teacherRoute)
+app.use("/student", studentRoute)
 app.use("/teacher", uploadFileTeacherRoute)
 app.use(searchRoute)
 

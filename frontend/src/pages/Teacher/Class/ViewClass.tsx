@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Authentication } from '../../../Auth/Authentication'
@@ -10,10 +10,11 @@ import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
 
 import { PostBlock } from '../../../components/PostBlock/PostBlock'
 import { FailedToast } from '../../../components/Toast/FailedToast'
-
+import { MeetModal } from '../../../components/Modal/MeetModal'
 
 export const ClassroomView: React.FC = () => {
-    const { getUser } = Authentication()
+    const { getUser, getID } = Authentication()
+    const [modal, setModal] = useState(false)
     const name = getUser()
 
     const location = useLocation();
@@ -26,10 +27,12 @@ export const ClassroomView: React.FC = () => {
         startLoading,
         stopLoading } = useModalStore()
         
-    const handleScheduleMeeting = () => {
-        stopLoading()
-        // navigate(`/teacher/class/${classData.id}/assignments/new`, {state:{item}})
-        // alert('yes')
+    const handleScheduleMeeting = (name: string) => {
+        stopLoading()                        
+        localStorage.setItem('meetingName', name || classroom.name);
+        window.open(`/teacher/${getID()}/class/${classroom.class_id}/meeting`, '_blank');
+
+        
     }
     
     useEffect(() => {
@@ -48,7 +51,8 @@ export const ClassroomView: React.FC = () => {
 
     
     return (
-        <>                              
+        <>
+            {modal && <MeetModal onSubmit={handleScheduleMeeting} onClose={() => setModal(false)}/>}
             <div className='flex items-center justify-between border-b-2 border-gray-300 px-8 py-4'>
             
                 <h1 className='text-2xl font-bold'>{`${classroom.name}'s Posts`.toUpperCase()}</h1>
@@ -56,7 +60,7 @@ export const ClassroomView: React.FC = () => {
                     type='button' 
                     className='p-2 rounded-md text-black flex 
                     items-center gap-2 hover:bg-blue-200 border border-gray-300'
-                    onClick={handleScheduleMeeting}
+                    onClick={() => setModal(true)}
                     > 
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />

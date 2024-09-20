@@ -7,6 +7,12 @@ export const fetchAssignmentService = async (class_id : string) => {
     return response.data.data;
 }
 
+export const fetchStudentGradeService = async (class_id : string) => {
+    const response = await api.get(`teacher/assignment/${class_id}/grade`); 
+    
+    return response.data.data;
+}
+
 export const createAssignmentService = async (data: AssignmentType) => {
     const response = await api.post(`teacher/assignment`, data)
     return response;

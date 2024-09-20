@@ -1,10 +1,10 @@
-const db = require("../../database/db")
 const {
     CreateAssignmentService,
     EditAssignmentService,
     RemoveAssignmentService,
     GetAssignStudentsWorkService,
     GradeAssignmentService,
+    GetGradeAssignmentService,
     GetAssignmentsService } = require("./AssignmentService")
 
 const CreateAssignment = async (req, res) => {
@@ -173,6 +173,33 @@ const GetAssignments = async (req, res) => {
     }
 }
 
+const GetStudentGrades = async (req, res) => {
+    try {
+        const { class_id } = req.params
+
+        const getGradeStudentGrades = await GetGradeAssignmentService(class_id)
+
+        if (!getGradeStudentGrades.succesfull) {
+            return res.status(200).json({ 
+                title: "No Assignment Found", 
+                message: "There's no assignment record.",
+                data: []
+            });
+        }
+        return res.status(200).json({ 
+            title: "Assignment Found", 
+            message: `There's assignment record.`,
+            data: getGradeStudentGrades.data
+            
+        });
+
+    } catch (error) {
+      
+        console.error(error);
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
+    }
+}
+
 const GetStudentsAssignments = async (req, res) => {
 
     try {
@@ -206,6 +233,7 @@ module.exports = {
     RemoveAssignment,
     GetAssignStudents,
     GetAssignments,
-    GradeAssignment
+    GradeAssignment,
+    GetStudentGrades
 
 }

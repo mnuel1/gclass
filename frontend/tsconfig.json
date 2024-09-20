@@ -20,6 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "src/pages/Video Conference/face-api.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -24,8 +24,13 @@ const {
     RemoveAssignment,
     GetAssignStudents,
     GetAssignments,
+    GetStudentGrades,
     GradeAssignment } = require("../Assignment/AssignmentController")
-
+const {
+    CreateMeeting,
+    EditMeeting,
+    RemoveMeeting,
+    GetMeetings } = require("../Calendar/CalendarController")
 const VerifyTeacher = require("../../middleware/verify")
 const express = require('express');
 const router = express.Router();
@@ -65,7 +70,17 @@ router.post("/assignment/remove/:assignment_id", RemoveAssignment)
 router.post("/assignment/grade/:class_assignment_id ", GradeAssignment) 
 router.get("/assignment/:assignment_id/view", GetAssignStudents) 
 router.get("/assignment/:class_id", GetAssignments) 
+router.get("/assignment/:class_id/grade", GetStudentGrades) 
 
+/* 
+ * MEETING ROUTE
+ * 
+ * 
+ **/
+router.post("/meeting", CreateMeeting)
+router.post("/meeting/edit", EditMeeting)
+router.post("/meeting/remove/:class_meeting_id", RemoveMeeting)
+router.get("/meeting/:teacher_id", GetMeetings) 
 
 /* 
  * MEMBER ROUTE

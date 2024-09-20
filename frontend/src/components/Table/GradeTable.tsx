@@ -16,8 +16,7 @@ interface StudentsData {
 
 export const TableGrade:React.FC<{studentsData : StudentsData}> = ({studentsData}) => {
     console.log(studentsData);
-    
- 
+     
     return (
         <>
             <div className="overflow-x-auto">

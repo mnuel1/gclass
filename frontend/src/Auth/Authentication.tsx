@@ -47,6 +47,8 @@ export const Authentication = () => {
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('id');
         sessionStorage.removeItem('email');
+        localStorage.removeItem("meetingName");
+        localStorage.removeItem("selectedClassroom");
         setUser(null);
         setToken(null);
         setEmail(null)

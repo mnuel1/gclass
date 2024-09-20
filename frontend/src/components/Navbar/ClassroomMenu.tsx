@@ -43,10 +43,11 @@ export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
         
     return (
         <>                        
-            <div className='flex h-full w-full'>
+            <div className={`flex h-full w-full`}>
                                 
-                <div className='flex flex-col gap-4 
-                border-r border-gray-200 h-full z-0 w-[30%] bg-white'>
+                <div className={`flex flex-col gap-4 
+                border-r border-gray-200 h-full z-0 w-[30%] bg-white
+                ${window.location.href.split("/").pop() === "meeting" ? `hidden` : 'flex'}`}>
                     <div className='h-[15rem] bg-[green]'></div>
 
                     <div className='flex items-center justify-between mx-6 my-2 relative'>
@@ -73,8 +74,8 @@ export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
                         </button>
                     </div>                                
                 </div>
-
-                <div className='w-[70%] bg-white'>                   
+                
+                <div className={`${window.location.href.split("/").pop() === "meeting" ? `w-screen` : 'w-[70%]'} bg-white`}>                   
                     {children}                    
                 </div>
             </div>  

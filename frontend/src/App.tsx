@@ -100,7 +100,7 @@ function App() {
               <Route path={`/teacher/:teacher_id`} element={<Navigate to={`class`} replace />} />
               <Route path={`/teacher/:teacher_id`} element={<TeacherLayout />} >            
                 <Route path='class' element={<Home/>} />
-                <Route path='class' element={<TeacherClassLayout />} >
+                <Route path='class' element={<TeacherClassLayout />} >                  
                   <Route path=':class_id/posts' element={<ClassroomView/>} />
                   <Route path=':class_id/assignments' element={<Assignments/>} />
                   <Route path=':class_id/grades' element={<Grades/>} />
@@ -115,8 +115,9 @@ function App() {
                 </Route>
                 <Route path='calendar' element={<Calendar/>} />
                 <Route path='account' element={<AccountSettings/>} /> 
-                <Route path='video' element={<VideoConference/>} />
+               
               </Route>
+              <Route path='teacher/:teacher_id/class/:class_id/meeting' element={<VideoConference/>} />
             
             <Route path='/student' element={<StudentLayout />} >
               

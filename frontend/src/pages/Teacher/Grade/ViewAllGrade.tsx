@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+    import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { TableGrade } from '../../../components/Table/GradeTable';
 import useModalStore from '../../../process/Modal/useModalStore';
 import useAssignmentStore from '../../../process/Assignment/useAssignmentStore';
-import { useAssignmentQuery } from '../../../process/Assignment/useAssignmentQuery';
+import { useGetStudentGradeQuery } from '../../../process/Assignment/useAssignmentQuery';
 import { FailedToast } from '../../../components/Toast/FailedToast';
 import { ClassroomTypes } from '../../../process/Classroom/classroomTypes';
+import * as XLSX from 'xlsx'; 
 
 interface StudentData {
     id: string;
@@ -24,7 +25,7 @@ export const Grades: React.FC = () => {
     const location = useLocation();
     const classroom: ClassroomTypes = location.state.classroom;
 
-    const { data, isSuccess, isError, isLoading, isEmpty } = useAssignmentQuery(classroom.class_id);
+    const { data, isSuccess, isError, isLoading } = useGetStudentGradeQuery(classroom.class_id);
     const { getAssignment } = useAssignmentStore();
     const { startLoading, stopLoading } = useModalStore();
 
@@ -42,7 +43,8 @@ export const Grades: React.FC = () => {
 
         if (isSuccess && data) {
             getAssignment(data);
-
+            console.log(data);
+            
             const studentMap: { [key: string]: StudentData } = {};
             const assignmentNames: Set<string> = new Set();
 
@@ -78,11 +80,37 @@ export const Grades: React.FC = () => {
         }
     }, [data, isSuccess, getAssignment, isError, isLoading, startLoading, stopLoading]);
 
+    const exportToExcel = () => {
+        const worksheetData = [
+            ['Student Name', 'Student Code', 'Email', ...studentGrades.col], // Header row with assignment names
+        ];
+
+        // Add student data rows
+        studentGrades.studentsData.forEach((student) => {
+            const row = [
+                student.name,
+                student.student_code,
+                student.email,
+                ...student.grades
+            ];
+            worksheetData.push(row);
+        });
+
+        // Create a new workbook and add the worksheet
+        const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Grades');
+
+        // Export to Excel file
+        XLSX.writeFile(wb, `${classroom.name}_Grades.xlsx`);
+    };
+
     return (
         <>
             <div className='flex md:items-center justify-between flex-col md:flex-row gap-4 md:gap-0 border-b-2 border-gray-300 px-8 py-4'>
                 <h1 className='text-2xl font-bold'>{classroom.name}'s Grades</h1>
                 <button
+                    onClick={exportToExcel}
                     type='button'
                     className='p-2 rounded-md text-black flex items-center gap-2 hover:bg-blue-200 border border-gray-300'
                 >
