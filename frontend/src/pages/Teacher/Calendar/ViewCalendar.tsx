@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { CalendarView } from '../../../components/Calendar/Calendar'
+import { CalendarView } from '../../../components/Calendar/TeacherCalendar'
 
 export const Calendar:React.FC = () => {
 

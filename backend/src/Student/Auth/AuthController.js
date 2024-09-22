@@ -4,11 +4,33 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 require('dotenv').config();
 
+function generateStudentStringID(email_address) {    
+    const today = new Date();
+    const seed = `${today.getFullYear()}${(today.getMonth() + 1).toString().padStart(2, '0')}${today.getDate().toString().padStart(2, '0')}${email_address}`;
+
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+        hash = (hash << 5) - hash + seed.charCodeAt(i);
+        hash = hash & hash; 
+    }
+
+    function randomChar() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        return chars[Math.abs(hash = (hash * 1664525 + 1013904223) % 2147483648) % chars.length];
+    }
+
+    let randomString = '';
+    for (let i = 0; i < 6; i++) {
+        randomString += randomChar();
+    }
+
+    return randomString;
+}
 
 const Register = async (req, res) => {
     
     const {email_address, password, first_name, last_name, middle_name} = req.body
-
+    const code = generateStudentStringID(email_address)
     const salt = await bcrypt.genSalt(10);
 
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -27,9 +49,9 @@ const Register = async (req, res) => {
             });
         }       
         const [registerResult] = await db.query(
-            `INSERT INTO students (first_name, last_name, middle_name, 
-            email_address, password) VALUES (?, ?, ?, ?, ?)`, 
-            [first_name, last_name, middle_name, email_address, hashedPassword]
+            `INSERT INTO students (student_string_id, first_name, last_name, middle_name, 
+            email_address, password) VALUES (?, ?, ?, ?, ?, ?)`, 
+            [code, first_name, last_name, middle_name, email_address, hashedPassword]
         )
         
         if (!registerResult) {
@@ -39,7 +61,7 @@ const Register = async (req, res) => {
             });
         }       
         const token = jwt.sign(
-            {username: email_address},
+            {email_address: email_address},
             process.env.JWT_TOKEN,
             {expiresIn: '1d'}
         )
@@ -64,7 +86,7 @@ const Register = async (req, res) => {
 const Login = async (req, res) => {
 
     const {email_address, password} = req.body
-
+       
     try {
         
         const [result] = await db.query(
@@ -72,14 +94,14 @@ const Login = async (req, res) => {
             [email_address]
         )
 
-        if (!result) {
+        if (!result.length) {
             return res.status(401).json({ 
                 title: "Login Failed", 
                 message: "Wrong username!",                
             });
         }
         bcrypt.compare(password, result[0].password, 
-            async (err, passResult) => {
+            async (err, passResult) => {                                
                 if (err) {
                     console.error("Error comparing passwords:", err);
                     return res.status(404).json({ title: "Internal Error", msg: "Something went wrong. Please try again later!" });
@@ -92,7 +114,7 @@ const Login = async (req, res) => {
                 }
 
                 const token = jwt.sign(
-                    {username: result[0].email_address},
+                    {email_address: result[0].email_address},
                     process.env.JWT_TOKEN,
                     {expiresIn: '1d'}
                 )
@@ -111,7 +133,7 @@ const Login = async (req, res) => {
                 });
             }
         )
-
+        
         
     } catch (error) {
         console.log(error);
@@ -157,9 +179,7 @@ const EditAccount = async (req, res) => {
     try {
 
         const {first_name, middle_name, last_name, email_address, student_id} = req.body
-        
-        console.log(student_id);
-        
+            
 
         const [ result ] = await db.query(
             `UPDATE students SET first_name = ?, middle_name = ?, last_name = ?, email_address = ? WHERE student_id = ?`,

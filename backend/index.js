@@ -2,10 +2,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const morgan = require("morgan");
-
+const path = require('path');
 // const { setupWebSocket } = require("./src/websocket/websocket");
 
-const uploadFileTeacherRoute = require("./src/Teacher/upload")
+const uploadRoute = require("./src/Teacher/upload")
 const teacherRoute = require("./src/Teacher/routes/route");
 const studentRoute = require("./src/Student/routes/route")
 
@@ -16,11 +16,12 @@ require("dotenv").config();
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.urlencoded({extended: true}))
 app.use("/teacher", teacherRoute)
 app.use("/student", studentRoute)
-app.use("/teacher", uploadFileTeacherRoute)
+app.use(uploadRoute)
 app.use(searchRoute)
 
 

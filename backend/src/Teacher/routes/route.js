@@ -11,7 +11,8 @@ const {
     GetClasses } = require("../Class/ClassroomController")
 
 const {
-    GetActivities } = require("../Activity/ActivityController")
+    GetActivities,
+    AddMeetingActivity } = require("../Activity/ActivityController")
 
 const {
     AddMembers,
@@ -67,7 +68,7 @@ router.get("/class/:teacher_id", GetClasses)
 router.post("/assignment", CreateAssignment)
 router.post("/assignment/edit", EditAssignment)
 router.post("/assignment/remove/:assignment_id", RemoveAssignment)
-router.post("/assignment/grade/:class_assignment_id ", GradeAssignment) 
+router.post("/assignment/grade", GradeAssignment) 
 router.get("/assignment/:assignment_id/view", GetAssignStudents) 
 router.get("/assignment/:class_id", GetAssignments) 
 router.get("/assignment/:class_id/grade", GetStudentGrades) 
@@ -97,6 +98,7 @@ router.get("/member/:class_id", GetMembers)
  * 
  * 
  **/
+router.post("/class/activity", AddMeetingActivity)
 router.get("/class/:class_id/activity", GetActivities) 
 
 

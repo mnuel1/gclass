@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useDeleteMeeting, useEditMeeting, useMeetingQuery } from '../../process/Calendar/useCalendarQuery';
+import { useMeetingQuery } from '../../pages/Student/process/Calendar/useCalendarQuery';
 import { Event } from '../../process/Calendar/calendarType';
 import useModalStore from '../../process/Modal/useModalStore';
 import { FailedToast } from '../Toast/FailedToast';
 import { Authentication } from '../../Auth/Authentication';
-import { ConfirmModal } from '../Modal/ConfirmModal';
-import { EditSched } from '../Modal/EditSchedModal';
+
+
 
 const getDaysInMonth = (year: number, month: number): Date[] => {
     const date = new Date(year, month, 1);
@@ -27,9 +27,6 @@ export const CalendarView: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [events, setEvents] = useState<Event[]>([]);
 	const [show, setShow] = useState(false);
-	const [confirmDelete, setConfirmDelete] = useState(false);
-	const [edit, setEdit] = useState(false);
-	const [id, setID] = useState("");
     const { data, isSuccess, isError, isLoading } = useMeetingQuery(getID());
     const { startLoading, stopLoading } = useModalStore();
 
@@ -53,7 +50,7 @@ export const CalendarView: React.FC = () => {
 
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
 
-    const leadingEmptyDays = Array.from({ length: firstDayOfMonth }, (_, i) => null);
+    const leadingEmptyDays = Array.from({ length: firstDayOfMonth }, (_, __) => null);
 
     const calendarDays = [...leadingEmptyDays, ...daysInMonth];
 
@@ -77,43 +74,9 @@ export const CalendarView: React.FC = () => {
         return events.filter(event => new Date(event.start_date).toDateString() === date.toDateString());
     };
 
-	const deleteScheduleMutation = useDeleteMeeting()
-	const handleDeleteSchedule = () => {
-		deleteScheduleMutation.mutate(id)
-		setConfirmDelete(false)
-	}
-	const createTimestamp = (date : any, time: any) => {
-        
-        const formattedDate = date.replace(/\//g, '-'); 
-        const dateTimeString = `${formattedDate}T${time}`; 
-        const rawdate = new Date(dateTimeString); 
-            
-        const year = rawdate.getFullYear();
-        const month = String(rawdate.getMonth() + 1).padStart(2, '0');
-        const day = String(rawdate.getDate()).padStart(2, '0');
-        const hours = String(rawdate.getHours()).padStart(2, '0');
-        const minutes = String(rawdate.getMinutes()).padStart(2, '0');
-        const seconds = String(rawdate.getSeconds()).padStart(2, '0');
-    
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    };
-	const editScheduleMutation = useEditMeeting()
-	const handleEditSchedule = (data : any) => {
-		const timestamp = createTimestamp(data.date, data.time)
-		const schedule = {
-			start_date : timestamp,
-			class_meeting_id : id
-		}
-		editScheduleMutation.mutate(schedule)
-		
-		
-
-	}
 
     return (
-		<>
-		{edit && <EditSched class_id="" onClose={() => setEdit(false)} onSubmit={handleEditSchedule}/>}
-		{confirmDelete && <ConfirmModal id="" onClose={() => setConfirmDelete(false)} onConfirm={handleDeleteSchedule}/>}
+		<>		
 		<div className='flex h-full w-full'>
 			{/* Side Panel: Responsive */}
 			<div
@@ -130,7 +93,8 @@ export const CalendarView: React.FC = () => {
 						rounded-full hover:bg-gray-200 p-2"
 						onClick={closeSidePanel}
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" 
+						className="size-6">
 							<path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
 						</svg>
 
@@ -146,23 +110,14 @@ export const CalendarView: React.FC = () => {
 								key={idx} 								
 								className="flex justify-between 
 								items-center bg-blue-100 p-2 rounded-md my-2 cursor-pointer">
-									<div 
-									onClick={() => {setEdit(true); setID(event.class_meeting_id)}}
-									className='grow'>
-										<h4 className="font-bold">{event.title}</h4>
-										<p className="text-gray-600">{event.time}</p>
+									<div className=''>                                    
+                                        <div                                        
+                                        className='grow'>
+                                            <h4 className="font-bold">{event.title}</h4>
+                                            <p className="text-gray-600">{event.time}</p>
+                                        </div>
+                                    <a className="text-blue-700 hover:underline" href={event.link}>{event.link}</a>
 									</div>
-									
-									<button 
-										onClick={() => {setConfirmDelete(true); setID(event.class_meeting_id)}}
-										className='hover:bg-red-200 p-2 rounded-full'>
-										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" 
-										className="size-6 text-red-600">
-											<path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-										</svg>
-									</button>
-									
-
 								</div>
 							))
 						) : (

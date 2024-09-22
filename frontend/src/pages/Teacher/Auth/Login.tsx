@@ -64,27 +64,28 @@ export const TeacherLogin:React.FC = () => {
 
         if (Object.keys(validationErrors).length === 0) {
             startLoading()
-            const response = await authapi.post('/teacher/login', form)
-            
-            if (response.status === 401) {
-
-                FailedToast(response.data.message)
-            }
-            if (response.status !== 200) {
-                FailedToast("Login Failed")
-                return;
-            }
-
-            const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`
-            const token = response.data.token
-            const id = response.data.teacher_id
-            const email = response.data.email_address
-                        
-            login( user, token, id, email )     
-            SuccessToast("Login Success")       
-            stopLoading()
-            
-            navigate(`/teacher/${response.data.teacher_id}/class`)           
+            try {
+                const response = await authapi.post('/teacher/login', form)
+                               
+                const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`
+                const token = response.data.token
+                const id = response.data.teacher_id
+                const email = response.data.email_address
+                const role = 'Teacher'
+                            
+                login( user, token, id, email, role )     
+                SuccessToast("Login Success")       
+                stopLoading()
+                
+                navigate(`/teacher/${response.data.teacher_id}/class`)
+            } catch (error : any) {
+                if (error.code) {
+                    FailedToast("Wrong username and password!")
+                } else {
+                    FailedToast("Something went wrong!")
+                }                
+                stopLoading()              
+            } 
 
         } else {
             setErrors(validationErrors);

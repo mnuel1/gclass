@@ -24,12 +24,7 @@ export const Members:React.FC = () => {
     const {    
         startLoading,
         stopLoading } = useModalStore()
-    // const handleFilter = (name : string) => {
-    //     setActive(name)
-    // }
-       
-    
-
+  
     const handleAddMember = () => {
         stopLoading()
         navigate(`new`, {state:{ classroom: classroom}})
@@ -121,7 +116,7 @@ export const Members:React.FC = () => {
                 </div>
                                                                     
                 <div className='border-b-2 border-gray-300 my-2 '/>                            
-                <Accordion name='Students'>
+                <Accordion name={`${member.length === 0 ? '' : member.length} Students`}>
 
                     {member.length !== 0 ? (
                         member.map((student, index) => (

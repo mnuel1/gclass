@@ -5,6 +5,7 @@ import { ClassroomTypes } from './classroomTypes';
 const defaultClass: ClassroomTypes = {
   class_id: "",
   teacher_id: "",
+  teacher_name: "",
   class_string_id: "",
   name: "",
   description: "",
@@ -16,8 +17,6 @@ interface ClassroomState {
   selectedClassroom: ClassroomTypes;
   getClassrooms: (classrooms : ClassroomTypes[]) => void;
   addClassroom: (classroom: ClassroomTypes) => void;
-  joinClassroom: (classroomId: string) => void;
-  addMemberClassroom: (studentID: string[]) => void;
   editClassroom: (classData: ClassroomTypes) => void;
   deleteClassroom: (class_id: string) => void;
   selectClassroom: (classroom: ClassroomTypes) => void;
@@ -35,14 +34,6 @@ const useClassroomStore = create<ClassroomState>((set) => ({
     set((state) => ({
       classrooms: [...state.classrooms, newClassroom],
     }))
-  },
-
-  joinClassroom: (classroomId) => {
-    console.log(`Joined classroom with ID: ${classroomId}`);
-  },
-
-  addMemberClassroom: (studentID) => {
-      console.log('call service')
   },
   editClassroom: (classData) => {
     set((state) => ({

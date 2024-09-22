@@ -63,28 +63,32 @@ export const StudentLogin:React.FC = () => {
         const validationErrors = validate();
 
         if (Object.keys(validationErrors).length === 0) {
-            startLoading()
-            const response = await authapi.post('/teacher/login', form)
-            
-            if (response.status === 401) {
-
-                FailedToast(response.data.message)
-            }
-            if (response.status !== 200) {
-                FailedToast("Login Failed")
-                return;
-            }
-
-            const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`
-            const token = response.data.token
-            const id = response.data.teacher_id
-            const email = response.data.email_address
                         
-            login( user, token, id, email )     
-            SuccessToast("Login Success")       
-            stopLoading()
-            
-            navigate(`/teacher/${response.data.teacher_id}/class`)           
+            startLoading()
+            try {
+                const response = await authapi.post('/student/login', form)
+                
+                const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`
+                const token = response.data.token
+                const id = response.data.student_id
+                const email = response.data.email_address
+                const role = 'Student'
+                            
+                login( user, token, id, email, role ) 
+                SuccessToast("Login Success")       
+                stopLoading()
+                
+                navigate(`/student/${id}/class`)   
+            } catch (error : any) {
+                if (error.code) {
+                    FailedToast("Wrong username and password!")
+                } else {
+                    FailedToast("Something went wrong!")
+                }
+                
+                stopLoading()
+              
+            }                         
 
         } else {
             setErrors(validationErrors);
@@ -97,10 +101,10 @@ export const StudentLogin:React.FC = () => {
             <Spinner isLoading={isLoading}>        
                 <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-lg">
-                        <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl">Welcome to the Teacher Portal</h1>
+                        <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl">Welcome to the Student Portal</h1>
 
                         <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
-                            Please log in to access your teaching resources and manage your classes. If you encounter any issues, feel free to contact support.
+                            Please log in to access your learning materials and track your progress. If you encounter any issues, feel free to contact support.
                         </p>
 
 

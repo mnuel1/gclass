@@ -18,6 +18,11 @@ export const createAssignmentService = async (data: AssignmentType) => {
     return response;
 }
 
+export const gradeAssignmentService = async (data: AssignmentType) => {
+    const response = await api.post(`teacher/assignment/grade`, data)
+    return response;
+}
+
 export const getAssignStudentsWorkService = async (assignment_id: string) => {
     const response = await api.get(`assignment/${assignment_id}/view`)
     return response.data.data;

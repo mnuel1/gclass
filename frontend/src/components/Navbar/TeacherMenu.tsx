@@ -102,7 +102,7 @@ export const TeacherMenu: React.FC<MainMenuProps> = ({ children }) => {
                         <div className="border-t border-gray-300" />
                         <li>
                         <a 
-                        onClick={() => handleNavBtn(`class`)}
+                        onClick={() => handleLogout()}
                         className={
                             `hover:bg-gray-200 block rounded-lg  px-4 py-2 text-sm font-medium text-gray-700`
                         }>

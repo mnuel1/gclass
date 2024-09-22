@@ -216,8 +216,25 @@ const GetStudentsAssignments = async (req, res) => {
 }
 
 const GradeAssignment = async (req, res) => {
+
     try {
-        const { assignment_id } = req.params
+        const assignmentData = req.body
+        
+        const gradeAssignmentResult = await GradeAssignmentService(assignmentData)
+
+        if (!gradeAssignmentResult.succesfull) {
+            return res.status(200).json({ 
+                title: "No Assignment Found", 
+                message: "There's no assignment record.",
+                data: []
+            });
+        }
+        return res.status(200).json({ 
+            title: "Assignment Found", 
+            message: `There's assignment record.`,
+            data: []
+            
+        });
 
 
     } catch (error) {

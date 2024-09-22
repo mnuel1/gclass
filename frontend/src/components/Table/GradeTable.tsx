@@ -4,7 +4,7 @@ interface StudentData {
     name: string;
     student_code: string;
     email: string;
-    grades: number[];
+    grades: string[];
 }
 
 interface StudentsData {    
@@ -15,8 +15,7 @@ interface StudentsData {
 
 
 export const TableGrade:React.FC<{studentsData : StudentsData}> = ({studentsData}) => {
-    console.log(studentsData);
-     
+         
     return (
         <>
             <div className="overflow-x-auto">

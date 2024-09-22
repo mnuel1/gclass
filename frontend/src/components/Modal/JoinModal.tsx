@@ -1,12 +1,19 @@
-import React from "react"
+import React, { useState } from "react"
 
 interface ModalProps {    
     onClose: () => void;
     id: string;
+    onSubmit: (data: any) => void;
   }
 
-export const JoinModal: React.FC<ModalProps> = ({ onClose, id }) => {
+export const JoinModal: React.FC<ModalProps> = ({ onClose, id, onSubmit}) => {
     
+    const [name, setName] = useState("")
+    const handleSubmit = () => {
+
+        onSubmit({name, id})
+        onClose()
+    }
     return(
         <>
            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-50">
@@ -34,6 +41,8 @@ export const JoinModal: React.FC<ModalProps> = ({ onClose, id }) => {
                                                     <input
                                                         type="text"
                                                         id="name"
+                                                        value={name}
+                                                        onChange={(e) => setName(e.target.value)}
                                                         placeholder="Email"
                                                         className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                                                     />
@@ -51,7 +60,7 @@ export const JoinModal: React.FC<ModalProps> = ({ onClose, id }) => {
                                 <div className="bg-gray-200 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                     <button
                                         type="button"
-                                        onClick={onClose}
+                                        onClick={handleSubmit}
                                         className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
                                     >
                                         Join

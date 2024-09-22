@@ -6,3 +6,7 @@ export const fetchActivity = async (class_id : string) => {
     
     return response.data.data;
 }
+
+export const addMeetingService = async (data: any) => {
+    return await api.post("teacher/class/activity", data)
+}

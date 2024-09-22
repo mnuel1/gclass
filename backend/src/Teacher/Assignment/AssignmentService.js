@@ -31,9 +31,9 @@ const CreateAssignmentService = async(assignmentData) => {
         await connection.beginTransaction()
 
         const [assignmentResult] = await connection.query(
-            `INSERT INTO assignments (class_id, name, instruction, attachment, points, due_date)
-            VALUES (?, ?, ?, ?, ?, ?)`,
-            [class_id, name, instruction, attachment, points, due_date]
+            `INSERT INTO assignments (class_id, name, instruction, points, due_date)
+            VALUES (?, ?, ?, ?, ?)`,
+            [class_id, name, instruction, points, due_date]
         )
                
         if (!assignmentResult.affectedRows) {
@@ -43,7 +43,8 @@ const CreateAssignmentService = async(assignmentData) => {
                 succesfull: false   
             };            
         }
-        const post = `A new assignment, ${name}, has been created. Please review the assignment details and submit it by the deadline.`
+        const post = `A new assignment, ${name}, has been created. Please review 
+        the assignment details and submit it before the deadline.`
         const [activityResult] = await connection.query(
             `INSERT INTO activity (class_id, posts) VALUES (?, ?)`,
             [class_id, post]
@@ -85,8 +86,7 @@ const CreateAssignmentService = async(assignmentData) => {
             assignment.students = student_ids
             return assignment;
         });
-        console.log(res);
-        
+                
         return {
             error: false,
             succesfull: true,
@@ -282,8 +282,7 @@ const GetAssignStudentsWorkService = async(assignment_id) => {
             return assignment;
         });
 
-        console.log(res);
-        
+
         return {
             error: false,
             succesfull: true,
@@ -299,6 +298,21 @@ const GetAssignStudentsWorkService = async(assignment_id) => {
 
 const GradeAssignmentService = async(assignmentData) => {
     try {
+        const { grade, student_id, assignment_id } = assignmentData
+        const status = 'Returned'
+        const [result] = await db.query(
+            `UPDATE class_assignments SET grade = ?, assignment_status = ?
+            WHERE assignment_id = ? AND student_id = ?`,
+            [grade, status, assignment_id, student_id]
+        )
+
+        if (!result.affectedRows) {
+            return {
+                error: false,
+                succesfull: false,
+            };
+        }
+        
         return {
             error: false,
             succesfull: true,
@@ -419,6 +433,9 @@ const GetAssignmentsService = async (class_id) => {
             ORDER BY start_date ASC`,
             [class_id]
         );
+
+        
+        
                
         if (!result.length) {
             return { 
@@ -442,6 +459,7 @@ const GetAssignmentsService = async (class_id) => {
             assignment.due_date = dueDate
             assignment.start_date = dateStart
             assignment.formatted_start_date = formatDateTimeForAssignment(startDate);
+           
             assignment.students = JSON.parse(`[${assignment.students}]`);
             acc[groupKey].push(assignment);
 

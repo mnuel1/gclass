@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Authentication } from '../../../Auth/Authentication'
-import { useActivityQuery } from '../../../process/Activity/useActivityQuery'
+import { useActivityQuery, useAddMeeting } from '../../../process/Activity/useActivityQuery'
 import useActivityStore from '../../../process/Activity/useActivityStore'
 import useModalStore from '../../../process/Modal/useModalStore'
 
@@ -26,13 +26,25 @@ export const ClassroomView: React.FC = () => {
     const {
         startLoading,
         stopLoading } = useModalStore()
-        
+    
+    const addMeetingMutation = useAddMeeting()
     const handleScheduleMeeting = (name: string) => {
-        stopLoading()                        
-        localStorage.setItem('meetingName', name || classroom.name);
-        window.open(`/teacher/${getID()}/class/${classroom.class_id}/meeting`, '_blank');
+        stopLoading()
 
-        
+        const data = {
+            class_id : classroom.class_id,
+            title: name
+        }
+
+        try {
+            addMeetingMutation.mutate(data)
+        } catch (error) {
+            FailedToast("Someting went wrong!")
+        } finally {
+            localStorage.setItem('meetingName', name || classroom.name);
+            window.open(`/teacher/${getID()}/class/${classroom.class_id}/meeting`, '_blank');
+        }               
+
     }
     
     useEffect(() => {

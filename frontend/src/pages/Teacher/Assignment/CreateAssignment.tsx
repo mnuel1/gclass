@@ -154,8 +154,7 @@ export const CreateAssignment:React.FC = () => {
         e.preventDefault();
         const validationErrors = validate();
                 
-        if (Object.keys(validationErrors).length === 0) {
-            startLoading()
+        if (Object.keys(validationErrors).length === 0) {            
             const data = {                
                 assignment_id: "",
                 class_id: classroom.class_id,
@@ -169,10 +168,10 @@ export const CreateAssignment:React.FC = () => {
                 formatted_start_date: "",
                 student_ids: members
 
-            }      
+            }
             addAssignmentMutation.mutate(data)
-            navigate(-1);
-            stopLoading()
+            
+            
 
 
         } else {

@@ -1,108 +1,17 @@
 const db = require("../../database/db")
 
 
-
-const CreateMeetingService = async (meetingData) => {
-
-    try {
-        const {class_id, title, link, start_date} = meetingData
-
-        const [result] = await db.query(
-            `
-            INSERT INTO class_meetings (class_id, title, link, start_date
-            VALUES (?, ?, ?, ?)`,
-            [class_id, title, link, start_date]
-        )
-
-        if (!result.affectedRows) {
-            return { 
-                error: false,
-                succesfull: false,
-                data: []
-            };
-        }
-    
-        return {
-            error: false,
-            succesfull: true,
-            data: []
-        };
-    } catch (error) {
-        console.error(error);
-        return {
-            error: true
-        }            
-    }
-}
-
-const EditMeetingService = async (meetingData) => {
-
-    try {
-        const {start_date, class_meeting_id} = meetingData
-        const [result] = await db.query(
-            `
-            UPDATE class_meetings SET start_date = ? WHERE class_meeting_id = ?`,
-            [start_date, class_meeting_id]
-        )
-
-        if (!result.affectedRows) {
-            return { 
-                error: false,
-                succesfull: false,
-                data: []
-            };
-        }
-    
-        return {
-            error: false,
-            succesfull: true,
-            data: []
-        };
-    } catch (error) {
-        console.error(error);
-        return {
-            error: true
-        }            
-    }
-}
-
-const RemoveMeetingService = async (class_meeting_id) => {
-
+const GetMeetingsService = async (student_id) => {
     try {
 
         const [result] = await db.query(
-            `DELETE FROM class_meetings WHERE class_meeting_id = ?`,
-            [class_meeting_id]
-        )
-
-        if (!result.affectedRows) {
-            return { 
-                error: false,
-                succesfull: false,
-                data: []
-            };
-        }
-    
-        return {
-            error: false,
-            succesfull: true,
-            data: []
-        };
-    } catch (error) {
-        console.error(error);
-        return {
-            error: true
-        }            
-    }
-
-}
-
-const GetMeetingsService = async (teacher_id) => {
-    try {
-
-        const [result] = await db.query(
-            `SELECT cm.* FROM class_meetings cm JOIN class c ON cm.class_id = c.class_id WHERE c.teacher_id = ?`,
-            [teacher_id]
+            `SELECT 
+                class_students.*,
+                class_meetings.*
+            FROM class_students 
+            LEFT JOIN class_meetings ON class_meetings.class_id = class_students.class_id            
+            WHERE student_id = ?`,
+            [student_id]
         )
 
         if (!result.length) {
@@ -134,7 +43,6 @@ const GetMeetingsService = async (teacher_id) => {
         });
         
 
-        console.log(res);
         
         return {
             error: false,
@@ -149,9 +57,6 @@ const GetMeetingsService = async (teacher_id) => {
     }
 }
 
-module.exports = {    
-    CreateMeetingService,
-    EditMeetingService,
-    RemoveMeetingService,
+module.exports = {       
     GetMeetingsService
 }

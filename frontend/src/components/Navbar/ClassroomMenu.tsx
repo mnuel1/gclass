@@ -15,7 +15,8 @@ export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
     const [classroom, setclassroom] = useState<ClassroomTypes>();    
     const length : number  = window.location.href.split("/").length
     const class_id = window.location.href.split("/")[length-2]
-    
+    const isStudent = window.location.href.split("/")[(length-length) + 3]
+
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -53,7 +54,7 @@ export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
                     <div className='flex items-center justify-between mx-6 my-2 relative'>
                         <h1 className='text-xl font-bold'>{classroom?.name}</h1>
 
-                        <MoreModal class_id={classroom?.class_id || ""}/>
+                        {isStudent !== 'student' && <MoreModal class_id={classroom?.class_id || ""}/>}
                     </div>
 
                     <div className='flex flex-col '>
@@ -66,9 +67,9 @@ export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
                         <button type='button' className={isActive === "grades" ? active : notActive} onClick={() => navigateTo("grades")}>
                             Grade
                         </button>
-                        <button type='button' className={isActive === "schedule" ? active : notActive} onClick={() => navigateTo("schedule")}>
+                        {isStudent !== 'student' && <button type='button' className={isActive === "schedule" ? active : notActive} onClick={() => navigateTo("schedule")}>
                             Schedule Meeting
-                        </button>
+                        </button> }
                         <button type='button' className={isActive === "members" ? active : notActive} onClick={() => navigateTo("members")}>
                             Members
                         </button>

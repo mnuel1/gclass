@@ -4,6 +4,7 @@ export const Authentication = () => {
     
     const [user, setUser] = useState<string | null>(null);
     const [email, setEmail] = useState<string | null>(null);
+    const [role, setRole] = useState<string | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [id, setID] = useState<number | null>(null);
 
@@ -25,21 +26,29 @@ export const Authentication = () => {
         return email;
     }
 
+    const getRole = () => {
+        const roleString = sessionStorage.getItem('role');
+        const role = roleString ? JSON.parse(roleString) : null;
+        return role;
+    }
+
     const getID = () => {
         const idString = sessionStorage.getItem('id');
         const id = idString ? JSON.parse(idString) : null;
         return id;
     }
 
-    const login = (user: string, token: string, id: number, email: string) => {
+    const login = (user: string, token: string, id: number, email: string, role: string) => {
         sessionStorage.setItem('token', JSON.stringify(token));
         sessionStorage.setItem('user', JSON.stringify(user));
         sessionStorage.setItem('id', JSON.stringify(id));
         sessionStorage.setItem('email', JSON.stringify(email));
+        sessionStorage.setItem('role', JSON.stringify(role));
         setUser(user);
         setToken(token);
         setEmail(email)
         setID(id)
+        setRole(role)
     }
 
     const logout = () => {
@@ -47,12 +56,14 @@ export const Authentication = () => {
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('id');
         sessionStorage.removeItem('email');
+        sessionStorage.removeItem('role');
         localStorage.removeItem("meetingName");
         localStorage.removeItem("selectedClassroom");
         setUser(null);
         setToken(null);
         setEmail(null)
         setID(null)
+        setRole(null)
     }
 
     const isAuthenticated = () => {
@@ -70,12 +81,14 @@ export const Authentication = () => {
         user,
         token,
         email,
+        role,
         login,
         logout,
         isAuthenticated,
         getUser,
         getToken,
         getID,
-        getEmail
+        getEmail,
+        getRole
     }
 }

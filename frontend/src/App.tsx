@@ -1,5 +1,6 @@
 import { Bounce, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import MeetingPage from './meeting';
 import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom'
 import { ProtectedRoute } from './Auth/ProtectedRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -12,7 +13,7 @@ const queryClient = new QueryClient();
 import { DefaultLayout } from './layout/DefaultLayout'
 import { TeacherLayout } from './layout/TeacherLayout'
 import { StudentLayout } from './layout/StudentLayout'
-import { TeacherClassLayout } from './layout/TeacherClassLayout';
+import { ClassroomLayout } from './layout/ClassroomLayout';
 
 /**
  * LANDING PAGE
@@ -20,7 +21,12 @@ import { TeacherClassLayout } from './layout/TeacherClassLayout';
  */
 import { LandingPage } from './pages/landing';
 
+/**
+ * ERROR PAGE
+ * 
+ */
 
+import { NotFound } from './components/Not Found Page/404'
 
 /**
  * TEACHER MAIN PAGES
@@ -56,78 +62,117 @@ import { TeacherLogin } from './pages/Teacher/Auth/Login';
 import { VideoConference } from './pages/Video Conference/VideoConference';
 
 /**
- * ERROR PAGE
+ * STUDENT AUTH
+ * 
+ */
+import { StudentLogin } from './pages/Student/Auth/Login';
+import { StudentSignup } from './pages/Student/Auth/Signup';
+
+/**
+ * STUDENT MAIN PAGES
  * 
  */
 
-import { NotFound } from './components/Not Found Page/404'
+import { StudentHome } from './pages/Student/Home/Home';
+import { StudentAccountSettings } from './pages/Student/Account/Account';
+import { StudentCalendar } from './pages/Student/Calendar/ViewCalendar';
+import { StudentClassroomView } from './pages/Student/Class/ViewClass';
+import { StudentAssignments } from './pages/Student/Assignment/ViewAllAssignment';
+import { StudentMembers } from './pages/Student/Members/ViewMembers';
+import { StudentGrades } from './pages/Student/Grade/ViewAllGrade';
+import { StudentViewAssignment } from './pages/Student/Assignment/ViewAssignment';
+import { StudentVideoConference } from './pages/Student/Video Conference/VideoConference';
 function App() {
       
-  return (
-    <>
-      <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          transition={Bounce}
-      />
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <Routes>
-            <Route path='/' element={<DefaultLayout />}>
-              <Route index element={<LandingPage/>} />
-              <Route path='teacher/login' element={
-                <ProtectedRoute>
-                  <TeacherLogin/>
-                </ProtectedRoute>
-              } />
-              <Route path='teacher/signup' element={
-                <ProtectedRoute>
-                  <TeacherSignup/>
-                </ProtectedRoute>
-              } />
-              
-            </Route>
+    return (
+        <>
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Bounce}
+            />
+            <QueryClientProvider client={queryClient}>
+                <Router>
+                    <Routes>
+                        <Route path="/meeting/:class_id/:meeting_name" element={<MeetingPage />} />
+                        <Route path='/' element={<DefaultLayout />}>
+                            <Route index element={<LandingPage/>} />
+                            <Route path='teacher/login' element={
+                                <ProtectedRoute>
+                                <TeacherLogin/>
+                                </ProtectedRoute>
+                            } />
+                            <Route path='teacher/signup' element={
+                                <ProtectedRoute>
+                                <TeacherSignup/>
+                                </ProtectedRoute>
+                            } />
+                            <Route path='student/login' element={
+                                <ProtectedRoute>
+                                <StudentLogin/>
+                                </ProtectedRoute>
+                            } />
+                            <Route path='student/signup' element={
+                                <ProtectedRoute>
+                                <StudentSignup/>
+                                </ProtectedRoute>
+                            } />
                         
-              <Route path={`/teacher`} element={<Navigate to={`login`} replace />} />
-              <Route path={`/teacher/:teacher_id`} element={<Navigate to={`class`} replace />} />
-              <Route path={`/teacher/:teacher_id`} element={<TeacherLayout />} >            
-                <Route path='class' element={<Home/>} />
-                <Route path='class' element={<TeacherClassLayout />} >                  
-                  <Route path=':class_id/posts' element={<ClassroomView/>} />
-                  <Route path=':class_id/assignments' element={<Assignments/>} />
-                  <Route path=':class_id/grades' element={<Grades/>} />
-                  <Route path=':class_id/members' element={<Members/>} />
+                        </Route>
+                                    
+                        <Route path={`/teacher`} element={<Navigate to={`login`} replace />} />
+                        <Route path={`/teacher/:teacher_id`} element={<Navigate to={`class`} replace />} />
+                        <Route path={`/teacher/:teacher_id`} element={<TeacherLayout />} >            
+                            <Route path='class' element={<Home/>} />
+                            <Route path='class' element={<ClassroomLayout />} >                  
+                                <Route path=':class_id/posts' element={<ClassroomView/>} />
+                                <Route path=':class_id/assignments' element={<Assignments/>} />
+                                <Route path=':class_id/grades' element={<Grades/>} />
+                                <Route path=':class_id/members' element={<Members/>} />
 
-                  <Route path=':class_id/assignments/:assignment_id/view' element={<ViewAssignment/>} />
-                  <Route path=':class_id/assignments/new' element={<CreateAssignment/>} />
-                  <Route path=':class_id/schedule' element={<CreateSchedule/>} />
+                                <Route path=':class_id/assignments/:assignment_id/view' element={<ViewAssignment/>} />
+                                <Route path=':class_id/assignments/new' element={<CreateAssignment/>} />
+                                <Route path=':class_id/schedule' element={<CreateSchedule/>} />
 
-                  <Route path=':class_id/members/new' element={<AddMember/>} />
-                  <Route path=':class_id/members/remove' element={<RemoveMember/>} />                                
-                </Route>
-                <Route path='calendar' element={<Calendar/>} />
-                <Route path='account' element={<AccountSettings/>} /> 
-               
-              </Route>
-              <Route path='teacher/:teacher_id/class/:class_id/meeting' element={<VideoConference/>} />
-            
-            <Route path='/student' element={<StudentLayout />} >
-              
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </QueryClientProvider>
-    </>
-  )
+                                <Route path=':class_id/members/new' element={<AddMember/>} />
+                                <Route path=':class_id/members/remove' element={<RemoveMember/>} />                                
+                            </Route>
+                            <Route path='calendar' element={<Calendar/>} />
+                            <Route path='account' element={<AccountSettings/>} /> 
+                        
+                        </Route>
+                        <Route path='teacher/:teacher_id/class/:class_id/meeting' element={<VideoConference/>} />
+                        
+                        <Route path={`/student`} element={<Navigate to={`login`} replace />} />
+                        <Route path={`/student/:teacher_id`} element={<Navigate to={`class`} replace />} />
+                        <Route path='/student/:student_id' element={<StudentLayout />} >
+                            <Route path='class' element={<StudentHome/>} />
+                            <Route path='class' element={<ClassroomLayout />} >
+                                <Route path=':class_id/posts' element={<StudentClassroomView/>} />
+                                <Route path=':class_id/assignments' element={<StudentAssignments/>} />
+                                <Route path=':class_id/grades' element={<StudentGrades/>} />
+                                <Route path=':class_id/members' element={<StudentMembers/>} />
+                                <Route path=':class_id/assignments/:assignment_id/view' element={<StudentViewAssignment/>} />
+                            </Route>
+                            <Route path='calendar' element={<StudentCalendar/>} />
+                            <Route path='account' element={<StudentAccountSettings/>} />
+                        </Route>
+                        <Route path='student/:student_id/class/:class_id/meeting' element={<StudentVideoConference/>} />
+                        <Route path="*" element={<NotFound />} />
+                        
+                    </Routes>
+                </Router>
+            </QueryClientProvider>
+        </>
+    )
 }
 
 export default App

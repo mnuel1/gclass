@@ -8,6 +8,7 @@ interface AssignmentState {
     getAssignment: (assignment : Assignments) => void
     createAssignment: (newAssignment : AssignmentType) => void
     editAssignment: (assignment : AssignmentType) => void
+    editGrade: (assignment : any) => void
     removeAssignment: (assignment_id : string) => void
     selectAssignment: (assignment : AssignmentType) => void
 }
@@ -55,6 +56,36 @@ const useAssignmentStore = create<AssignmentState>((set) => ({
             }
         };
     }),
+    editGrade: (updatedAssignment: { assignment_id: string; student_id: string; grade: number; status: string; }) => 
+        set((state) => {
+            const updatedAssignments = Object.keys(state.assignment).reduce((acc, date) => {
+                const updatedDateAssignments = state.assignment[date]?.map((assignment) => {
+                    // Check if the assignment matches the assignment_id
+                    if (assignment.assignment_id === updatedAssignment.assignment_id) {
+                        // Find the specific student within the assignment's students array
+                        const updatedStudents = assignment.students?.map(student => 
+                            student.student_id === updatedAssignment.student_id
+                                ? { ...student, grade: updatedAssignment.grade, assignment_status: updatedAssignment.status }
+                                : student
+                        );
+                        
+                        // Return the updated assignment with the modified students array
+                        return { ...assignment, students: updatedStudents };
+                    }
+                    return assignment; // Return unchanged assignment if no match
+                });
+    
+                return { ...acc, [date]: updatedDateAssignments };
+            }, {});
+    
+            return {
+                assignment: {
+                    ...state.assignment,
+                    ...updatedAssignments
+                }
+            };
+        }
+    ),
     removeAssignment: async (assignment_id: string) => 
         set((state) => {
         const newAssignments = { ...state.assignment };

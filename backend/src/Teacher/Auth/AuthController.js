@@ -39,7 +39,7 @@ const Register = async (req, res) => {
             });
         }       
         const token = jwt.sign(
-            {username: email_address},
+            {email_address: email_address},
             process.env.JWT_TOKEN,
             {expiresIn: '1d'}
         )
@@ -72,7 +72,7 @@ const Login = async (req, res) => {
             [email_address]
         )
 
-        if (!result) {
+        if (!result.length) {
             return res.status(401).json({ 
                 title: "Login Failed", 
                 message: "Wrong username!",                
@@ -92,7 +92,7 @@ const Login = async (req, res) => {
                 }
 
                 const token = jwt.sign(
-                    {username: result[0].email_address},
+                    {email_address: result[0].email_address},
                     process.env.JWT_TOKEN,
                     {expiresIn: '1d'}
                 )
@@ -174,7 +174,7 @@ const EditAccount = async (req, res) => {
         }
 
         const token = jwt.sign(
-            {username: email_address},
+            {email_address: email_address},
             process.env.JWT_TOKEN,
             {expiresIn: '1d'}
         )

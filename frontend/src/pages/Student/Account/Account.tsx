@@ -5,7 +5,7 @@ import { SuccessToast } from "../../../components/Toast/SuccessToast";
 import { FailedToast } from "../../../components/Toast/FailedToast";
 import { ConfirmModal } from "../../../components/Modal/ConfirmModal";
 
-export const AccountSettings: React.FC = () => {
+export const StudentAccountSettings: React.FC = () => {
     const { getUser, getEmail, getID } = Authentication();
     const [edit, setEdit] = useState(false);
     const [firstName, setFirstName] = useState("");
@@ -36,12 +36,12 @@ export const AccountSettings: React.FC = () => {
                 FailedToast("Please fill up the required fields")
                 return;
             } 
-            const response = await api.post('/teacher/edit/account', {
+            const response = await api.post('/student/edit/account', {
                 first_name: firstName,
                 middle_name: middleName,
                 last_name: lastName,
                 email_address: email,
-                teacher_id: getID()
+                student_id: getID()
             });
                         
             if (response.status === 200) {
@@ -73,9 +73,9 @@ export const AccountSettings: React.FC = () => {
                 return;
             } 
 
-            const response = await api.post('/teacher/change/password', {
+            const response = await api.post('/student/change/password', {
                 password: password,
-                teacher_id: getID()
+                student_id: getID()
             });
                         
             if (response.status === 200) {

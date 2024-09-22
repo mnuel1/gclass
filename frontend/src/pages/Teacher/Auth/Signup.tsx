@@ -91,8 +91,9 @@ export const TeacherSignup: React.FC = () => {
             const token = response.data.token
             const id = response.data.teacher_id
             const email = response.data.email_address
-
-            login( user, token, id, email )
+            const role = 'Teacher'
+                            
+            login( user, token, id, email, role )
             SuccessToast("Success! Setting up your account. Please wait for a minute")
             stopLoading()
             navigate(`/teacher/${id}/class`)

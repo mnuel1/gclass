@@ -24,7 +24,7 @@ interface ErrorsState {
     confirm_password?: string;
 }
 
-export const TeacherSignup: React.FC = () => {
+export const StudentSignup: React.FC = () => {
     const { login } = Authentication()
     const navigate = useNavigate()
     const {
@@ -81,7 +81,7 @@ export const TeacherSignup: React.FC = () => {
         
         if (Object.keys(validationErrors).length === 0) {
             startLoading()
-            const response = await authapi.post('/teacher/register', form)
+            const response = await authapi.post('/student/register', form)
                      
             if (response.status !== 200) {
                 FailedToast("Sign up Failed")
@@ -89,13 +89,14 @@ export const TeacherSignup: React.FC = () => {
             } 
             const user = `${response.data.last_name}, ${response.data.first_name} ${response.data.middle_name}`
             const token = response.data.token
-            const id = response.data.teacher_id
+            const id = response.data.student_id
             const email = response.data.email_address
-
-            login( user, token, id, email )
+            const role = 'Student'
+                            
+            login( user, token, id, email, role ) 
             SuccessToast("Success! Setting up your account. Please wait for a minute")
             stopLoading()
-            navigate(`/teacher/${id}/class`)
+            navigate(`/student/${id}/class`)
            
 
         } else {
@@ -109,10 +110,10 @@ export const TeacherSignup: React.FC = () => {
             
                 <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl">
-                        <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl">Join the Teacher Portal</h1>
+                        <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl">Join the Student Portal</h1>
 
                         <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
-                            Sign up to access teaching resources, manage your classes, and connect with your students. Complete the form below to get started.
+                            Sign up to access learning resources, track your progress, and connect with your teachers. Complete the form below to get started.
                         </p>
 
                         <form action="#" className="mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8" onSubmit={handleSubmit}>

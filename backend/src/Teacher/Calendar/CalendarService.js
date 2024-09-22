@@ -5,11 +5,11 @@ const db = require("../../database/db")
 const CreateMeetingService = async (meetingData) => {
 
     try {
-        const {class_id, title, link, start_date} = meetingData
-
+        const {class_id, title, start_date} = meetingData
+        const link = `http://localhost:5173/meeting/${class_id}/${encodeURIComponent(title)}`
         const [result] = await db.query(
             `
-            INSERT INTO class_meetings (class_id, title, link, start_date
+            INSERT INTO class_meetings (class_id, title, link, start_date)
             VALUES (?, ?, ?, ?)`,
             [class_id, title, link, start_date]
         )

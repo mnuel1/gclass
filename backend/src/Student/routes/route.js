@@ -4,7 +4,7 @@ const {
     EditAccount,
     ChangePassword } = require("../Auth/AuthController")
 
-const {JoinClass, GetClasses } = require("../Class/ClassroomController")
+const { JoinClass, GetClasses } = require("../Class/ClassroomController")
 
 const { GetActivities } = require("../Activity/ActivityController")
 
@@ -12,10 +12,8 @@ const { GetMembers } = require("../Members/MemberController")
 
 const {
     CreateAssignment,
-    EditAssignment,
-    RemoveAssignment,
-    GetAssignStudents,
-    GetAssignments,
+    EditAssignment,   
+    GetAssignments, 
     GetStudentGrades } = require("../Assignment/AssignmentController")
 const { GetMeetings } = require("../Calendar/CalendarController")
 const VerifyStudent = require("../../middleware/verify")
@@ -41,10 +39,8 @@ router.post("/change/password", ChangePassword);
  * 
  * 
  **/ 
-router.post("/class", CreateClass)
-router.post("/class/edit", EditClass)
-router.post("/class/remove/:class_id", RemoveClass)
-router.get("/class/:teacher_id", GetClasses)
+router.post("/join/class", JoinClass)
+router.get("/class/:student_id", GetClasses)
 
 /* 
  * ASSIGNMENT ROUTE
@@ -53,29 +49,22 @@ router.get("/class/:teacher_id", GetClasses)
  **/
 router.post("/assignment", CreateAssignment)
 router.post("/assignment/edit", EditAssignment)
-router.post("/assignment/remove/:assignment_id", RemoveAssignment)
-router.post("/assignment/grade/:class_assignment_id ", GradeAssignment) 
-router.get("/assignment/:assignment_id/view", GetAssignStudents) 
-router.get("/assignment/:class_id", GetAssignments) 
-router.get("/assignment/:class_id/grade", GetStudentGrades) 
+router.get("/assignment/:class_id/:student_id", GetAssignments) 
+router.get("/assignment/:class_id/:student_id/grade", GetStudentGrades) 
 
 /* 
  * MEETING ROUTE
  * 
  * 
  **/
-router.post("/meeting", CreateMeeting)
-router.post("/meeting/edit", EditMeeting)
-router.post("/meeting/remove/:class_meeting_id", RemoveMeeting)
-router.get("/meeting/:teacher_id", GetMeetings) 
+router.get("/meeting/:student_id", GetMeetings) 
 
 /* 
  * MEMBER ROUTE
  * 
  * 
  **/ 
-router.post("/member", AddMembers)
-router.post("/member/remove", RemoveMembers)
+
 router.get("/member/:class_id", GetMembers)
 
 

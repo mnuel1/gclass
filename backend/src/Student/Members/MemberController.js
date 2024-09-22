@@ -1,34 +1,5 @@
 
-const {
-    CreateMemberService,
-    GetMemberService,
-    RemoveMemberService } = require("./MemberService")
-
-
-
-const AddMembers = async (req, res) => {
-
-    try {
-        const memberData = req.body
-        console.log(memberData);
-        
-        const addMemberResult = await CreateMemberService(memberData)
-
-        if (addMemberResult.error) {
-            return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
-        }
-
-        return res.status(200).json({ 
-            title: "Member/s Added", 
-            message: `Members was added succesfully.`,
-        });
-
-    } catch (error) {       
-        console.log(error);
-        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
-    }
-    
-}
+const { GetMemberService } = require("./MemberService")
 
 const GetMembers = async (req, res) => {
 
@@ -54,30 +25,6 @@ const GetMembers = async (req, res) => {
     }
 }
 
-const RemoveMembers = async (req, res) => {
-
-    try {
-
-        const memberData = req.body
-
-        const removeMemberResult = RemoveMemberService(memberData)
-
-        if (removeMemberResult.error) {
-            return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
-        }
-
-        return res.status(200).json({ 
-            title: "Member/s Deleted", 
-            message: `Members was deleted succesfully.`,            
-        });                
-    } catch (error) {       
-        console.log(error);
-        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
-    }
-}
-
-module.exports = {
-    AddMembers,
-    GetMembers,
-    RemoveMembers
+module.exports = {    
+    GetMembers
 }
