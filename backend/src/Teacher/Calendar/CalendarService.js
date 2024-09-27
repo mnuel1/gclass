@@ -1,5 +1,16 @@
 const db = require("../../database/db")
+const nodemailer = require('nodemailer');
 
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.hostinger.com',
+    port: 465,
+    secure: true, 
+    auth: {
+        user: 'jobportal@resiboph.site',
+        pass: '9@omljoYWV'
+    }
+});
 
 
 const CreateMeetingService = async (meetingData) => {
@@ -21,6 +32,35 @@ const CreateMeetingService = async (meetingData) => {
                 data: []
             };
         }
+
+        const [getStudentsResult] = await db.query(
+            `SELECT students.email_address FROM students 
+            LEFT JOIN class_students ON class_students.student_id = students.student_id
+            WHERE class_students.class_id = ?`,
+            [class_id]
+        )
+        
+        const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
+        
+        const mailOptions = {
+            from: 'jobportal@resiboph.site',
+            to: emailAddresses,
+            subject: "Meeting now",
+            html: `<h4 className='text-sm'>
+            🚨 <strong>Meeting now!</strong><br />
+            <strong>${title}</strong><br />
+            Don't forget, we've got a meeting today! Click the link below to join:<br />
+            👉 <a href=${link} target="_blank" rel="noopener noreferrer">Join Meeting</a><br />
+            See you there!
+            </h4>`,            
+        };
+        
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log('Email sent to all students');
+        } catch (error) {
+            console.error('Failed to send email:', error);
+        }
     
         return {
             error: false,
@@ -38,7 +78,7 @@ const CreateMeetingService = async (meetingData) => {
 const EditMeetingService = async (meetingData) => {
 
     try {
-        const {start_date, class_meeting_id} = meetingData
+        const {start_date, class_meeting_id, class_id} = meetingData
         const [result] = await db.query(
             `
             UPDATE class_meetings SET start_date = ? WHERE class_meeting_id = ?`,
@@ -52,6 +92,37 @@ const EditMeetingService = async (meetingData) => {
                 data: []
             };
         }
+
+        const [getStudentsResult] = await db.query(
+            `SELECT students.email_address FROM students 
+            LEFT JOIN class_students ON class_students.student_id = students.student_id
+            WHERE class_students.class_id = ?`,
+            [class_id]
+        )
+        
+        const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
+        
+        const mailOptions = {
+            from: 'jobportal@resiboph.site',
+            to: emailAddresses,
+            subject: "Meeting now",
+            html: `<h4 className='text-sm'>
+            🚨 <strong>Meeting now!</strong><br />
+            <strong>${title}</strong><br />
+            Don't forget, we've got a meeting today! Click the link below to join:<br />
+            👉 <a href=${link} target="_blank" rel="noopener noreferrer">Join Meeting</a><br />
+            See you there!
+            </h4>`,            
+        };
+        
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log('Email sent to all students');
+        } catch (error) {
+            console.error('Failed to send email:', error);
+        }
+
+        
     
         return {
             error: false,

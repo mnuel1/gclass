@@ -8,6 +8,20 @@ const formatDateTimeForActivity = (date) => {
     return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }).format(date);
 };
 
+const nodemailer = require('nodemailer');
+
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.hostinger.com',
+    port: 465,
+    secure: true, 
+    auth: {
+        user: 'jobportal@resiboph.site',
+        pass: '9@omljoYWV'
+    }
+});
+
+
 const GetActivityService = async (class_id) => {
     try {        
         const [result] = await db.query(
@@ -77,6 +91,35 @@ const CreateMeetingActivityService = async (meetingData) => {
                 succesfull: false,
                 data: []
             };
+        }
+
+        const [getStudentsResult] = await db.query(
+            `SELECT students.email_address FROM students 
+            LEFT JOIN class_students ON class_students.student_id = students.student_id
+            WHERE class_students.class_id = ?`,
+            [class_id]
+        )
+        
+        const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
+        
+        const mailOptions = {
+            from: 'jobportal@resiboph.site',
+            to: emailAddresses,
+            subject: "Meeting now",
+            html: `<h4 className='text-sm'>
+            🚨 <strong>Meeting now!</strong><br />
+            <strong>${title}</strong><br />
+            Don't forget, we've got a meeting today! Click the link below to join:<br />
+            👉 <a href=${link} target="_blank" rel="noopener noreferrer">Join Meeting</a><br />
+            See you there!
+            </h4>`,            
+        };
+        
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log('Email sent to all students');
+        } catch (error) {
+            console.error('Failed to send email:', error);
         }
     
         return {

@@ -1,6 +1,7 @@
 
 const { GetActivityService, CreateMeetingActivityService } = require("./ActivityService")
 
+
 const GetActivities = async (req, res) => {
 
     try {
@@ -16,7 +17,8 @@ const GetActivities = async (req, res) => {
                 data: []
             });
         }
-           
+
+
         return res.status(200).json({ 
             title: "Activity Found", 
             message: "There's a record for activity.",
@@ -45,6 +47,7 @@ const AddMeetingActivity = async (req, res) => {
                 data: []
             });
         }
+        
 
         return res.status(200).json({ 
             title: "New meeting Created", 

@@ -30,6 +30,7 @@ export const CalendarView: React.FC = () => {
 	const [confirmDelete, setConfirmDelete] = useState(false);
 	const [edit, setEdit] = useState(false);
 	const [id, setID] = useState("");
+	const [classid, setClassid] = useState("");
     const { data, isSuccess, isError, isLoading } = useMeetingQuery(getID());
     const { startLoading, stopLoading } = useModalStore();
 
@@ -102,7 +103,8 @@ export const CalendarView: React.FC = () => {
 		const timestamp = createTimestamp(data.date, data.time)
 		const schedule = {
 			start_date : timestamp,
-			class_meeting_id : id
+			class_meeting_id : id,
+			class_id: classid
 		}
 		editScheduleMutation.mutate(schedule)
 		
@@ -148,7 +150,7 @@ export const CalendarView: React.FC = () => {
 								items-center bg-blue-100 p-2 rounded-md my-2 cursor-pointer">
                                     <div className=''>                                    
                                         <div 
-                                        onClick={() => {setEdit(true); setID(event.class_meeting_id)}}
+                                        onClick={() => {setEdit(true); setID(event.class_meeting_id); setClassid(event.class_id)}}
                                         className='grow'>
                                             <h4 className="font-bold">{event.title}</h4>
                                             <p className="text-gray-600">{event.time}</p>
