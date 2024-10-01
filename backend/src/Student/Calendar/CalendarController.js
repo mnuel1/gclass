@@ -7,7 +7,7 @@ const GetMeetings = async (req, res) => {
         const getMeetingResult = await GetMeetingsService(student_id)
 
         if (!getMeetingResult.succesfull) {
-            return res.status(400).json({ 
+            return res.status(200).json({ 
                 title: "Schedule Meeting Failed", 
                 message: "New assignment was not created.",
                 data: []

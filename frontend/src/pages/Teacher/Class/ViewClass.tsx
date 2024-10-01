@@ -82,7 +82,7 @@ export const ClassroomView: React.FC = () => {
                 </button>
             </div>
             
-            <div className='p-4 m-6'>
+            <div className='pb-24 pl-4 pr-4 pt-4 m-6 overflow-y-auto h-full'>
 
                 {!isEmpty ? (
                     Object.entries(activity).map(([startDate, act]) => (

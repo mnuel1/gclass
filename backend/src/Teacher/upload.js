@@ -65,12 +65,12 @@ router.post('/student/upload/assignment', upload.single('attachment'),
 async (req, res) => {
 
     try {
-        const { assignment_id, student_id } = req.body;
+        const { assignment_id, student_id, status } = req.body;
         const attachment = req.file.path.replace(/\\/g, '/'); 
-        
+        let ass_status = status
 
         const [assignment] = await db.query(
-            `SELECT due_date, assignment_status FROM assignments WHERE assignment_id = ?`,
+            `SELECT due_date FROM assignments WHERE assignment_id = ?`,
             [assignment_id]
         );
 
@@ -81,23 +81,19 @@ async (req, res) => {
             });
         }
 
-
         const dueDate = new Date(assignment[0].due_date);
         const currentDate = new Date();
 
-        if (currentDate > dueDate) {
-            return res.status(400).json({
-                title: "Due Date Passed",
-                message: "You cannot submit the assignment because the due date has passed.",
-            });
+        if (ass_status === "Pending" || (currentDate < dueDate && ass_status === "Turned In")) {
+            ass_status = "Turned In"
+        } else if (ass_status === "Not Turned In" || (currentDate > dueDate && ass_status === "Turned In")) {
+            ass_status = "Late Turned In"
         }
-    
-        
-        const turnedIn = "Turned In"
+                
         const [result] = await db.query(
             `UPDATE class_assignments SET attachments = ?, pass_date = ?, assignment_status = ? 
             WHERE assignment_id = ? AND student_id = ?`,
-            [attachment, currentDate, turnedIn, assignment_id, student_id]
+            [attachment, currentDate, ass_status, assignment_id, student_id]
         );
 
         if (!result.affectedRows) {

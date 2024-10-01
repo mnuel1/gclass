@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { api } from '../process/axios';
 import { Authentication } from '../../../Auth/Authentication';
 import { useNavigate } from 'react-router-dom';
 import { FailedToast } from '../../../components/Toast/FailedToast';
@@ -13,12 +14,23 @@ export const StudentVideoConference: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const meetingName = localStorage.getItem('meetingName');
+  const [counter, setCounter] = useState(0)
   const navigate = useNavigate()
   useEffect(() => {
 
     if(!getID()) {
       navigate("/teacher/login")
     }
+
+    const notifyTeacher = async () => {
+      await api.post('http://localhost:5000/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: 'Student is not present!' }),
+      });
+    };
       
     // Load Jitsi Meet API script
     const jitsiScript = document.createElement('script');
@@ -59,9 +71,15 @@ export const StudentVideoConference: React.FC = () => {
                 .withFaceLandmarks().withFaceDescriptors();                                          
 
               if (detections.length > 0) {
-                SuccessToast("Student is present")
+                SuccessToast("You are present")
               } else {
-                FailedToast("Student is not present")
+                FailedToast("You are not present")
+                if (counter === 3) {
+                  notifyTeacher()
+                } else {
+                  setCounter(prev => prev+1)
+                }
+                
               }
             }
           };

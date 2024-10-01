@@ -175,17 +175,25 @@ export const ViewAssignment:React.FC = () => {
             formData.append('attachment', form.attachment);
 
             try {
-                const response = await fetch(`${SERVER}/teacher/upload/assignment`,
-                    {
-                        method:"POST",
-                        body: formData
+                if (form.attachment && form.attachment instanceof File) {
+                    const response = await fetch(`${SERVER}/teacher/upload/assignment`,
+                        {
+                            method:"POST",
+                            body: formData
+                        }
+                    )
+                                    
+                    if (response.status === 200) {                    
+                        editAssignmentMutation.mutate(data)
+                        navigate(-1)
+                    } else {
+                        FailedToast("Something went wrong!")
                     }
-                )
-                                
-                if (response.status === 200) {                    
+                } else {
                     editAssignmentMutation.mutate(data)
                     navigate(-1)
                 }
+               
             } catch (error) {
                 FailedToast("Something went wrong!")
             }
@@ -280,7 +288,7 @@ export const ViewAssignment:React.FC = () => {
                     </div>
               
             </div>
-            <div className='grow'>
+            <div className='grow overflow-y-auto h-full pb-12'>
 
              
             {page === 1 ? (
@@ -464,150 +472,151 @@ export const ViewAssignment:React.FC = () => {
                 </form>
             ) : (
                 <>
-                <div className='h-full p-4 m-6 flex flex-col gap-4'>
-                    <div className='flex gap-4'>                        
-                        <button onClick={() => handleFilter("Turned In")} className={active === 'Turned In' ? activeStyle : notActiveStyle}>Turned In</button>
-                        <button onClick={() => handleFilter("Pending")} className={active === 'Pending' ? activeStyle : notActiveStyle}>Pending</button>
-                        <button onClick={() => handleFilter("Not Turned In")} className={active === 'Not Turned In' ? activeStyle : notActiveStyle}>Not Turned In</button>
-                        <button onClick={() => handleFilter("Returned")} className={active === 'Returned' ? activeStyle : notActiveStyle}>Returned</button>
-                    </div>
-                    {filteredStudents?.map((student, index) => (
-                        <div className='border border-gray-200'>                           
-                            <Accordion key={index} name={`${student.fullname} Work`}>
-                            
-                                <div className='px-4 border-t border-gray-200 mt-2 py-3'>
-                                    {student.assignment_status === 'Pending' || student.assignment_status === 'Not Turned In' ? (
-                                        <h1>{student.fullname} doesn't have work yet</h1>
-                                    ) : (
-                                        <>                                            
-                                            {student.attachments.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-                                                <>
-                                                    <div className='flex gap-6 justify-between mb-2'>
-                                                        <div className='flex items-end gap-2'>
-                                                            <span className='text-sm text-gray-500'>Grade:</span>
-                                                            <input 
-                                                                type="number" 
-                                                                name={`grading-${student.student_id}`}
-                                                                value={grades[student.student_id] || ''}
-                                                                onChange={(e) => handleGradeChange(e, student.student_id)}
-                                                                className="border border-200 rounded-md"
-                                                            />
-
-                                                        </div>
-                                                        
-                                                        <div className='flex gap-4'>
-                                                            <button onClick={() => handleGradeAssignment(student.student_id)} className='border-blue-200 border p-2 
-                                                            rounded-lg hover:bg-blue-400 hover:border-blue-400 hover:text-white'>Return</button>
-                                                            <a 
-                                                                href={`${SERVER}/${student.attachments}`} 
-                                                                download 
-                                                                className="rounded-lg border border-gray-200 bg-blue-400 text-white hover:bg-blue-500
-                                                                p-2"
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                                                </svg>
-
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <img 
-                                                        src={`${SERVER}/${student.attachments}`} 
-                                                        alt={`Preview of ${student.student_id}`} 
-                                                        style={{ width: '100%', maxWidth: '600px', height: 'auto' }} 
-                                                    />
-                                                    
-                                                    
-                                                </>
-                                            ) : student.attachments.match(/\.pdf$/i) ? (
-                                                <>
-                                                    <div className='flex gap-6 justify-between mb-2'>                                                        
-                                                        <div className='flex items-end gap-2'>
-                                                            <span className='text-sm text-gray-500'>Grade:</span>
-                                                            <input 
-                                                                type="number" 
-                                                                name={`grading-${student.student_id}`}
-                                                                value={grades[student.student_id] || ''}
-                                                                onChange={(e) => handleGradeChange(e, student.student_id)}
-                                                                className="border border-200 rounded-md"
-                                                            />
-
-                                                        </div>
-                                                        
-                                                        <div className='flex gap-4'>
-                                                            <button onClick={() => handleGradeAssignment(student.student_id)} className='border-blue-200 border p-2 
-                                                            rounded-lg hover:bg-blue-400 hover:border-blue-400 hover:text-white'>Return</button>
-                                                            <a 
-                                                                href={`${SERVER}/${student.attachments}`} 
-                                                                download 
-                                                                className="rounded-lg border border-gray-200 bg-blue-400 text-white hover:bg-blue-500
-                                                                p-2"
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                                                </svg>
-
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <iframe 
-                                                        src={`${SERVER}/${student.attachments}`} 
-                                                        width="100%" 
-                                                        height="600" 
-                                                        title="PDF Preview"
-                                                    />
-                                                    
-                                                   
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <div className='flex gap-6 justify-between mb-2'>
-                                                        <div className='flex items-end gap-2'>
-                                                            <span className='text-sm text-gray-500'>Grade:</span>
-                                                            <input 
-                                                                type="number" 
-                                                                name={`grading-${student.student_id}`}
-                                                                value={grades[student.student_id] || ''}
-                                                                onChange={(e) => handleGradeChange(e, student.student_id)}
-                                                                className="border border-200 rounded-md"
-                                                            />
-
-                                                        </div>
-                                                        
-                                                        <div className='flex gap-4'>
-                                                            <button onClick={() => handleGradeAssignment(student.student_id)} className='border-blue-200 border p-2 
-                                                            rounded-lg hover:bg-blue-400 hover:border-blue-400 hover:text-white'>Return</button>
-                                                            <a 
-                                                                href={`${SERVER}/${student.attachments}`} 
-                                                                download 
-                                                                className="rounded-lg border border-gray-200 bg-blue-400 text-white hover:bg-blue-500
-                                                                p-2"
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                                                </svg>
-
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <p>Preview not available for this file type.</p>
-                                                    {/* Download button for unsupported file types */}
-                                                    
-                                                </>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-                            </Accordion>
+                    <div className='h-full p-4 m-6 flex flex-col gap-4 overflow-y-auto pb-12'>
+                        <div className='flex gap-4'>                        
+                            <button onClick={() => handleFilter("Turned In")} className={active === 'Turned In' ? activeStyle : notActiveStyle}>Turned In</button>
+                            <button onClick={() => handleFilter("Pending")} className={active === 'Pending' ? activeStyle : notActiveStyle}>Pending</button>
+                            <button onClick={() => handleFilter("Late Turned In")} className={active === 'Late Turned In' ? activeStyle : notActiveStyle}>Late Turned In</button>
+                            <button onClick={() => handleFilter("Not Turned In")} className={active === 'Not Turned In' ? activeStyle : notActiveStyle}>Not Turned In</button>
+                            <button onClick={() => handleFilter("Returned")} className={active === 'Returned' ? activeStyle : notActiveStyle}>Returned</button>
                         </div>
-                    ))}
-                </div>
+                        {filteredStudents?.map((student, index) => (
+                            <div className='border border-gray-200'>                           
+                                <Accordion key={index} name={`${student.fullname} Work`}>
+                                
+                                    <div className='px-4 border-t border-gray-200 mt-2 py-3'>
+                                        {student.assignment_status === 'Pending' || student.assignment_status === 'Not Turned In' ? (
+                                            <h1>{student.fullname} doesn't have work yet</h1>
+                                        ) : (
+                                            <>                                            
+                                                {student.attachments.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+                                                    <>
+                                                        <div className='flex gap-6 justify-between mb-2'>
+                                                            <div className='flex items-end gap-2'>
+                                                                <span className='text-sm text-gray-500'>Grade:</span>
+                                                                <input 
+                                                                    type="number" 
+                                                                    name={`grading-${student.student_id}`}
+                                                                    value={grades[student.student_id] || ''}
+                                                                    onChange={(e) => handleGradeChange(e, student.student_id)}
+                                                                    className="border border-200 rounded-md"
+                                                                />
+
+                                                            </div>
+                                                            
+                                                            <div className='flex gap-4'>
+                                                                <button onClick={() => handleGradeAssignment(student.student_id)} className='border-blue-200 border p-2 
+                                                                rounded-lg hover:bg-blue-400 hover:border-blue-400 hover:text-white'>Return</button>
+                                                                <a 
+                                                                    href={`${SERVER}/${student.attachments}`} 
+                                                                    download 
+                                                                    className="rounded-lg border border-gray-200 bg-blue-400 text-white hover:bg-blue-500
+                                                                    p-2"
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                                                    </svg>
+
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <img 
+                                                            src={`${SERVER}/${student.attachments}`} 
+                                                            alt={`Preview of ${student.student_id}`} 
+                                                            style={{ width: '100%', maxWidth: '600px', height: 'auto' }} 
+                                                        />
+                                                        
+                                                        
+                                                    </>
+                                                ) : student.attachments.match(/\.pdf$/i) ? (
+                                                    <>
+                                                        <div className='flex gap-6 justify-between mb-2'>                                                        
+                                                            <div className='flex items-end gap-2'>
+                                                                <span className='text-sm text-gray-500'>Grade:</span>
+                                                                <input 
+                                                                    type="number" 
+                                                                    name={`grading-${student.student_id}`}
+                                                                    value={grades[student.student_id] || ''}
+                                                                    onChange={(e) => handleGradeChange(e, student.student_id)}
+                                                                    className="border border-200 rounded-md"
+                                                                />
+
+                                                            </div>
+                                                            
+                                                            <div className='flex gap-4'>
+                                                                <button onClick={() => handleGradeAssignment(student.student_id)} className='border-blue-200 border p-2 
+                                                                rounded-lg hover:bg-blue-400 hover:border-blue-400 hover:text-white'>Return</button>
+                                                                <a 
+                                                                    href={`${SERVER}/${student.attachments}`} 
+                                                                    download 
+                                                                    className="rounded-lg border border-gray-200 bg-blue-400 text-white hover:bg-blue-500
+                                                                    p-2"
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                                                    </svg>
+
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <iframe 
+                                                            src={`${SERVER}/${student.attachments}`} 
+                                                            width="100%" 
+                                                            height="600" 
+                                                            title="PDF Preview"
+                                                        />
+                                                        
+                                                    
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className='flex gap-6 justify-between mb-2'>
+                                                            <div className='flex items-end gap-2'>
+                                                                <span className='text-sm text-gray-500'>Grade:</span>
+                                                                <input 
+                                                                    type="number" 
+                                                                    name={`grading-${student.student_id}`}
+                                                                    value={grades[student.student_id] || ''}
+                                                                    onChange={(e) => handleGradeChange(e, student.student_id)}
+                                                                    className="border border-200 rounded-md"
+                                                                />
+
+                                                            </div>
+                                                            
+                                                            <div className='flex gap-4'>
+                                                                <button onClick={() => handleGradeAssignment(student.student_id)} className='border-blue-200 border p-2 
+                                                                rounded-lg hover:bg-blue-400 hover:border-blue-400 hover:text-white'>Return</button>
+                                                                <a 
+                                                                    href={`${SERVER}/${student.attachments}`} 
+                                                                    download 
+                                                                    className="rounded-lg border border-gray-200 bg-blue-400 text-white hover:bg-blue-500
+                                                                    p-2"
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                                                    </svg>
+
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <p>Preview not available for this file type.</p>
+                                                        {/* Download button for unsupported file types */}
+                                                        
+                                                    </>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                </Accordion>
+                            </div>
+                        ))}
+                    </div>
                 </>
             )}
           
-          </div>
+            </div>
         </>
     )
 

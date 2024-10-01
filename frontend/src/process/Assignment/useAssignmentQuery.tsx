@@ -121,22 +121,30 @@ export const useAddAssignment = () => {
             const formData = new FormData();
             formData.append('assignment_id', data[0].assignment_id); 
             formData.append('attachment', variables.attachment);
-            try {
-                const response = await fetch(`${SERVER}/teacher/upload/assignment`, {
-                    method:"POST",
-                    body: formData
-                })
-                                
-                if (response.status === 200) {
-                    createAssignment(data[0])                    
-                    SuccessToast("Assignment created successfully!")
-                    console.log("Classroom successfully added:", data);
-                    stopLoading()           
-                    navigate(-1)
+         
+            if (variables.attachment && variables.attachment instanceof File) {
+                try {
+                    const response = await fetch(`${SERVER}/teacher/upload/assignment`, {
+                        method:"POST",
+                        body: formData
+                    })
+                                    
+                    if (response.status === 200) {
+                        createAssignment(data[0])                    
+                        SuccessToast("Assignment created successfully!")
+                        console.log("Classroom successfully added:", data);
+                        stopLoading()           
+                        navigate(-1)
+                    }
+                } catch (error) {
+                    FailedToast("Something went wrong!")
                 }
-            } catch (error) {
-                FailedToast("Something went wrong!")
             }
+            createAssignment(data[0])                    
+            SuccessToast("Assignment created successfully!")
+            console.log("Classroom successfully added:", data);
+            stopLoading()           
+            navigate(-1)
             
         }
     });

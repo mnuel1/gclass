@@ -14,10 +14,12 @@ const MeetingPage = () => {
         if (getRole() === 'Teacher') {
             localStorage.setItem('meetingName', meet_name || "");
             window.open(`/teacher/${getID()}/class/${class_id}/meeting`, '_blank');
+            navigate(-1)
                     
         } else if (getRole() === 'Student') {            
             localStorage.setItem('meetingName', meet_name || "");
             window.open(`/student/${getID()}/class/${class_id}/meeting`, '_blank');
+            navigate(-1)
         }
     }, [getRole(), navigate, class_id, meeting_name]);
 

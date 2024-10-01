@@ -73,8 +73,7 @@ export const VideoConference: React.FC = () => {
         
         // Generate file
         XLSX.writeFile(workbook, `${meetingName}-${new Date()}.xlsx`);
-        
-        
+                
         // Close the tab after the meeting ends
         window.close();
       });

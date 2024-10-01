@@ -4,18 +4,31 @@ const db = require("../../database/db");
 const JoinClassService = async (class_string_id, student_id) => {
     const connection = await db.getConnection()
     try {
-        console.log(class_string_id);
-        
+                
         const [findClassResult] = await connection.query(
             `SELECT * FROM class WHERE class_string_id = ?`,
             [class_string_id]
-        )
-        console.log(findClassResult)
+        )        
         if (!findClassResult.length) {
             connection.rollback()
             return {    
                 error: false,
                 succesfull: false,
+                joined: false,
+            };
+        }
+
+        const [isJoinResult] = await connection.query(
+            `SELECT COUNT(*) as count FROM class_students WHERE class_id = ? AND student_id = ?`,
+            [findClassResult[0].class_id, student_id]
+        );
+        
+        if (isJoinResult[0].count > 0) {
+            await connection.rollback(); 
+            return {    
+                error: false,
+                successful: false,
+                joined: true
             };
         }
                
@@ -29,10 +42,10 @@ const JoinClassService = async (class_string_id, student_id) => {
             connection.rollback()
             return {
                 error: false,
-                succesfull: false,                
+                succesfull: false,
+                joined: false,                
             };
-        }
-        console.log(joinClassResult.affectedRows);
+        }        
         
         await connection.commit()
         
@@ -40,6 +53,7 @@ const JoinClassService = async (class_string_id, student_id) => {
         return {
             error: false,
             succesfull: true,
+            joined: false,
             data: findClassResult
         };
     } catch (error) {
@@ -76,6 +90,7 @@ const GetClassesService = async (student_id) => {
             return {
                 error: false,
                 succesfull: false,
+                data: []
             };
         }
         

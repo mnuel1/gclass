@@ -159,8 +159,7 @@ export const CreateAssignment:React.FC = () => {
                 assignment_id: "",
                 class_id: classroom.class_id,
                 name: form.name,
-                instruction: form.instructions,
-                attachment: form.attachment,
+                instruction: form.instructions,                
                 points: form.points,
                 start_date: "",
                 due_date: `${createTimestamp()}`,
@@ -169,11 +168,10 @@ export const CreateAssignment:React.FC = () => {
                 student_ids: members
 
             }
+            
             addAssignmentMutation.mutate(data)
             
             
-
-
         } else {
             setErrors(validationErrors);
         }
@@ -187,8 +185,8 @@ export const CreateAssignment:React.FC = () => {
                 <h1 className='text-2xl font-bold'>New Assignment</h1>                        
             </div>
             
-            <form action="" onSubmit={handleSubmit}>            
-                <div className='h-full p-4 m-6 flex flex-col gap-6'>
+            <form action="" onSubmit={handleSubmit} className='overflow-y-auto h-full pb-24'>            
+                <div className='p-4 m-6 flex flex-col gap-6 '>
                     <div className='flex flex-col gap-2'>
                         <span className='text-sm text-gray-500'>Title <span className='text-red-700'>*</span> </span>
                         <div>                                
@@ -198,7 +196,7 @@ export const CreateAssignment:React.FC = () => {
                                 value={form.name}
                                 onChange={handleChange}
                                 className="w-full rounded-lg border border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                                placeholder="Enter email"
+                                placeholder="Enter title"
                             />
                             {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                         </div>

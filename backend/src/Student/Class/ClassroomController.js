@@ -10,6 +10,14 @@ const JoinClass = async (req, res) => {
         
         const joinClassResult = await JoinClassService(name, id)
 
+        if (joinClassResult.joined) {
+            return res.status(201).json({ 
+                title: "Already join", 
+                message: "Something went wrong.", 
+                data: []
+            });
+        }
+        
         if (!joinClassResult.succesfull) {
             return res.status(400).json({ 
                 title: "Join Class failed", 
@@ -17,6 +25,7 @@ const JoinClass = async (req, res) => {
                 data: []
             });
         }
+        
         
         return res.status(200).json({ 
             title: "Join Class Success", 
@@ -35,7 +44,8 @@ const GetClasses = async (req, res) => {
     const { student_id } = req.params
 
     try {
-
+        console.log(student_id);
+        
         const getClassesResult = await GetClassesService(student_id)
 
         if (!getClassesResult.succesfull) {

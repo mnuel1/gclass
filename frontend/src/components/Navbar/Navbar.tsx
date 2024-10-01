@@ -44,7 +44,7 @@ export const Navbar:React.FC<MainMenuProps> = ({children}) => {
                             hidden cursor-pointer hover:bg-gray-200 hover:border-gray-200 w-[6rem] p-2 rounded-lg md:flex items-center 
                             justify-center`}
                         >                               
-                            <span className={'text-xs sm:block md:text-md font-bold'}> Home </span>
+                            <span className={'text-xs sm:block md:text-lg font-bold'}> Home </span>
                         </div>
                         <div
                             onClick={() => navigateHome("/about")}
@@ -52,7 +52,7 @@ export const Navbar:React.FC<MainMenuProps> = ({children}) => {
                             hidden cursor-pointer hover:bg-gray-200 hover:border-gray-200 w-[6rem] p-2 rounded-lg md:flex items-center 
                             justify-center`}
                         >                               
-                            <span className={'text-xs sm:block md:text-md font-bold'}> About Us </span>
+                            <span className={'text-xs sm:block md:text-lg font-bold'}> About Us </span>
                         </div>
                         <div
                             onClick={() => navigateHome("/faq")}
@@ -60,7 +60,7 @@ export const Navbar:React.FC<MainMenuProps> = ({children}) => {
                             hidden cursor-pointer hover:bg-gray-200 hover:border-gray-200 w-[6rem] p-2 rounded-lg md:flex items-center 
                             justify-center`}
                         >                               
-                            <span className={'text-xs sm:block md:text-md font-bold'}> FAQ </span>
+                            <span className={'text-xs sm:block md:text-lg font-bold'}> FAQ </span>
                         </div>                        
                        
                         <div
@@ -68,7 +68,7 @@ export const Navbar:React.FC<MainMenuProps> = ({children}) => {
                             className={`${isActive === 'class' ? active : notActive} 
                             hidden cursor-pointer hover:bg-blue-400 w-[6rem] p-2 rounded-lg md:flex items-center justify-center bg-blue-300 `}
                         >                               
-                            <span className={'text-xs sm:block md:text-md font-bold'}> Sign-in </span>
+                            <span className={'text-xs sm:block md:text-lg font-bold'}> Sign-in </span>
                         </div>
                         <div
                             onClick={() => navigateHome("/sign-up")}
@@ -76,7 +76,7 @@ export const Navbar:React.FC<MainMenuProps> = ({children}) => {
                             hidden cursor-pointer hover:bg-gray-200 hover:border-gray-200 w-[6rem] p-2 rounded-lg md:flex items-center 
                             justify-center border border-blue-200`}
                         >                            
-                            <span className={'text-xs sm:block md:text-md font-bold'}> Sign-up </span>
+                            <span className={'text-xs sm:block md:text-lg font-bold'}> Sign-up </span>
                         </div>
                         <button onClick={() => setCollapsed(prev => !prev)} className='relative block md:hidden z-50 pointer-events-auto'>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" 

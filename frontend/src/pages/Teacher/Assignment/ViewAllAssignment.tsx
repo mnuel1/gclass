@@ -74,7 +74,7 @@ export const Assignments:React.FC = () => {
             </div>
             
 
-            <div className='p-4 m-6'>
+            <div className='pb-24 pl-4 pr-4 pt-4 m-6 overflow-y-auto h-full'>
                 {/* <div className='flex gap-4'>
                     <button onClick={() => handleFilter("pending")}className={active === 'pending' ? aactive : notActive}>Pending</button>
                     <button onClick={() => handleFilter("past")}className={active === 'past' ? aactive : notActive}>Past Due</button>
