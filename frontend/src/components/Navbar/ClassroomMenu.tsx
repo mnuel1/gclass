@@ -76,7 +76,7 @@ export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
                     </div>                                
                 </div>
                 
-                <div className={`${window.location.href.split("/").pop() === "meeting" ? `w-screen` : 'w-[70%]'} bg-white`}>                   
+                <div className={`${window.location.href.split("/").pop() === "meeting" ? `w-screen` : 'w-[70%]'} bg-white overflow-hidden h-[calc(100vh-100px)]`}>
                     {children}                    
                 </div>
             </div>  

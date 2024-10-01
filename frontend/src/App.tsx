@@ -34,14 +34,8 @@ import { NotFound } from './components/Not Found Page/404'
  */
 import { Home } from './pages/Teacher/Home/Home'
 import { Calendar } from './pages/Teacher/Calendar/ViewCalendar'
-import { Assignments } from './pages/Teacher/Assignment/ViewAllAssignment'
-import { Grades } from './pages/Teacher/Grade/ViewAllGrade'
 import { ClassroomView } from './pages/Teacher/Class/ViewClass'
-import { ViewAssignment } from './pages/Teacher/Assignment/ViewAssignment';
-// import { ViewAllAssignments } from './pages/Teacher/Assignment/AllAssignments'
-import { CreateAssignment } from './pages/Teacher/Assignment/CreateAssignment'
 import { CreateSchedule } from './pages/Teacher/Calendar/CreateCalendar'
-import { Members } from './pages/Teacher/Members/ViewMembers'
 import { AddMember } from './pages/Teacher/Members/AddMember'
 import { RemoveMember } from './pages/Teacher/Members/RemoveMember';
 
@@ -77,10 +71,6 @@ import { StudentHome } from './pages/Student/Home/Home';
 import { StudentAccountSettings } from './pages/Student/Account/Account';
 import { StudentCalendar } from './pages/Student/Calendar/ViewCalendar';
 import { StudentClassroomView } from './pages/Student/Class/ViewClass';
-import { StudentAssignments } from './pages/Student/Assignment/ViewAllAssignment';
-import { StudentMembers } from './pages/Student/Members/ViewMembers';
-import { StudentGrades } from './pages/Student/Grade/ViewAllGrade';
-import { StudentViewAssignment } from './pages/Student/Assignment/ViewAssignment';
 import { StudentVideoConference } from './pages/Student/Video Conference/VideoConference';
 function App() {
       
@@ -133,13 +123,7 @@ function App() {
                         <Route path={`/teacher/:teacher_id`} element={<TeacherLayout />} >            
                             <Route path='class' element={<Home/>} />
                             <Route path='class' element={<ClassroomLayout />} >                  
-                                <Route path=':class_id/posts' element={<ClassroomView/>} />
-                                <Route path=':class_id/assignments' element={<Assignments/>} />
-                                <Route path=':class_id/grades' element={<Grades/>} />
-                                <Route path=':class_id/members' element={<Members/>} />
-
-                                <Route path=':class_id/assignments/:assignment_id/view' element={<ViewAssignment/>} />
-                                <Route path=':class_id/assignments/new' element={<CreateAssignment/>} />
+                                <Route path=':class_id/posts' element={<ClassroomView/>} />                                
                                 <Route path=':class_id/schedule' element={<CreateSchedule/>} />
 
                                 <Route path=':class_id/members/new' element={<AddMember/>} />
@@ -156,11 +140,7 @@ function App() {
                         <Route path='/student/:student_id' element={<StudentLayout />} >
                             <Route path='class' element={<StudentHome/>} />
                             <Route path='class' element={<ClassroomLayout />} >
-                                <Route path=':class_id/posts' element={<StudentClassroomView/>} />
-                                <Route path=':class_id/assignments' element={<StudentAssignments/>} />
-                                <Route path=':class_id/grades' element={<StudentGrades/>} />
-                                <Route path=':class_id/members' element={<StudentMembers/>} />
-                                <Route path=':class_id/assignments/:assignment_id/view' element={<StudentViewAssignment/>} />
+                                <Route path=':class_id/posts' element={<StudentClassroomView/>} />                               
                             </Route>
                             <Route path='calendar' element={<StudentCalendar/>} />
                             <Route path='account' element={<StudentAccountSettings/>} />

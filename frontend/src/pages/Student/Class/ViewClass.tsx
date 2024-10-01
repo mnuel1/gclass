@@ -48,8 +48,8 @@ export const StudentClassroomView: React.FC = () => {
                 <h1 className='text-2xl font-bold'>{`${classroom.name}'s Posts`.toUpperCase()}</h1>
             </div>
             
-            <div className='p-4 m-6'>
-
+            <div className='p-4 m-6 overflow-y-auto h-full '>
+             
                 {!isEmpty ? (
                     Object.entries(activity).map(([startDate, act]) => (
                     <>
@@ -74,8 +74,7 @@ export const StudentClassroomView: React.FC = () => {
                         </h1>
                     </>
                 )}
-                
-
+           
                 
                 
             </div>
