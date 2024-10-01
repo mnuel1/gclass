@@ -36,7 +36,7 @@ export const CalendarView: React.FC = () => {
         } else {
             stopLoading();
         }
-
+		
         if (isSuccess && data) {
             setEvents(data);					
         }

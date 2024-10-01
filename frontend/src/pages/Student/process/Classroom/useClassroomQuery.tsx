@@ -30,22 +30,26 @@ export const useJoinClassroom = () => {
     return useMutation({
         mutationFn: async (data: ClassroomTypes) => {
             startLoading()
-            console.log(data);
-            
+                                    
             const response = await joinClassroomService(data)
             
+            if (response.status === 201) {
+                throw new Error('You have already joined to this class!')
+            }
+
             if (response.status !== 200) {
-                throw new Error('Server error occurred')
+                throw new Error('Join class failed!')
             }   
             
             return response.data.data;
         },
         onMutate: (variables) => {                    
-            return { id: 1 };
+            return { id: 1 };            
+            
         },
         onError: (error, variables, context) => {           
             console.log(`Error occurred, rolling back optimistic update with id ${error}`);
-            FailedToast("Join class failed")
+            FailedToast(error.message)
             stopLoading()
         },
         onSuccess: (data, variables, context) => {           

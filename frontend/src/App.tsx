@@ -1,5 +1,7 @@
 import { Bounce, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'slick-carousel/slick/slick.css'; 
+import 'slick-carousel/slick/slick-theme.css';
 import MeetingPage from './meeting';
 import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom'
 import { ProtectedRoute } from './Auth/ProtectedRoute';
@@ -20,6 +22,10 @@ import { ClassroomLayout } from './layout/ClassroomLayout';
  * 
  */
 import { LandingPage } from './pages/landing';
+import { AboutPage } from './pages/about';
+import { FAQPage } from './pages/faq';
+import { SignIn } from './pages/sign-in';
+import { SignUp } from './pages/sign-up';
 
 /**
  * ERROR PAGE
@@ -105,6 +111,11 @@ function App() {
                         <Route path="/meeting/:class_id/:meeting_name" element={<MeetingPage />} />
                         <Route path='/' element={<DefaultLayout />}>
                             <Route index element={<LandingPage/>} />
+                            <Route path='about' element={<AboutPage/>} />
+                            <Route path='faq' element={<FAQPage/>} />
+                            <Route path='sign-in' element={<SignIn/>} />
+                            <Route path='sign-up' element={<SignUp/>} />
+                            
                             <Route path='teacher/login' element={
                                 <ProtectedRoute>
                                 <TeacherLogin/>

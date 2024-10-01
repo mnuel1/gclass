@@ -22,9 +22,9 @@ export const StudentViewAssignment:React.FC = () => {
     const ass : AssignmentType = location.state.assignment    
     const [errors, setErrors] = useState<ErrorsState>({})
     const [form,setForm] = useState({        
-        attachment: ass.attachment,      
+        attachment: ass.attachment,     
     })
-    const [edit, setEdit] = useState(false)
+    const [edit, setEdit] = useState(false)    
     const [confirm, setConfirm] = useState(false)
     
     const {startLoading, stopLoading} = useModalStore()
@@ -59,18 +59,18 @@ export const StudentViewAssignment:React.FC = () => {
     };
 
 
-    const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
+        // e.preventDefault();
         const validationErrors = validate();
                 
         if (Object.keys(validationErrors).length === 0) {         
-           
+
             const formData = new FormData();
             formData.append('assignment_id', ass.assignment_id);
             formData.append('student_id', getID()); 
+            formData.append('status', ass.assignment_status);
             formData.append('attachment', form.attachment);
-            
-            
+                                    
             try {
                 startLoading()
                 const response = await fetch("http://localhost:4000/student/upload/assignment", 
@@ -79,6 +79,12 @@ export const StudentViewAssignment:React.FC = () => {
                         body: formData
                     }
                 )
+
+                if (response.status === 201) {
+                    FailedToast("You cannot submit the assignment because the due date has passed.")
+                    stopLoading()
+                    return;
+                }
                     
                 if (response.status === 200) {
                     SuccessToast("Assignment Submitted!")
@@ -100,10 +106,23 @@ export const StudentViewAssignment:React.FC = () => {
         }
 
     }
-
+        
+    const isReturned = ass.assignment_status === 'Returned';
+    const isTurnedIn = ass.assignment_status === 'Turned In';
+    const isPending = ass.assignment_status === 'Pending';
+    const isNotTurnedIn = ass.assignment_status === 'Not Turned In';
+    const isLate = new Date() > new Date(ass.due_date);
+    const renderSubmitButton = () => (
+        <button
+          onClick={() => setConfirm(true)}
+          type='button'
+          className={`bg-blue-500 p-2 rounded-md w-[10rem] text-white hover:bg-blue-600 mt-2`}>
+          {isLate ? "Late Turned In" : (isTurnedIn ? "Turned In again" : (isPending ? "Turned In" : (isNotTurnedIn ? "Late Turned In" : "")))}
+        </button>
+      );
     return (
         <>
-            {confirm && <ConfirmModal onClose={() => setConfirm(false)} id='' onConfirm={() => handleSubmit}/>}
+            {confirm && <ConfirmModal onClose={() => setConfirm(false)} id='' onConfirm={handleSubmit} />}
             <div className='flex items-center justify-between border-b-2 border-gray-300 p-4'>
             
                 <h1 className='text-2xl font-bold'>{classroom.name}'s Assignment</h1>
@@ -158,7 +177,7 @@ export const StudentViewAssignment:React.FC = () => {
                                 )}                        
                             </Accordion>
                         )}
-                        {!ass.attachment && edit && 
+                        {!ass.attachment && 
                             <>
                                 <span className='text-xs italic text-gray-400'>Insert your answer here.</span>
                                 <input                         
@@ -172,14 +191,40 @@ export const StudentViewAssignment:React.FC = () => {
                         
                     </div>
 
-                    {ass.assignment_status !== 'Returned' && 
-                        <button
-                            onClick={() => setConfirm(true)}                
-                            type='button' 
-                            className={`bg-blue-500 p-2 rounded-md w-[10rem] text-white hover:bg-blue-600 mt-2`}> 
-                            {ass.assignment_status === 'Turned In' ? "Edit" : "Submit"} 
-                        </button>
-                    }
+                    <>
+                        {!isReturned && (
+                        <div className='flex gap-4'>
+                            {isTurnedIn && !edit && (
+                            <>
+                                <button
+                                onClick={() => setEdit(true)}
+                                type='button'
+                                className={`bg-blue-500 p-2 rounded-md w-[10rem] text-white hover:bg-blue-600 mt-2`}>
+                                Edit
+                                </button>                                
+                            </>
+                            )}
+                            
+                            {!isTurnedIn && (
+                            <>
+                                {renderSubmitButton()}
+                            </>
+                            )}
+                            
+                            {isTurnedIn && edit && (
+                            <>
+                                {renderSubmitButton()}
+                                <button
+                                onClick={() => setEdit(false)}
+                                type='button'
+                                className={`bg-gray-500 p-2 rounded-md w-[10rem] text-white hover:bg-gray-600 mt-2`}>
+                                Cancel Edit
+                                </button>
+                            </>
+                            )}
+                        </div>
+                        )}
+                    </>
                 </div>
             </form>
         

@@ -87,7 +87,7 @@ export const StudentSignup: React.FC = () => {
                 FailedToast("Sign up Failed")
                 return;
             } 
-            const user = `${response.data.last_name}, ${response.data.first_name} ${response.data.middle_name}`
+            const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`
             const token = response.data.token
             const id = response.data.student_id
             const email = response.data.email_address

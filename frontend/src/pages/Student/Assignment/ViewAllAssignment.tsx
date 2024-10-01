@@ -54,9 +54,8 @@ export const StudentAssignments: React.FC = () => {
     const filteredAssignments = () => {
         if (!assignment || isEmpty) return []
 
-        return Object.entries(assignment).map(([date, assignments]) => {
-            
-            const filteredAss = assignments.filter((ass: AssignmentType) => ass.assignment_status === active)
+        return Object.entries(assignment).map(([date, assignments]) => {            
+            const filteredAss = assignments.filter((ass: any) => ass.assignment_status === active)
 
             if (filteredAss.length > 0) {
                 return (
@@ -64,7 +63,7 @@ export const StudentAssignments: React.FC = () => {
                         <div className='flex justify-center items-center border-b-2 border-gray-300'>
                             <span className='text-[11px] text-gray-400'>{date}</span>
                         </div>
-                        {filteredAss.map((ass: AssignmentType, index: number) => (
+                        {filteredAss.map((ass: any, index: number) => (
                             <button key={index} onClick={() => handleAssignmentButton(ass)} className='w-full'>
                                 <AssignmentBlock 
                                     name={ass.name} 
@@ -89,6 +88,7 @@ export const StudentAssignments: React.FC = () => {
                 <div className='flex gap-4'>
                     <button onClick={() => handleFilter("Pending")} className={active === 'Pending' ? activeStyle : notActiveStyle}>Pending</button>
                     <button onClick={() => handleFilter("Turned In")} className={active === 'Turned In' ? activeStyle : notActiveStyle}>Turned In</button>
+                    <button onClick={() => handleFilter("Late Turned In")} className={active === 'Late Turned In' ? activeStyle : notActiveStyle}>Late Turned In</button>
                     <button onClick={() => handleFilter("Not Turned In")} className={active === 'Not Turned In' ? activeStyle : notActiveStyle}>Not Turned In</button>
                     <button onClick={() => handleFilter("Returned")} className={active === 'Returned' ? activeStyle : notActiveStyle}>Returned</button>
                 </div>

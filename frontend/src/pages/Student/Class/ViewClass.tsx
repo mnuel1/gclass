@@ -43,12 +43,11 @@ export const StudentClassroomView: React.FC = () => {
     return (
         <>
             
-            <div className='flex items-center justify-between border-b-2 border-gray-300 px-8 py-4'>
-            
+            <div className='flex items-center justify-between border-b-2 border-gray-300 px-8 py-4'>            
                 <h1 className='text-2xl font-bold'>{`${classroom.name}'s Posts`.toUpperCase()}</h1>
             </div>
             
-            <div className='p-4 m-6'>
+            <div className='pb-24 pl-4 pr-4 pt-4 m-6 overflow-y-auto h-full'>
 
                 {!isEmpty ? (
                     Object.entries(activity).map(([startDate, act]) => (
@@ -65,7 +64,6 @@ export const StudentClassroomView: React.FC = () => {
                                 formatted_created_time={act.formatted_created_time}
                             />
                         ))}
-                        
                     </>
                 ))) : (
                     <>
@@ -73,12 +71,9 @@ export const StudentClassroomView: React.FC = () => {
                             No post yet.
                         </h1>
                     </>
-                )}
-                
-
-                
-                
+                )}                                                
             </div>
+           
 
             
         

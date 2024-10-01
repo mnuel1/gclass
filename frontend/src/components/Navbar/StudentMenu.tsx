@@ -118,7 +118,14 @@ export const StudentMenu: React.FC<MainMenuProps> = ({ children }) => {
                 <div className="flex items-center gap-2 p-2">
                 <div className="rounded-full w-[40px] flex justify-center p-2 bg-blue-200 font-bold">{firstLetter}</div>
                 <div className="flex flex-col">
-                    <h3 className="font-bold text-lg text-black">{user}</h3>
+                    <h3 className="font-bold text-lg text-black">
+                        {user.split(',').map((part, index) => (
+                            <span key={index}>
+                            {part.trim()}
+                            {index === 0 && ', '}
+                            {index !== 0 && ' '}
+                            </span>
+                        ))}</h3>
                     <span className="text-xs text-gray-400">Student</span>
                 </div>
                 </div>
@@ -189,25 +196,7 @@ export const StudentMenu: React.FC<MainMenuProps> = ({ children }) => {
 
                         <span className={`${collapsed ? 'hidden' : 'sm:block '} text-xs lg:text-lg font-semibold`}> Log-out </span>
                     </div>
-                </div>
-                {/* <NavLink 
-                    to={"assignments"} 
-                    className={({isActive}) => 
-                    isActive ? active : notActive}
-                >
-                    <MdOutlineAssignment className='text-3xl'/>
-                    <span className='text-xs sm:block md:text-md font-bold w-full truncate text-center'> Assignment </span>
-                </NavLink> */}
-                {/* <NavLink 
-                    to={"activity"} 
-                    className={({isActive}) => 
-                    isActive ? active : notActive}
-                >
-                    <IoMdNotificationsOutline className='text-3xl'/>
-                    <span className='text-xs sm:block md:text-md font-bold w-full truncate text-center'> Activity </span>
-                </NavLink>
-            </div>
-
+                </div>                
             {/* Main Content Area */}
                 <div className="bg-gray-200 w-full overflow-auto">
                     <Spinner isLoading={isLoading}>

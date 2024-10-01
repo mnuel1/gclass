@@ -118,7 +118,15 @@ export const TeacherMenu: React.FC<MainMenuProps> = ({ children }) => {
                 <div className="flex items-center gap-2 p-2">
                 <div className="rounded-full w-[40px] flex justify-center p-2 bg-blue-200 font-bold">{firstLetter}</div>
                 <div className="flex flex-col">
-                    <h3 className="font-bold text-lg text-black">{user}</h3>
+                    <h3 className="font-bold text-lg text-black">
+                        {user.split(',').map((part, index) => (
+                            <span key={index}>
+                            {part.trim()}
+                            {index === 0 && ', '}
+                            {index !== 0 && ' '}
+                            </span>
+                        ))}
+                    </h3>
                     <span className="text-xs text-gray-400">Teacher</span>
                 </div>
                 </div>
