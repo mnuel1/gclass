@@ -7,18 +7,18 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true, 
     auth: {
-        user: 'jobportal@resiboph.site',
-        pass: '9@omljoYWV'
+        user: 'edusync@resiboph.site',
+        pass: '|N3qrKEp?'
     }
 });
 
 
 const CreateMeetingService = async (meetingData) => {
-
+    const connection = await db.getConnection()
     try {
         const {class_id, title, start_date} = meetingData
         const link = `http://localhost:5173/meeting/${class_id}/${encodeURIComponent(title)}`
-        const [result] = await db.query(
+        const [result] = await connection.query(
             `
             INSERT INTO class_meetings (class_id, title, link, start_date)
             VALUES (?, ?, ?, ?)`,
@@ -33,7 +33,7 @@ const CreateMeetingService = async (meetingData) => {
             };
         }
 
-        const [getStudentsResult] = await db.query(
+        const [getStudentsResult] = await connection.query(
             `SELECT students.email_address FROM students 
             LEFT JOIN class_students ON class_students.student_id = students.student_id
             WHERE class_students.class_id = ?`,
@@ -43,31 +43,46 @@ const CreateMeetingService = async (meetingData) => {
         const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
         
         const mailOptions = {
-            from: 'jobportal@resiboph.site',
+            from: 'edusync@resiboph.site',
             to: emailAddresses,
             subject: "Meeting now",
             html: `<h4 className='text-sm'>
-            🚨 <strong>Meeting now!</strong><br />
+            <strong>Meeting now!</strong><br />
             <strong>${title}</strong><br />
             Don't forget, we've got a meeting today! Click the link below to join:<br />
-            👉 <a href=${link} target="_blank" rel="noopener noreferrer">Join Meeting</a><br />
+            <a href=${link} target="_blank" rel="noopener noreferrer" style="
+                display: inline-block; 
+                padding: 10px 20px; 
+                font-size: 16px; 
+                color: white; 
+                background-color: #007bff; 
+                border: none; 
+                border-radius: 5px; 
+                text-decoration: none; 
+                text-align: center; 
+                transition: background-color 0.3s, transform 0.2s;
+            ">Join Meeting</a><br />
             See you there!
             </h4>`,            
         };
         
-        try {
-            await transporter.sendMail(mailOptions);
-            console.log('Email sent to all students');
-        } catch (error) {
-            console.error('Failed to send email:', error);
+        if (!transporter.sendMail(mailOptions)) {
+            await connection.rollback()
+            return {
+                error: true
+            }  
+        } else {
+            await connection.commit()
+            return {
+                error: false,
+                succesfull: true,
+                data: []
+            };
+
         }
-    
-        return {
-            error: false,
-            succesfull: true,
-            data: []
-        };
+                            
     } catch (error) {
+        await connection.rollback()
         console.error(error);
         return {
             error: true
@@ -76,10 +91,11 @@ const CreateMeetingService = async (meetingData) => {
 }
 
 const EditMeetingService = async (meetingData) => {
-
+    const connection = await db.getConnection()
     try {
+        
         const {start_date, class_meeting_id, class_id} = meetingData
-        const [result] = await db.query(
+        const [result] = await connection.query(
             `
             UPDATE class_meetings SET start_date = ? WHERE class_meeting_id = ?`,
             [start_date, class_meeting_id]
@@ -93,7 +109,7 @@ const EditMeetingService = async (meetingData) => {
             };
         }
 
-        const [getStudentsResult] = await db.query(
+        const [getStudentsResult] = await connection.query(
             `SELECT students.email_address FROM students 
             LEFT JOIN class_students ON class_students.student_id = students.student_id
             WHERE class_students.class_id = ?`,
@@ -103,33 +119,46 @@ const EditMeetingService = async (meetingData) => {
         const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
         
         const mailOptions = {
-            from: 'jobportal@resiboph.site',
+            from: 'edusync@resiboph.site',
             to: emailAddresses,
             subject: "Meeting now",
             html: `<h4 className='text-sm'>
-            🚨 <strong>Meeting now!</strong><br />
+            <strong>Meeting now!</strong><br />
             <strong>${title}</strong><br />
             Don't forget, we've got a meeting today! Click the link below to join:<br />
-            👉 <a href=${link} target="_blank" rel="noopener noreferrer">Join Meeting</a><br />
+            <a href=${link} target="_blank" rel="noopener noreferrer" style="
+                display: inline-block; 
+                padding: 10px 20px; 
+                font-size: 16px; 
+                color: white; 
+                background-color: #007bff; 
+                border: none; 
+                border-radius: 5px; 
+                text-decoration: none; 
+                text-align: center; 
+                transition: background-color 0.3s, transform 0.2s;
+            ">Join Meeting</a><br />
             See you there!
             </h4>`,            
         };
         
-        try {
-            await transporter.sendMail(mailOptions);
-            console.log('Email sent to all students');
-        } catch (error) {
-            console.error('Failed to send email:', error);
-        }
+        if (!transporter.sendMail(mailOptions)) {
+            await connection.rollback()
+            return {
+                error: true
+            }  
+        } else {
+            await connection.commit()
+            return {
+                error: false,
+                succesfull: true,
+                data: []
+            };
 
-        
-    
-        return {
-            error: false,
-            succesfull: true,
-            data: []
-        };
+        }
+                            
     } catch (error) {
+        await connection.rollback()
         console.error(error);
         return {
             error: true
@@ -203,10 +232,7 @@ const GetMeetingsService = async (teacher_id) => {
         
             return meeting; 
         });
-        
-
-        console.log(res);
-        
+         
         return {
             error: false,
             succesfull: true,

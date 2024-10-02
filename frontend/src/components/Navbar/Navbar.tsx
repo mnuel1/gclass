@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
+import logo from "../../assets/5.png"
 type MainMenuProps = {
     children: React.ReactNode
 }
@@ -13,10 +14,7 @@ export const Navbar:React.FC<MainMenuProps> = ({children}) => {
     const [collapsed, setCollapsed] = useState(false)
     const [isActive, setActive] = useState(window.location.pathname)
     const navigate = useNavigate()
-   
-    
-    console.log(isActive === '/about');
-    
+               
     const navigateHome = (id: string) => {
         setActive(id)
         navigate(id)
@@ -35,7 +33,9 @@ export const Navbar:React.FC<MainMenuProps> = ({children}) => {
                     
                     <div className='flex gap-4 pl-8'>
                         
-                        <a className='text-2xl' href='/#'> APP NAME</a>
+                        <a className='' href='/#'>
+                            <img src={logo} alt="" className='w-32'/>
+                        </a>
                     </div>                                 
                     <div className='flex gap-4 pr-8'>
                         <div

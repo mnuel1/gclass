@@ -13,7 +13,7 @@ const GetActivityService = async (class_id) => {
         const [result] = await db.query(
             `SELECT * FROM activity 
              WHERE class_id = ? 
-             ORDER BY created_time ASC`, 
+             ORDER BY created_time DESC`, 
             [class_id]
         );
 

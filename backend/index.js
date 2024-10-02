@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
+const http = require('http');
 const cors = require("cors");
 const morgan = require("morgan");
 const path = require('path');
+const WebSocket = require('ws')
+const url = require('url');
 
 const uploadRoute = require("./src/Teacher/upload")
 const teacherRoute = require("./src/Teacher/routes/route");
@@ -27,65 +30,75 @@ app.use(searchRoute)
 
 
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on http://localhost:${process.env.PORT}`);  
-});
-
-const clients = [];
+const classes = {};
 
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
-
-wss.on('connection', (ws) => {
-  console.log('A user connected');
-
-  ws.on('message', (message) => {
-    const data = JSON.parse(message);
-    if (data.type === 'register') {
-      clients.push({ id: data.id, role: data.role, socket: ws });
-      console.log(`User registered: ${data.id} as ${data.role}`);
-    }
-  });
-
-  ws.on('close', () => {
-    console.log('User disconnected');
-    // Remove client from the array
-    clients.splice(clients.indexOf(ws), 1);
-  });
-});
 
 
-app.post('/notify', (req, res) => {
-  const { message, studentId } = req.body;
-  console.log(message); // Log the message on the server
 
-  // Find the teacher and send the notification to them only
-  const teacher = clients.find(client => client.role === 'teacher');
-  if (teacher && teacher.socket.readyState === WebSocket.OPEN) {
-    teacher.socket.send(JSON.stringify({ message: `${studentId} is not present!` }));
+const wss = new WebSocket.Server({ noServer: true });
+
+
+wss.on('connection', (ws, queryParams) => {
+  const role = queryParams.get('role');
+  const classId = queryParams.get('classId');
+  const studentId = queryParams.get('studentId');
+  const studentName = queryParams.get('studentName');
+
+
+  if (!classId) {
+    console.error('Class ID is missing!');
+    return;
+  }
+        
+  if (!classes[classId]) {
+    classes[classId] = { teacherSocket: null, students: {} };
   }
 
-  return res.status(200).json({ status: 'Notification sent.' });
+  if (role === 'teacher') {
+    classes[classId].teacherSocket = ws;    
+  } else if (role === 'student') {
+    classes[classId].students[studentId] = 0;    
+    ws.on('message', (message) => {
+            
+      const data = JSON.parse(message.toString());
+      const { action } = data;
+
+      if (action === 'increment') {        
+        classes[classId].students[studentId] += 1;        
+        if (classes[classId].students[studentId] === 3) {
+          const teacherSocket = classes[classId].teacherSocket;
+          if (teacherSocket && teacherSocket.readyState === WebSocket.OPEN) {
+            // Notify the teacher
+            teacherSocket.send(JSON.stringify({
+              type: 'absence_alert',
+              message: `${studentName} has been not detected 3 times.`,
+            }));
+          }
+        }
+      }
+    });
+  }
+
+  ws.on('close', () => {
+    if (role === 'teacher') {      
+      classes[classId].teacherSocket = null;
+    } else if (role === 'student') {      
+      delete classes[classId].students[studentId];
+    }
+  });
 });
 
-// useEffect(() => {
-//   // Connect to WebSocket server
-//   const webSocket = new WebSocket('ws://localhost:5000');
+server.on('upgrade', (request, socket, head) => {
+  
+  const parsedUrl = url.parse(request.url || '', true);
+  const queryParams = new URLSearchParams(parsedUrl.query);
+  
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, queryParams);
+  });
+});
 
-//   webSocket.onmessage = (event) => {
-//     const data = JSON.parse(event.data);
-//     setNotifications((prev) => [...prev, data.message]);
-//   };
-
-//   // Register the user (teacher or student) with the server
-//   webSocket.onopen = () => {
-//     webSocket.send(JSON.stringify({ type: 'register', id: studentId, role }));
-//   };
-
-//   setWs(webSocket);
-
-//   // Cleanup function to close the WebSocket connection when the component unmounts
-//   return () => {
-//     webSocket.close();
-//   };
-// }, [role, studentId]);
+server.listen(process.env.PORT, () => {
+  console.log(`Server is running on http://localhost:${process.env.PORT}`);
+});

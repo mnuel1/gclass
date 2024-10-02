@@ -141,13 +141,13 @@ export const CalendarView: React.FC = () => {
 
 				{/* Show the events for the selected day */}
 				{selectedDate && (
-					<div className="p-4">						
+					<div className="p-4 overflow-hidden">						
 						{getEventsForDay(selectedDate).length > 0 ? (
 							getEventsForDay(selectedDate).map((event, idx) => (
 								<div 
 								key={idx} 								
 								className="flex justify-between 
-								items-center bg-blue-100 p-2 rounded-md my-2 cursor-pointer">
+								items-center bg-blue-100 p-2 rounded-md my-2 cursor-pointer overflow-y-auto">
                                     <div className=''>                                    
                                         <div 
                                         onClick={() => {setEdit(true); setID(event.class_meeting_id); setClassid(event.class_id)}}
@@ -155,7 +155,7 @@ export const CalendarView: React.FC = () => {
                                             <h4 className="font-bold">{event.title}</h4>
                                             <p className="text-gray-600">{event.time}</p>
                                         </div>
-                                    <a className="text-blue-700 hover:underline" href={event.link}> {event.link}</a>
+										<a className="text-blue-700 hover:underline" href={'http://localhost:5172/meeting/1/Schedule%20Test'}>{event.link}</a>
 									</div>
 									<button 
 										onClick={() => {setConfirmDelete(true); setID(event.class_meeting_id)}}

@@ -37,12 +37,12 @@ export const useAddMeeting = () => {
         },
         onError: (error, variables, context) => {           
             console.log(`Error occurred, rolling back optimistic update with id ${error}`);
-            FailedToast("Schedule Meeting Failed")
+            FailedToast("You can't start a meeting now")
             stopLoading()
         },
         onSuccess: (data, variables, context) => {
             console.log("Classroom successfully added:", data);
-            SuccessToast("Schedule Meeting Success!")
+            SuccessToast("Meeting started!")
             stopLoading()         
         }
     });

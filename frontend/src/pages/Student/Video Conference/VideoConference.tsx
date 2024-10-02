@@ -1,106 +1,142 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { api } from '../process/axios';
 import { Authentication } from '../../../Auth/Authentication';
 import { useNavigate } from 'react-router-dom';
 import { FailedToast } from '../../../components/Toast/FailedToast';
 import { SuccessToast } from '../../../components/Toast/SuccessToast';
 import * as faceApi from 'face-api.js';
-import MODEL from '../../../public/models/face_landmark_68_model-weights_manifest.json'
-
 
 export const StudentVideoConference: React.FC = () => {
-  const { getID } = Authentication()
+  const { getID, getUser } = Authentication();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const meetingName = localStorage.getItem('meetingName');
-  const [counter, setCounter] = useState(0)
-  const navigate = useNavigate()
+  const classId = localStorage.getItem('classId');
+  const studentId = getID();
+  const [counter, setCounter] = useState(0);
+  const navigate = useNavigate();
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [isWsOpen, setIsWsOpen] = useState(false);
+  
   useEffect(() => {
-
-    if(!getID()) {
-      navigate("/teacher/login")
+    if (!studentId || !classId) {
+      navigate('/');
     }
 
-    const notifyTeacher = async () => {
-      await api.post('http://localhost:5000/notify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: 'Student is not present!' }),
-      });
-    };
-      
-    // Load Jitsi Meet API script
-    const jitsiScript = document.createElement('script');
-    jitsiScript.src = 'https://8x8.vc/vpaas-magic-cookie-e0064c22ac054806b66d689c7d3af0c6/external_api.js';
-    jitsiScript.async = true;
-    document.body.appendChild(jitsiScript);
-
-    jitsiScript.onload = () => {
-      const api = new (window as any).JitsiMeetExternalAPI("8x8.vc", {
-        roomName: `vpaas-magic-cookie-e0064c22ac054806b66d689c7d3af0c6/${meetingName}`,
-        parentNode: containerRef.current!,
-      });
-            
-      api.addEventListener('videoConferenceJoined', async () => {
-       
-        if (videoRef.current) {
-          const constraints = { video: { facingMode: 'user' } };
-          const stream = await navigator.mediaDevices.getUserMedia(constraints);
-          videoRef.current.srcObject = stream;
-          videoRef.current.play();
-
-          // Function to load face-api.js models
-          const loadModels = async () => {         
-            await faceApi.loadSsdMobilenetv1Model('/models')
-            await faceApi.loadFaceLandmarkModel('/models')
-            await faceApi.loadFaceRecognitionModel('/models')
-            console.log("Models loaded");
-          };
-
-          // Function to detect faces
-          const detectFaces = async () => {
-            if (videoRef.current) {
-              const canvas = faceApi.createCanvasFromMedia(videoRef.current);
-              document.body.append(canvas);
-              faceApi.matchDimensions(canvas, videoRef.current);
-
-              const detections = await faceApi.detectAllFaces(videoRef.current, new faceApi.SsdMobilenetv1Options())
-                .withFaceLandmarks().withFaceDescriptors();                                          
-
-              if (detections.length > 0) {
-                SuccessToast("You are present")
-              } else {
-                FailedToast("You are not present")
-                if (counter === 3) {
-                  notifyTeacher()
-                } else {
-                  setCounter(prev => prev+1)
-                }
-                
-              }
-            }
-          };
-
-          await loadModels();
-          setInterval(detectFaces, 5000);
-        }
-      });
-    };
+    const socket = new WebSocket(`ws://localhost:4000?role=student&classId=${classId}&studentId=${studentId}&studentName=${getUser()}`);
+    
+    setWs(socket);
+    
+    socket.addEventListener('open', () => {
+      console.log('WebSocket connection established');
+      setIsWsOpen(true); 
+    });
+    
+    socket.addEventListener('close', () => {
+      console.log('WebSocket connection closed');
+      setIsWsOpen(false); 
+    });
+    
+    socket.addEventListener('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
 
     return () => {
-      // Cleanup the script elements
-      // document.body.removeChild(faceApiScript);
-      document.body.removeChild(jitsiScript);
+      // socket.close();
     };
-  }, []);
+  }, [classId, studentId]);
+
+  useEffect(() => {
+    if (!getID()) {
+      navigate('/teacher/login');
+    }
+
+    const handleIncrement = () => {
+      setCounter((prevCount) => {
+        if (prevCount === 3) {
+          return 3;
+        }
+        const newCount = prevCount + 1;
+      
+        if (ws && isWsOpen && ws.readyState === WebSocket.OPEN) {
+          console.log('Sending increment action');
+          ws.send(JSON.stringify({ action: 'increment' }));
+        } else {
+          console.log('WebSocket is not open. Ready state:', ws?.readyState);
+        }
+
+        return newCount;
+      });
+    };
+
+    if (isWsOpen) {
+      const jitsiScriptSource = 'https://8x8.vc/vpaas-magic-cookie-f7d524abd18843e8bf062651dd1d8ea8/external_api.js';
+      
+      const existingJitsiScript = document.querySelector(`script[src="${jitsiScriptSource}"]`);
+      if (existingJitsiScript) return;
+      
+      const jitsiScript = document.createElement('script');
+      jitsiScript.src = jitsiScriptSource;
+      jitsiScript.async = true;
+      document.body.appendChild(jitsiScript);
+
+      jitsiScript.onload = () => {
+        const api = new (window as any).JitsiMeetExternalAPI('8x8.vc', {
+          roomName: `vpaas-magic-cookie-f7d524abd18843e8bf062651dd1d8ea8/${meetingName}`,
+          parentNode: containerRef.current!
+        });
+
+        api.addEventListener('videoConferenceJoined', async () => {
+          if (videoRef.current) {
+            const constraints = { video: { facingMode: 'user' } };
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            videoRef.current.srcObject = stream;
+            videoRef.current.play();
+            
+            const loadModels = async () => {
+              await faceApi.loadSsdMobilenetv1Model('/models');
+              await faceApi.loadFaceLandmarkModel('/models');
+              await faceApi.loadFaceRecognitionModel('/models');
+              console.log('Models loaded');
+            };
+            
+            const detectFaces = async () => {
+              if (videoRef.current) {
+                const canvas = faceApi.createCanvasFromMedia(videoRef.current);
+                document.body.append(canvas);
+                faceApi.matchDimensions(canvas, videoRef.current);
+
+                const detections = await faceApi.detectAllFaces(
+                  videoRef.current,
+                  new faceApi.SsdMobilenetv1Options()
+                ).withFaceLandmarks().withFaceDescriptors();
+
+                if (detections.length > 0) {
+                  SuccessToast('You are present');
+                } else {
+                  FailedToast('You are not present');
+                  handleIncrement();
+                }
+              }
+            };
+
+            await loadModels();
+            setInterval(detectFaces, 5000);
+          }
+        });
+      };
+      return () => {
+        // Cleanup the script elements
+        document.body.removeChild(jitsiScript);
+      };
+
+    }        
+  }, [isWsOpen]);
 
   return (
-    <div style={{ height: '100vh', width: '100vw', position: 'relative'}} className=''>
+    <div style={{ height: '100vh', width: '100vw', position: 'relative' }}>
       <div ref={containerRef} style={{ height: '100%', width: '100%' }}></div>
-      <video ref={videoRef} style={{ display: 'none' }} />    
-    </div>
+      <video ref={videoRef} style={{ display: 'none' }} />
+    </div> 
   );
 };

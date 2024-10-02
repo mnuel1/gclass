@@ -16,8 +16,8 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true, 
     auth: {
-        user: 'jobportal@resiboph.site',
-        pass: '9@omljoYWV'
+        user: 'edusync@resiboph.site',
+        pass: '|N3qrKEp?'
     }
 });
 
@@ -27,7 +27,7 @@ const GetActivityService = async (class_id) => {
         const [result] = await db.query(
             `SELECT * FROM activity 
              WHERE class_id = ? 
-             ORDER BY created_time ASC`, 
+             ORDER BY created_time DESC`, 
             [class_id]
         );
 
@@ -67,71 +67,105 @@ const GetActivityService = async (class_id) => {
 
 const CreateMeetingActivityService = async (meetingData) => {
 
+    const connection = await db.getConnection();
     try {
-        const {class_id, title} = meetingData
-        const link = `http://localhost:5173/meeting/${class_id}/${encodeURIComponent(title)}`
-        const post = `<h4 className='text-sm'>
-            🚨 <strong>Meeting now!</strong><br />
+        const { class_id, title } = meetingData;
+        const link = `http://localhost:5173/meeting/${class_id}/${encodeURIComponent(title)}`;
+        
+        const post = `<h4 class='text-sm'>
+            <strong>Meeting now!</strong><br />
             <strong>${title}</strong><br />
             Don't forget, we've got a meeting today! Click the link below to join:<br />
-            👉 <a href=${link} target="_blank" rel="noopener noreferrer">Join Meeting</a><br />
+            <a href=${link} target="_blank" rel="noopener noreferrer" style="
+                display: inline-block; 
+                padding: 10px 20px; 
+                font-size: 16px; 
+                color: white; 
+                background-color: #007bff; 
+                border: none; 
+                border-radius: 5px; 
+                text-decoration: none; 
+                text-align: center; 
+                transition: background-color 0.3s, transform 0.2s;
+            ">Join Meeting</a><br />
             See you there!
-            </h4>`
+            </h4>`;
         
-        const [result] = await db.query(
+        const [result] = await connection.query(
             `
             INSERT INTO activity (class_id, posts)
             VALUES (?, ?)`,
             [class_id, post]
-        )
+        );
 
-        if (!result.affectedRows) {
+        if (!result.affectedRows) {  
+            await connection.rollback();          
             return { 
                 error: false,
-                succesfull: false,
+                succesfull: false, 
                 data: []
             };
         }
 
-        const [getStudentsResult] = await db.query(
+        const [getStudentsResult] = await connection.query(
             `SELECT students.email_address FROM students 
             LEFT JOIN class_students ON class_students.student_id = students.student_id
             WHERE class_students.class_id = ?`,
             [class_id]
-        )
-        
+        );
+
         const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
-        
+
         const mailOptions = {
-            from: 'jobportal@resiboph.site',
+            from: 'edusync@resiboph.site',
             to: emailAddresses,
             subject: "Meeting now",
-            html: `<h4 className='text-sm'>
-            🚨 <strong>Meeting now!</strong><br />
+            html: `<h4 class='text-sm'>
+            <strong>Meeting now!</strong><br />
             <strong>${title}</strong><br />
             Don't forget, we've got a meeting today! Click the link below to join:<br />
-            👉 <a href=${link} target="_blank" rel="noopener noreferrer">Join Meeting</a><br />
+            <a href="${link}" target="_blank" rel="noopener noreferrer" style="
+                display: inline-block; 
+                padding: 10px 20px; 
+                font-size: 16px; 
+                color: white; 
+                background-color: #007bff; 
+                border: none; 
+                border-radius: 5px; 
+                text-decoration: none; 
+                text-align: center; 
+                transition: background-color 0.3s, transform 0.2s;
+            ">Join Meeting</a>
+            <br />
             See you there!
             </h4>`,            
         };
+
         
-        try {
-            await transporter.sendMail(mailOptions);
-            console.log('Email sent to all students');
-        } catch (error) {
-            console.error('Failed to send email:', error);
+        const emailResult = await transporter.sendMail(mailOptions); 
+        if (!emailResult) {
+            await connection.rollback();
+            console.log("error send email");
+            
+            return {
+                error: true,
+                message: "Failed to send email."
+            };  
+        } else {
+            await connection.commit();
+            return {
+                error: false,
+                succesfull: true, 
+                data: []
+            };
         }
-    
-        return {
-            error: false,
-            succesfull: true,
-            data: []
-        };
     } catch (error) {
-        console.error(error);
+        await connection.rollback();
+        console.error('Error:', error);
         return {
-            error: true
-        }            
+            error: true,
+            message: error.message || 'An unknown error occurred.'
+        };            
     }
 }
 

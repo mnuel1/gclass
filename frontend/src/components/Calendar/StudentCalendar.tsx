@@ -103,13 +103,13 @@ export const CalendarView: React.FC = () => {
 
 				{/* Show the events for the selected day */}
 				{selectedDate && (
-					<div className="p-4">						
+					<div className="p-4 overflow-hidden">						
 						{getEventsForDay(selectedDate).length > 0 ? (
 							getEventsForDay(selectedDate).map((event, idx) => (
 								<div 
 								key={idx} 								
 								className="flex justify-between 
-								items-center bg-blue-100 p-2 rounded-md my-2 cursor-pointer">
+								items-center bg-blue-100 p-2 rounded-md my-2 cursor-pointer overflow-y-auto">
 									<div className=''>                                    
                                         <div                                        
                                         className='grow'>

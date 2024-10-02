@@ -37,7 +37,7 @@ export const ClassroomView: React.FC = () => {
         }
 
         try {
-            addMeetingMutation.mutate(data)
+            addMeetingMutation.mutateAsync(data)
         } catch (error) {
             FailedToast("Someting went wrong!")
         } finally {
