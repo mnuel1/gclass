@@ -83,7 +83,17 @@ export const StudentVideoConference: React.FC = () => {
       jitsiScript.onload = () => {
         const api = new (window as any).JitsiMeetExternalAPI('8x8.vc', {
           roomName: `vpaas-magic-cookie-f7d524abd18843e8bf062651dd1d8ea8/${meetingName}`,
-          parentNode: containerRef.current!
+          parentNode: containerRef.current!,
+          configOverwrite: {            
+            disableInviteFunctions: true,
+          },
+          interfaceConfigOverwrite: {            
+            DISABLE_INVITE: true,            
+            TOOLBAR_BUTTONS: [
+              'microphone', 'camera', 'chat', 'desktop', 'fullscreen', 'hangup', 'profile', 'recording', 'settings',
+              'videoquality', 'stats', 'shortcuts', 'tileview', 'select-background', 'mute-everyone', 'mute-video-everyone'
+            ],
+          },
         });
 
         api.addEventListener('videoConferenceJoined', async () => {
