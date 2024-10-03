@@ -49,8 +49,8 @@ export const StudentAccountSettings: React.FC = () => {
                 sessionStorage.setItem('user', JSON.stringify(user));
                 sessionStorage.setItem('email', JSON.stringify(email));
                 SuccessToast("Account updated!")
-
                 setEdit(false);
+                window.location.reload();
                
             } else {
                 FailedToast("Acount update failed!")
