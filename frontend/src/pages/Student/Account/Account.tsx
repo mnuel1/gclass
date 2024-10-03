@@ -45,7 +45,11 @@ export const StudentAccountSettings: React.FC = () => {
             });
                         
             if (response.status === 200) {
+                const user = `${lastName}, ${firstName}, ${middleName}`
+                sessionStorage.setItem('user', JSON.stringify(user));
+                sessionStorage.setItem('email', JSON.stringify(email));
                 SuccessToast("Account updated!")
+
                 setEdit(false);
                
             } else {
