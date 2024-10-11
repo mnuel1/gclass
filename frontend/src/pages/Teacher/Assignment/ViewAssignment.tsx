@@ -185,12 +185,14 @@ export const ViewAssignment:React.FC = () => {
                                     
                     if (response.status === 200) {                    
                         editAssignmentMutation.mutate(data)
-                        navigate(-1)
+                        window.location.reload()
+                        navigate(-1)                        
                     } else {
                         FailedToast("Something went wrong!")
                     }
                 } else {
                     editAssignmentMutation.mutate(data)
+                    window.location.reload()
                     navigate(-1)
                 }
                
@@ -210,7 +212,8 @@ export const ViewAssignment:React.FC = () => {
     const deleteAssignmentMutation = useDeleteAssignment()
     const handleRemoveAssignment = (assignment_id : string) => {
        
-        deleteAssignmentMutation.mutate(assignment_id)       
+        deleteAssignmentMutation.mutate(assignment_id)
+        window.location.reload()       
         navigate(-1);
     }
 
@@ -237,6 +240,7 @@ export const ViewAssignment:React.FC = () => {
             "assignment_id" : ass.assignment_id
         }
         gradeAssignmentMutation.mutate(data)
+        window.location.reload()
         
         console.log(`Submitting grade ${grade} for student ${student_id}`);
             

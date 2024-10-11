@@ -88,7 +88,7 @@ export const CreateSchedule:React.FC = () => {
         if (Object.keys(validationErrors).length === 0) {
             form.start_date = createTimestamp()
             addMeetingMutation.mutate(form)
-           
+            window.location.reload()
 
         } else {
             setErrors(validationErrors);

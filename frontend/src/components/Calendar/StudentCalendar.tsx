@@ -114,7 +114,15 @@ export const CalendarView: React.FC = () => {
                                         <div                                        
                                         className='grow'>
                                             <h4 className="font-bold">{event.title}</h4>
-                                            <p className="text-gray-600">{event.time}</p>
+                                            <p className="text-gray-600">{(() => {
+											let [hour, minute] = event.time.split(':');
+											hour = parseInt(hour);
+										
+											let ampm = hour >= 12 ? 'PM' : 'AM';
+											hour = hour % 12 || 12; // Convert hour to 12-hour format
+										
+											return `${hour}:${minute} ${ampm}`;
+											})()}</p>
                                         </div>
                                     <a className="text-blue-700 hover:underline" href={event.link}>{event.link}</a>
 									</div>
@@ -194,7 +202,15 @@ export const CalendarView: React.FC = () => {
 													{getEventsForDay(day).map((event, idx) => (
 														<div key={idx} className="flex justify-between text-sm bg-blue-300 p-1 rounded-lg">
 															<span className="font-bold">{event.title}</span>
-															<span className="text-gray-500 font-semibold">{event.time}</span>
+															<span className="text-gray-500 font-semibold">{(() => {
+															let [hour, minute] = event.time.split(':');
+															hour = parseInt(hour);
+														
+															let ampm = hour >= 12 ? 'PM' : 'AM';
+															hour = hour % 12 || 12; // Convert hour to 12-hour format
+														
+															return `${hour}:${minute} ${ampm}`;
+															})()}</span>
 														</div>
 													))}
 												</div>

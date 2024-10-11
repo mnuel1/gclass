@@ -71,14 +71,14 @@ export const AddMember:React.FC = () => {
 
     const addMembersMutation = useAddMember()
     const handleSave = () => {
-        console.log(classroom);
-        
+                
         const data = {
             class_id: classroom.class_id,
             members: members
         }
         
         addMembersMutation.mutate(data)
+        window.location.reload()
         
     }
 

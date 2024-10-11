@@ -75,12 +75,7 @@ export const Assignments:React.FC = () => {
             
 
             <div className='pb-24 pl-4 pr-4 pt-4 m-6 overflow-y-auto h-full'>
-                {/* <div className='flex gap-4'>
-                    <button onClick={() => handleFilter("pending")}className={active === 'pending' ? aactive : notActive}>Pending</button>
-                    <button onClick={() => handleFilter("past")}className={active === 'past' ? aactive : notActive}>Past Due</button>
-                    <button onClick={() => handleFilter("complete")}className={active === 'complete' ? aactive : notActive}>Completed</button>
-                </div> */}
-
+              
                 {!isEmpty ? ( Object.entries(assignment).map(([startDate, ass]) => (
                     <>
                         <div key={startDate} className='flex justify-center items-center border-b-2 border-gray-300'>

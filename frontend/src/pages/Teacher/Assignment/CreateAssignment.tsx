@@ -170,7 +170,7 @@ export const CreateAssignment:React.FC = () => {
             }
             
             addAssignmentMutation.mutate(data)
-            
+            window.location.reload()
             
         } else {
             setErrors(validationErrors);

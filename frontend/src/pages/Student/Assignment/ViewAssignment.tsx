@@ -87,8 +87,9 @@ export const StudentViewAssignment:React.FC = () => {
                 }
                     
                 if (response.status === 200) {
-                    SuccessToast("Assignment Submitted!")
+                    SuccessToast("Assignment Submitted!")                    
                     stopLoading()
+                    window.location.reload()
                     navigate(-1)
                   
                 } else {                    

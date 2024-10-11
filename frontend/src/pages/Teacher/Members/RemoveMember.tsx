@@ -45,7 +45,8 @@ export const RemoveMember: React.FC = () => {
         }
         removeMemberMutation.mutate(data)
         setConfirm(false)
-    }
+        window.location.reload()
+    }   
 
     return (
         <>

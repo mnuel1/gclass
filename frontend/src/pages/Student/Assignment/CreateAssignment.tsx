@@ -171,6 +171,7 @@ export const CreateAssignment:React.FC = () => {
 
             }      
             addAssignmentMutation.mutate(data)
+            window.location.reload()
             navigate(-1);
             stopLoading()
 
