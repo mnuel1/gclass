@@ -67,9 +67,11 @@ export const LandingPage: React.FC = () => {
                             
                             <div className="absolute 
                                 bottom-[calc(100vh-850px)] 
-                                md:bottom-[calc(100vh-780px)] 
+                                sm:bottom-[calc(100vh-750px)] 
+                                md:bottom-[calc(100vh-770px)] 
                                 lg:bottom-[calc(100vh-720px)] 
-                                xl:bottom-[calc(100vh-820px)] 
+                                xl:bottom-[calc(100vh-790px)] 
+                               
                                 left-1/2 transform -translate-x-1/2 flex flex-col md:flex-row justify-center gap-4 z-20">
                                 <a
                                     className="block rounded bg-blue-600 px-2 lg:px-12 py-3 text-xs md:text-sm font-medium  

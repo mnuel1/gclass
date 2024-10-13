@@ -124,7 +124,7 @@ export const CalendarView: React.FC = () => {
 											return `${hour}:${minute} ${ampm}`;
 											})()}</p>
                                         </div>
-                                    <a className="text-blue-700 hover:underline" href={event.link}>{event.link}</a>
+                                    <a className="text-blue-700 hover:underline" href={event.link}>Meeting Link</a>
 									</div>
 								</div>
 							))

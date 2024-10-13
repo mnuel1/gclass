@@ -47,12 +47,13 @@ const CreateMeetingService = async (meetingData) => {
             to: emailAddresses,
             subject: "Meeting now",
             html: `<h4 className='text-sm'>
-            <strong>Meeting now!</strong><br />
+            <strong>Meeting now!</strong> 
             <strong>${title}</strong><br />
             Don't forget, we've got a meeting today! Click the link below to join:<br />
             <a href=${link} target="_blank" rel="noopener noreferrer" style="
                 display: inline-block; 
-                padding: 10px 20px; 
+                margin-top:2px;
+                padding: 8px 14px; 
                 font-size: 16px; 
                 color: white; 
                 background-color: #007bff; 
@@ -62,7 +63,7 @@ const CreateMeetingService = async (meetingData) => {
                 text-align: center; 
                 transition: background-color 0.3s, transform 0.2s;
             ">Join Meeting</a><br />
-            See you there!
+            
             </h4>`,            
         };
         

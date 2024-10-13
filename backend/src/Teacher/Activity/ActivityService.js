@@ -107,6 +107,22 @@ const CreateMeetingActivityService = async (meetingData) => {
             };
         }
 
+        const [calendarResult] = await connection.query(
+            `
+            INSERT INTO class_meetings (class_id, title, link)
+            VALUES (?, ?, ?)`,
+            [class_id, title, link]
+        )
+
+        if (!calendarResult.affectedRows) {
+            await connection.rollback();          
+            return { 
+                error: false,
+                succesfull: false,
+                data: []
+            };
+        }
+
         const [getStudentsResult] = await connection.query(
             `SELECT students.email_address FROM students 
             LEFT JOIN class_students ON class_students.student_id = students.student_id

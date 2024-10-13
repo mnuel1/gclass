@@ -70,7 +70,7 @@ export const StudentVideoConference: React.FC = () => {
     };
 
     if (isWsOpen) {
-      const jitsiScriptSource = 'https://8x8.vc/vpaas-magic-cookie-f7d524abd18843e8bf062651dd1d8ea8/external_api.js';
+      const jitsiScriptSource = 'https://8x8.vc/vpaas-magic-cookie-e0064c22ac054806b66d689c7d3af0c6/external_api.js';
       
       const existingJitsiScript = document.querySelector(`script[src="${jitsiScriptSource}"]`);
       if (existingJitsiScript) return;
@@ -82,7 +82,7 @@ export const StudentVideoConference: React.FC = () => {
 
       jitsiScript.onload = () => {
         const api = new (window as any).JitsiMeetExternalAPI('8x8.vc', {
-          roomName: `vpaas-magic-cookie-f7d524abd18843e8bf062651dd1d8ea8/${meetingName}`,
+          roomName: `vpaas-magic-cookie-e0064c22ac054806b66d689c7d3af0c6/${meetingName}`,
           parentNode: containerRef.current!,
           configOverwrite: {            
             disableInviteFunctions: true,
@@ -121,7 +121,7 @@ export const StudentVideoConference: React.FC = () => {
                   new faceApi.SsdMobilenetv1Options()
                 ).withFaceLandmarks().withFaceDescriptors();
 
-                if (detections.length > 0) {
+                if (detections.length > 0 && counter !== 3) {
                   SuccessToast('You are present');
                 } else {
                   FailedToast('You are not present');
@@ -134,6 +134,10 @@ export const StudentVideoConference: React.FC = () => {
             setInterval(detectFaces, 5000);
           }
         });
+
+        api.addEventListener('videoConferenceLeft', () => {
+          window.close();
+        })
       };
       return () => {
         // Cleanup the script elements

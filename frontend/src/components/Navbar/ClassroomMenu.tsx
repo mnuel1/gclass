@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 import { MoreModal } from '../Modal/More'
+import { Clipboard } from '../Clipboard/Clipboard'
 import { ClassroomTypes } from '../../process/Classroom/classroomTypes'
 
 const active = 'h-[2rem] text-sm bg-gray-200 text-gray-500 text-left px-6'
@@ -53,8 +54,13 @@ export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
 
                     <div className='flex items-center justify-between mx-6 my-2 relative'>
                         <h1 className='text-xl font-bold'>{classroom?.name}</h1>
-
-                        {isStudent !== 'student' && <MoreModal class_id={classroom?.class_id || ""}/>}
+                        
+                        <div className='flex gap-4'>
+                            {isStudent !== 'student' && <Clipboard/> }
+                            {isStudent !== 'student' && <MoreModal class_id={classroom?.class_id || ""}/>}
+                            
+                        </div>
+                        
                     </div>
 
                     <div className='flex flex-col '>

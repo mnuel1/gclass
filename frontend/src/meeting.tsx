@@ -9,7 +9,13 @@ const MeetingPage = () => {
     
     
     useEffect(() => {
-        // Redirect based on user role        
+        // Redirect based on user role
+        console.log(getRole());
+
+        if (getRole() === null ) {
+            navigate(-1)
+        }
+                
         const meet_name = decodeURIComponent(meeting_name || "");
         if (getRole() === 'Teacher') {
                         
@@ -23,7 +29,7 @@ const MeetingPage = () => {
             localStorage.setItem('classId', class_id || "");            
             window.open(`/student/${getID()}/class/${class_id}/meeting`, '_blank');
             navigate(-1)
-        }
+        } 
     }, [getRole(), navigate, class_id, meeting_name]);
 
     return null; // No need to render anything as you are redirecting

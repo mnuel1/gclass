@@ -21,9 +21,8 @@ export const PostBlock:React.FC<Props> = ({teacher_name, posts, formatted_create
                         </div>
 
                         <div className="meeting-post" dangerouslySetInnerHTML={{ __html: posts }} />
-                    </div>
-                    
-            </div>
+                    </div>                                
+                </div>
 
             </div>
         

@@ -16,7 +16,8 @@ interface Participant {
 export const VideoConference: React.FC = () => {
   const { getID } = Authentication()
   const [participants, setParticipants] = useState<Participant[]>([]);
-  
+  const participantsRef = useRef<Participant[]>([]);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const meetingName = localStorage.getItem('meetingName');
@@ -73,45 +74,67 @@ export const VideoConference: React.FC = () => {
         const api = new (window as any).JitsiMeetExternalAPI("8x8.vc", {
           roomName: `vpaas-magic-cookie-e0064c22ac054806b66d689c7d3af0c6/${meetingName}`,
           parentNode: containerRef.current!,
+          configOverwrite: {            
+            disableInviteFunctions: true,
+          },
+          interfaceConfigOverwrite: {            
+            DISABLE_INVITE: true,            
+            TOOLBAR_BUTTONS: [
+              'microphone', 'camera', 'chat', 'desktop', 'fullscreen', 'hangup', 'profile', 'recording', 'settings',
+              'videoquality', 'stats', 'shortcuts', 'tileview', 'select-background', 'mute-everyone', 'mute-video-everyone'
+            ],
+          },
+          
         });
 
-        api.addEventListener('participantJoined', (participant: any) => {
+        api.addEventListener('participantJoined', (participant: any) => {              
+          console.log(participant);
+                                    
           const newParticipant: Participant = {
             id: participant.id,
             name: participant.displayName || 'Anonymous',
             joined_time: new Date(),
             leave_time: null,
           };
-          setParticipants((prevParticipants) => [...prevParticipants, newParticipant]);
+          console.log(newParticipant);
+          setParticipants((prevParticipants) => {
+            const updatedParticipants = [...prevParticipants, newParticipant];
+            participantsRef.current = updatedParticipants; // Update the ref
+            return updatedParticipants;
+          });
+          console.log(participant);
         });
 
         api.addEventListener('participantLeft', (participant: any) => {
-          setParticipants((prevParticipants) =>
-            prevParticipants.map(p => 
-              p.id === participant.id 
-                ? { ...p, leave_time: new Date() } 
-                : p
-            )
-          );
+          setParticipants((prevParticipants) => {
+            const updatedParticipants = prevParticipants.map((p) =>
+              p.id === participant.id ? { ...p, leave_time: new Date() } : p
+            );
+            participantsRef.current = updatedParticipants; // Update the ref
+            return updatedParticipants;
+          });
         });
 
         api.addEventListener('videoConferenceLeft', () => {
           
-          // Create Excel file on meeting end
-          const worksheet = XLSX.utils.json_to_sheet(participants.map(p => ({
-            ID: p.id,
-            Name: p.name,
-            JoinedTime: p.joined_time.toISOString(),
-            LeaveTime: p.leave_time ? p.leave_time.toISOString() : 'Still in the meeting',
-          })));
+          const participantsList = participantsRef.current; // Use the ref to get the latest participants
+
+          const worksheet = XLSX.utils.json_to_sheet(
+            participantsList.map((p) => ({
+              ID: p.id,
+              Name: p.name,
+              JoinedTime: p.joined_time.toISOString(),
+              LeaveTime: p.leave_time ? p.leave_time.toISOString() : 'Still in the meeting',
+            }))
+          );
+
           const workbook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
-          
-          // Generate file
-          XLSX.writeFile(workbook, `${meetingName}-${new Date()}.xlsx`);
-                  
+
+          XLSX.writeFile(workbook, `${meetingName}-${new Date().toISOString()}.xlsx`);
+
           // Close the tab after the meeting ends
-          window.close();
+          // window.close();
         });
 
         api.addEventListener('videoConferenceJoined', async () => {
