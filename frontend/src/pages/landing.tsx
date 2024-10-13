@@ -18,7 +18,7 @@ export const LandingPage: React.FC = () => {
         {            
             text: 'Enhance Your Learning Experience',
             sub: "Stay Organized, Stay Connected",
-            context: "Join your classes, access assignments, and collaborate with classmates—all in one place. Learning has never been easier."
+            context: "Join your classes, access assignments, and collaborate with classmates—all in one place."
         },
         {            
             text: 'Access your assignments with ease.',
@@ -28,7 +28,7 @@ export const LandingPage: React.FC = () => {
         {            
             text: 'Engage in Interactive Learning.',
             sub: "Experience Learning Like Never Before",
-            context: "Participate in live discussions, access diverse learning resources, and benefit from personalized support to boost your success."
+            context: "Participate in live discussions, access learning resources, and benefit from personalized support to boost your success."
         },
     ];
     
@@ -65,7 +65,12 @@ export const LandingPage: React.FC = () => {
                                 ))}
                             </Slider>
                             
-                            <div className="absolute bottom-[calc(100vh-800px)] left-1/2 transform -translate-x-1/2 flex flex-col md:flex-row justify-center gap-4 z-20">
+                            <div className="absolute 
+                                bottom-[calc(100vh-850px)] 
+                                md:bottom-[calc(100vh-780px)] 
+                                lg:bottom-[calc(100vh-720px)] 
+                                xl:bottom-[calc(100vh-820px)] 
+                                left-1/2 transform -translate-x-1/2 flex flex-col md:flex-row justify-center gap-4 z-20">
                                 <a
                                     className="block rounded bg-blue-600 px-2 lg:px-12 py-3 text-xs md:text-sm font-medium  
                                     text-white shadow hover:bg-blue-700 focus:outline-none focus:ring active:bg-blue-500 sm:w-auto"
