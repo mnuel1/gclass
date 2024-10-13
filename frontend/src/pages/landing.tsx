@@ -69,7 +69,7 @@ export const LandingPage: React.FC = () => {
                                 <a
                                     className="block rounded bg-blue-600 px-2 lg:px-12 py-3 text-xs md:text-sm font-medium  
                                     text-white shadow hover:bg-blue-700 focus:outline-none focus:ring active:bg-blue-500 sm:w-auto"
-                                    href="#"
+                                    href="/sign-up"
                                 >
                                     Create Account
                                 </a>

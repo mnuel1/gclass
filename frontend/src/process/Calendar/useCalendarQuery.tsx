@@ -16,7 +16,7 @@ export const useMeetingQuery = (class_id: string) => {
         queryKey: ['meeting', class_id],
         queryFn: () => fetchMeetingService(class_id),
         staleTime: 1000 * 60 * 5,
-        // refetchOnWindowFocus: false,
+        refetchOnWindowFocus: false,
     })
     const isEmpty = isSuccess && (!data || data.length === 0);
     

@@ -104,16 +104,16 @@ const GetMeetings = async (req, res) => {
         const getMeetingResult = await GetMeetingsService(teacher_id)
 
         if (!getMeetingResult.succesfull) {
-            return res.status(400).json({ 
-                title: "Schedule Meeting Failed", 
-                message: "New assignment was not created.",
+            return res.status(200).json({ 
+                title: "No meeting", 
+                message: "no meeting.",
                 data: []
             });
         }
 
         return res.status(200).json({ 
-            title: "New meeting Created", 
-            message: `The new meeting was succesfully created`,
+            title: "Meeting found", 
+            message: `meeting found`,
             data: getMeetingResult.data
             
         });
