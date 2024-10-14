@@ -121,6 +121,8 @@ export const StudentViewAssignment:React.FC = () => {
           {isLate ? "Late Turned In" : (isTurnedIn ? "Turned In again" : (isPending ? "Turned In" : (isNotTurnedIn ? "Late Turned In" : "")))}
         </button>
       );
+            
+      
     return (
         <>
             {confirm && <ConfirmModal onClose={() => setConfirm(false)} id='' onConfirm={handleSubmit} />}
@@ -158,17 +160,17 @@ export const StudentViewAssignment:React.FC = () => {
                    
                     <div className='border border-gray-200 p-4 rounded-lg flex flex-col'>
                     
-                        {ass.attachment && (                       
+                        {ass.attachments && (                       
                             <Accordion name='Attachment Preview'>
-                                {ass.attachment.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+                                {ass.attachments.match(/\.(jpg|jpeg|png|gif)$/i) ? (
                                     <img 
-                                        src={`${SERVER}/${ass.attachment}`} 
+                                        src={`${SERVER}/${ass.attachments}`} 
                                         alt={`Preview of ${ass.assignment_id}`} 
                                         style={{ width: '100%', maxWidth: '600px', height: 'auto' }} 
                                     />
-                                ) : ass.attachment.match(/\.pdf$/i) ? (
+                                ) : ass.attachments.match(/\.pdf$/i) ? (
                                     <iframe 
-                                        src={`${SERVER}/${ass.attachment}`} 
+                                        src={`${SERVER}/${ass.attachments}`} 
                                         width="100%" 
                                         height="600px" 
                                         title="PDF Preview"
@@ -178,7 +180,7 @@ export const StudentViewAssignment:React.FC = () => {
                                 )}                        
                             </Accordion>
                         )}
-                        {!ass.attachment && 
+                        {!ass.attachments || edit && 
                             <>
                                 <span className='text-xs italic text-gray-400'>Insert your answer here.</span>
                                 <input                         
@@ -195,7 +197,7 @@ export const StudentViewAssignment:React.FC = () => {
                     <>
                         {!isReturned && (
                         <div className='flex gap-4'>
-                            {isTurnedIn && !edit && (
+                            {(isTurnedIn || isLate) && !edit && (
                             <>
                                 <button
                                 onClick={() => setEdit(true)}
@@ -206,13 +208,13 @@ export const StudentViewAssignment:React.FC = () => {
                             </>
                             )}
                             
-                            {!isTurnedIn && (
+                            {!isTurnedIn || !isLate && (
                             <>
                                 {renderSubmitButton()}
                             </>
                             )}
                             
-                            {isTurnedIn && edit && (
+                            {(isTurnedIn || isLate) && edit && (
                             <>
                                 {renderSubmitButton()}
                                 <button

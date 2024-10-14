@@ -6,10 +6,10 @@ interface ModalProps {
     class_id: string;
   }
 
-export const EditModal: React.FC<ModalProps> = ({ onClose, class_id, onSubmit }) => {
+export const EditModal: React.FC<ModalProps> = ({ onClose, class_id, classname, classdescription, onSubmit }) => {
     
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+    const [name, setName] = useState(classname);
+    const [description, setDescription] = useState(classdescription);
 
     
     const handleSubmit = () => {

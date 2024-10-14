@@ -78,7 +78,7 @@ export const AddMember:React.FC = () => {
         }
         
         addMembersMutation.mutate(data)
-        window.location.reload()
+        
         
     }
 

@@ -60,7 +60,7 @@ export const useAssignedStudentsWorkQuery = (assignment_id:string) => {
 export const useGradeAssignment = () => {
     const { editGrade } = useAssignmentStore()
     const { startLoading, stopLoading} = useModalStore()
-       
+    const navigate = useNavigate()
     return useMutation({
         mutationFn: async (data: AssignmentType) => {
             startLoading()
@@ -85,7 +85,8 @@ export const useGradeAssignment = () => {
             editGrade(variables)                    
             SuccessToast("Assignment returned!")
             console.log("Classroom successfully added:", data);
-            stopLoading()           
+            stopLoading() 
+            navigate(-1)
                        
         }
     });

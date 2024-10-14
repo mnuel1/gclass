@@ -37,8 +37,10 @@ export const StudentClassroomView: React.FC = () => {
         if (isError) {            
             FailedToast("Something went wrong!")
         }
+        
     }, [data, isSuccess, getActivity, isError]);
 
+    
     
     return (
         <>
@@ -62,13 +64,13 @@ export const StudentClassroomView: React.FC = () => {
                                 teacher_name={classroom.teacher_name}
                                 posts={act.posts}
                                 formatted_created_time={act.formatted_created_time}
+                                link={act.link}
                             />
                         ))}
                     </>
                 ))) : (
                     <>
-                        <h1 className='m-2 p-2 text-gray-400 text-sm'> No post yet. <br /> 
-                            No post yet.
+                        <h1 className='m-2 p-2 text-gray-400 text-sm'> No post yet.
                         </h1>
                     </>
                 )}                                                

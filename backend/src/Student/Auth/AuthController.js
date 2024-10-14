@@ -41,13 +41,15 @@ const Register = async (req, res) => {
             "SELECT * FROM students WHERE email_address = ?",
             [email_address]
         )
-
-        if (checkEmailExist.affectedRows) {
-            return res.status(400).json({ 
+        
+        
+        if (checkEmailExist.length > 0) {
+            return res.status(201).json({ 
                 title: "Registration Failed.", 
                 message: "The email address you entered is already belong to an existing account" 
             });
         }       
+        console.log('yo');
         const [registerResult] = await db.query(
             `INSERT INTO students (student_string_id, first_name, last_name, middle_name, 
             email_address, password) VALUES (?, ?, ?, ?, ?, ?)`, 
@@ -218,9 +220,40 @@ const EditAccount = async (req, res) => {
         return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
     }
 }
+
+const ResetPassword = async (req, res) => {
+    try {
+        const {email, password} = req.body
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const [ result ] = await db.query(
+            `UPDATE students SET password = ? WHERE email_address = ?`,
+            [hashedPassword, email]
+        )
+
+        if (!result.affectedRows) {
+            return res.status(400).json({ 
+                title: "", 
+                message: "" 
+            });
+        }
+
+        return res.status(200).json({ 
+            title: "Done", 
+            message: "" 
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
+    }
+}
 module.exports = { 
     Login,
     Register,
     ChangePassword,
-    EditAccount
+    EditAccount,
+    ResetPassword
 };

@@ -9,30 +9,27 @@ const MeetingPage = () => {
     
     
     useEffect(() => {
-        // Redirect based on user role
-        console.log(getRole());
-
+        
         if (getRole() === null ) {
             navigate(-1)
         }
                 
-        const meet_name = decodeURIComponent(meeting_name || "");
+        const meet_name = decodeURIComponent(meeting_name || "");        
         if (getRole() === 'Teacher') {
                         
             localStorage.setItem('meetingName', meet_name || "");
             localStorage.setItem('classId', class_id || "");
-            window.open(`/teacher/${getID()}/class/${class_id}/meeting`, '_blank');
-            navigate(-1)
+            navigate(`/teacher/${getID()}/class/${class_id}/meeting`);            
                     
         } else if (getRole() === 'Student') {                        
             localStorage.setItem('meetingName', meet_name || "");
             localStorage.setItem('classId', class_id || "");            
-            window.open(`/student/${getID()}/class/${class_id}/meeting`, '_blank');
-            navigate(-1)
+       
+            navigate(`/student/${getID()}/class/${class_id}/meeting`);
         } 
     }, [getRole(), navigate, class_id, meeting_name]);
 
-    return null; // No need to render anything as you are redirecting
+    return null;
 };
 
 export default MeetingPage;

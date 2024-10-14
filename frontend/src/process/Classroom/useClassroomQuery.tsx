@@ -11,6 +11,7 @@ import { SuccessToast } from "../../components/Toast/SuccessToast";
 import { FailedToast } from "../../components/Toast/FailedToast";
 import { Authentication } from "../../Auth/Authentication";
 import useModalStore from "../Modal/useModalStore";
+import { useNavigate } from "react-router-dom";
 
 export const useClassroomQuery = () => {
     const { getID } = Authentication();
@@ -61,7 +62,9 @@ export const useAddClassroom = () => {
 export const useEditClassroom = () => {
 
     const { editClassroom } = useClassroomStore()  
-    const { startLoading, stopLoading} = useModalStore()  
+    const { startLoading, stopLoading} = useModalStore()
+    const { getID } = Authentication()  
+    const navigate = useNavigate()
     return useMutation({
         mutationFn: async (data: ClassroomTypes) => {
             startLoading()
@@ -87,13 +90,16 @@ export const useEditClassroom = () => {
             SuccessToast("Class edited successfully!")
             console.log("Classroom successfully edited:", variables);
             stopLoading()
+            navigate(`/teacher/${getID()}/class`)
         }
     });
 }
 
 export const useRemoveClassroom = () => {
     const { deleteClassroom } = useClassroomStore()
-    const { startLoading, stopLoading} = useModalStore()  
+    const { startLoading, stopLoading} = useModalStore()
+    const navigate = useNavigate()
+    const { getID } = Authentication()  
     return useMutation({
         mutationFn: async (class_id: string) => {
             startLoading()
@@ -118,6 +124,7 @@ export const useRemoveClassroom = () => {
             SuccessToast("Class removed successfully!") 
             console.log("Classroom successfully deleted:", variables);
             stopLoading()
+            navigate(`/teacher/${getID()}/class`)
         }
     });
 

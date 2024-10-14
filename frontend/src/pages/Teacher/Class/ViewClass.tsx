@@ -93,10 +93,11 @@ export const ClassroomView: React.FC = () => {
 
                         {Array.isArray(act) && act.map((act, index) => (
                                 <PostBlock 
-                                key={index} 
-                                teacher_name={name}
-                                posts={act.posts}
-                                formatted_created_time={act.formatted_created_time}
+                                    key={index} 
+                                    teacher_name={name}
+                                    posts={act.posts}
+                                    formatted_created_time={act.formatted_created_time}
+                                    link={act.link}
                             />
                         ))}
                         

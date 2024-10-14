@@ -127,7 +127,7 @@ const GetAssignStudents = async (req, res) => {
         const getAssignStudentsResult = await GetAssignStudentsWorkService(assignment_id)
 
         if (!getAssignStudentsResult.succesfull) {
-            return res.status(400).json({ 
+            return res.status(200).json({ 
                 title: "No assigned student/s found", 
                 message: "There's no students assigned in this assignment." 
             });

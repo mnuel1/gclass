@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SuccessToast } from '../Toast/SuccessToast';
-export const Clipboard: React.FC = () => {  
-  const [textToCopy, setTextToCopy] = useState<string>('This is the text to copy!');
 
+export const Clipboard: React.FC = (class_code) => {  
+  
   const copyToClipboard = async () => {
     try {
-        await navigator.clipboard.writeText(textToCopy);
+        await navigator.clipboard.writeText(class_code.class_code);
         SuccessToast("Class code copied")
     } catch (err) {
         SuccessToast("Something went wrong. Try to copy again.")

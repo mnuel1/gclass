@@ -13,6 +13,7 @@ const studentRoute = require("./src/Student/routes/route")
 
 const searchRoute = require('./src/routes/route')
 
+const forgotPass = require('./src/notify')
 
 
 require("dotenv").config();
@@ -27,7 +28,7 @@ app.use("/teacher", teacherRoute)
 app.use("/student", studentRoute)
 app.use(uploadRoute)
 app.use(searchRoute)
-
+app.use(forgotPass)
 
 
 const classes = {};

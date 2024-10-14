@@ -56,8 +56,11 @@ export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
                         <h1 className='text-xl font-bold'>{classroom?.name}</h1>
                         
                         <div className='flex gap-4'>
-                            {isStudent !== 'student' && <Clipboard/> }
-                            {isStudent !== 'student' && <MoreModal class_id={classroom?.class_id || ""}/>}
+                            {isStudent !== 'student' && <Clipboard class_code={classroom?.class_string_id}/> }
+                            {isStudent !== 'student' && <MoreModal 
+                                class_id={classroom?.class_id || ""} 
+                                name={classroom?.name} 
+                                description={classroom?.description}/>}
                             
                         </div>
                         

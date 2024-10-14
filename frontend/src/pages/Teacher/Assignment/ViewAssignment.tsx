@@ -229,7 +229,7 @@ export const ViewAssignment:React.FC = () => {
     };
     const gradeAssignmentMutation = useGradeAssignment()
     const handleGradeAssignment = (student_id:string) => {
-        const grade = grades[student_id]; // Get the grade from state
+        const grade = grades[student_id]; 
         if (!grade) {
             FailedToast("Enter a grade first before returning");
             return;
@@ -239,9 +239,7 @@ export const ViewAssignment:React.FC = () => {
             "grade" : grade,
             "assignment_id" : ass.assignment_id
         }
-        gradeAssignmentMutation.mutate(data)
-        window.location.reload()
-        
+        gradeAssignmentMutation.mutate(data)                
         console.log(`Submitting grade ${grade} for student ${student_id}`);
             
     };

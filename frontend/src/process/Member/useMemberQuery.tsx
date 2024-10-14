@@ -10,7 +10,7 @@ export const useMemberQuery = (class_id: string) => {
     const {data, isSuccess, isError, error, isLoading} = useQuery({
         queryKey: ['member', class_id],
         queryFn: () => fetchMembers(class_id),
-        staleTime: 1000 * 60 * 5,
+        // staleTime: 1000 * 60 * 5,
         // refetchOnWindowFocus: false,
     })
 
@@ -46,7 +46,8 @@ export const useAddMember = () => {
             
             SuccessToast("Members added successfully!")            
             stopLoading()
-            navigate(-1)
+            navigate(-1)            
+            
         }   
     });
 }
@@ -77,8 +78,7 @@ export const useRemoveMember = () => {
             FailedToast("Remove members failed")
             stopLoading()
         },
-        onSuccess: (data, variables, context) => {           
-            
+        onSuccess: (data, variables, context) => {            
             SuccessToast("Members removed successfully!")            
             stopLoading()
             navigate(-1)

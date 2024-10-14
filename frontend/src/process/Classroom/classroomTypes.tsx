@@ -5,5 +5,6 @@ export interface ClassroomTypes {
     class_string_id: string
     name: string;
     description: string;
-    created_time: Date
+    created_time: Date;
+
 }

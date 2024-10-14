@@ -7,7 +7,7 @@ import useModalStore from '../../process/Modal/useModalStore';
 import { useRemoveClassroom, useEditClassroom } from '../../process/Classroom/useClassroomQuery';
 import { ClassroomTypes } from '../../process/Classroom/classroomTypes';
 
-export const MoreModal: React.FC<({class_id: string})> = ({class_id}) => {
+export const MoreModal: React.FC<({class_id: string, name: string, description: string})> = ({class_id, name, description}) => {
   const {    
     isDeleteModalOpen,
     isEditModalOpen,
@@ -77,7 +77,7 @@ export const MoreModal: React.FC<({class_id: string})> = ({class_id}) => {
       )}
 
           {isEditModalOpen === class_id && (
-            <EditModal onClose={() => closeEditModal()} class_id={class_id} onSubmit={handleEditModal}/>
+            <EditModal onClose={() => closeEditModal()} class_id={class_id} classname={name} classdescription={description} onSubmit={handleEditModal}/>
           )}
 
           {/* Show delete modal for this assignment if it's open */}

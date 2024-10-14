@@ -48,9 +48,10 @@ export const AccountSettings: React.FC = () => {
                 const user = `${lastName}, ${firstName}, ${middleName}`
                 sessionStorage.setItem('user', JSON.stringify(user));
                 sessionStorage.setItem('email', JSON.stringify(email));
-                SuccessToast("Account updated!")
+                
                 setEdit(false);
                 window.location.reload();
+                SuccessToast("Account updated!")
                
             } else {
                 FailedToast("Acount update failed!")

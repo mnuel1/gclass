@@ -47,6 +47,7 @@ export const StudentAssignments: React.FC = () => {
 
     const handleAssignmentButton = (assignment: AssignmentType) => {
         stopLoading()
+        
         navigate(`${assignment.assignment_id}/view`, { state: { assignment: assignment, classroom: classroom } })
     }
 

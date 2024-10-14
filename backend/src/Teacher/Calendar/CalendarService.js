@@ -7,8 +7,8 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true, 
     auth: {
-        user: 'edusync@resiboph.site',
-        pass: '|N3qrKEp?'
+        user: 'noreplyedusync@resiboph.site',
+        pass: '$&2X9e:6k8+J'
     }
 });
 
@@ -17,7 +17,7 @@ const CreateMeetingService = async (meetingData) => {
     const connection = await db.getConnection()
     try {
         const {class_id, title, start_date} = meetingData
-        const link = `http://localhost:5173/meeting/${class_id}/${encodeURIComponent(title)}`
+        const link = `/meeting/${class_id}/${encodeURIComponent(title + class_id)}`
         const [result] = await connection.query(
             `
             INSERT INTO class_meetings (class_id, title, link, start_date)
@@ -41,29 +41,22 @@ const CreateMeetingService = async (meetingData) => {
         )
         
         const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
-        
+       
+        const date = new Date(start_date); 
+
+        const month = date.getMonth() + 1; 
+        const day = date.getDate();
+        const year = date.getFullYear();
+
         const mailOptions = {
-            from: 'edusync@resiboph.site',
+            from: 'noreplyedusync@resiboph.site',
             to: emailAddresses,
-            subject: "Meeting now",
-            html: `<h4 className='text-sm'>
-            <strong>Meeting now!</strong> 
+            subject: `Scheduled Meeting on ${month}/${day}/${year}`,
+            html: `<h4 class='text-sm'>
+            <strong>Meeting now!</strong><br />
             <strong>${title}</strong><br />
-            Don't forget, we've got a meeting today! Click the link below to join:<br />
-            <a href=${link} target="_blank" rel="noopener noreferrer" style="
-                display: inline-block; 
-                margin-top:2px;
-                padding: 8px 14px; 
-                font-size: 16px; 
-                color: white; 
-                background-color: #007bff; 
-                border: none; 
-                border-radius: 5px; 
-                text-decoration: none; 
-                text-align: center; 
-                transition: background-color 0.3s, transform 0.2s;
-            ">Join Meeting</a><br />
-            
+            Don't forget, we've got a meeting today! Check our class in Edusync to join<br />                        
+            See you there!
             </h4>`,            
         };
         
@@ -120,7 +113,7 @@ const EditMeetingService = async (meetingData) => {
         const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
         
         const mailOptions = {
-            from: 'edusync@resiboph.site',
+            from: 'noreplyedusync@resiboph.site',
             to: emailAddresses,
             subject: "Meeting now",
             html: `<h4 className='text-sm'>

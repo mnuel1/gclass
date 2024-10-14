@@ -66,6 +66,7 @@ export const StudentHome:React.FC = () => {
         console.log(data);
         
         joinClassMutation.mutate(data)
+        window.location.reload();
         
     }
     return(

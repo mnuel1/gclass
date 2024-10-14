@@ -2,7 +2,8 @@ const {
     Login, 
     Register, 
     EditAccount,
-    ChangePassword } = require("../Auth/AuthController")
+    ChangePassword,
+    ResetPassword } = require("../Auth/AuthController")
 
 const { JoinClass, GetClasses } = require("../Class/ClassroomController")
 
@@ -29,7 +30,7 @@ const router = express.Router();
 
 router.post("/login", Login);
 router.post("/register", Register);
-
+router.post("/reset", ResetPassword);
 
 router.post("/edit/account", EditAccount);
 router.post("/change/password", ChangePassword);
