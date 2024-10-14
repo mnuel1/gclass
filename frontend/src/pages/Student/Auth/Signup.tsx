@@ -65,8 +65,19 @@ export const StudentSignup: React.FC = () => {
         if (!form.email_address.includes('@')) {
             newErrors.email = "Please enter a valid email address.";
         }
-        if (form.password.length < 8) {
+        const password = form.password;
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        if (password.length < 8) {
             newErrors.password = "Password must be at least 8 characters long.";
+        } else if (!hasUpperCase) {
+            newErrors.password = "Password must contain at least one uppercase letter.";
+        } else if (!hasLowerCase) {
+            newErrors.password = "Password must contain at least one lowercase letter.";
+        } else if (!hasSpecialChar) {
+            newErrors.password = "Password must contain at least one special character.";
         }
         if (form.password !== form.confirm_password || form.confirm_password.length <= 0) {
             newErrors.confirm_password = "Passwords do not match.";
@@ -82,9 +93,16 @@ export const StudentSignup: React.FC = () => {
         if (Object.keys(validationErrors).length === 0) {
             startLoading()
             const response = await authapi.post('/student/register', form)
-                     
+            
+            if (response.status === 201) {
+                FailedToast("Email already have an account. Please use different email account.")
+                stopLoading()
+                return;
+            } 
+
             if (response.status !== 200) {
                 FailedToast("Sign up Failed")
+                stopLoading()
                 return;
             } 
             const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`

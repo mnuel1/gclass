@@ -189,10 +189,18 @@ export const TeacherLogin:React.FC = () => {
                             Sign in
                         </button>
 
-                        <p className="text-center text-sm text-gray-500">
-                            No account yet?
-                            <a className="underline text-blue-500 ml-2" href="/teacher/signup">Sign up </a>
-                        </p>
+                        <div className="flex justify-between">                                                
+                            <p className="text-center text-sm text-gray-500">
+                                <a className="underline text-blue-500 ml-2" href="/teacher/forgot">
+                                    Forgot Password ?
+                                </a>
+                                                                
+                            </p>
+                            <p className="text-center text-sm text-gray-500">
+                                No account yet?
+                                <a className="underline text-blue-500 ml-2" href="/teacher/signup">Sign up </a>
+                            </p>
+                        </div>
                         </form>
                     </div>
                 </div>

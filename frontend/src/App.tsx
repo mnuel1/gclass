@@ -60,6 +60,8 @@ import { AccountSettings } from './pages/Teacher/Account/Account';
  */
 import { TeacherSignup } from './pages/Teacher/Auth/Signup';
 import { TeacherLogin } from './pages/Teacher/Auth/Login';
+import { TeacherForgot } from './pages/Teacher/Auth/Forgot';
+import { TeacherReset } from './pages/Teacher/Auth/Reset';
 
 /**
  * VIDEO CONFRENCE
@@ -73,7 +75,8 @@ import { VideoConference } from './pages/Video Conference/VideoConference';
  */
 import { StudentLogin } from './pages/Student/Auth/Login';
 import { StudentSignup } from './pages/Student/Auth/Signup';
-
+import { StudentForgot } from './pages/Student/Auth/Forgot';
+import { StudentReset } from './pages/Student/Auth/Reset';
 /**
  * STUDENT MAIN PAGES
  * 
@@ -126,6 +129,18 @@ function App() {
                                 <TeacherSignup/>
                                 </ProtectedRoute>
                             } />
+
+                            <Route path='teacher/forgot' element={
+                                <ProtectedRoute>
+                                <TeacherForgot/>
+                                </ProtectedRoute>
+                            } />
+                            <Route path='teacher/reset' element={
+                                <ProtectedRoute>
+                                <TeacherReset/>
+                                </ProtectedRoute>
+                            } />
+
                             <Route path='student/login' element={
                                 <ProtectedRoute>
                                 <StudentLogin/>
@@ -134,6 +149,17 @@ function App() {
                             <Route path='student/signup' element={
                                 <ProtectedRoute>
                                 <StudentSignup/>
+                                </ProtectedRoute>
+                            } />
+
+                            <Route path='student/forgot' element={
+                                <ProtectedRoute>
+                                <StudentForgot/>
+                                </ProtectedRoute>
+                            } />
+                            <Route path='student/reset' element={
+                                <ProtectedRoute>
+                                <StudentReset/>
                                 </ProtectedRoute>
                             } />
                         
