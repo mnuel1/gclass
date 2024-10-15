@@ -122,7 +122,6 @@ export const StudentViewAssignment:React.FC = () => {
         </button>
       );
             
-      
     return (
         <>
             {confirm && <ConfirmModal onClose={() => setConfirm(false)} id='' onConfirm={handleSubmit} />}
@@ -180,7 +179,7 @@ export const StudentViewAssignment:React.FC = () => {
                                 )}                        
                             </Accordion>
                         )}
-                        {!ass.attachments || edit && 
+                        {!ass.attachments  && 
                             <>
                                 <span className='text-xs italic text-gray-400'>Insert your answer here.</span>
                                 <input                         
@@ -197,7 +196,14 @@ export const StudentViewAssignment:React.FC = () => {
                     <>
                         {!isReturned && (
                         <div className='flex gap-4'>
-                            {(isTurnedIn || isLate) && !edit && (
+                                                        
+                            {(!isTurnedIn )&& (
+                            <>
+                                {renderSubmitButton()}
+                            </>
+                            )}
+
+                            {(isTurnedIn || isLate) && ass.attachments && !edit && (
                             <>
                                 <button
                                 onClick={() => setEdit(true)}
@@ -205,12 +211,6 @@ export const StudentViewAssignment:React.FC = () => {
                                 className={`bg-blue-500 p-2 rounded-md w-[10rem] text-white hover:bg-blue-600 mt-2`}>
                                 Edit
                                 </button>                                
-                            </>
-                            )}
-                            
-                            {!isTurnedIn || !isLate && (
-                            <>
-                                {renderSubmitButton()}
                             </>
                             )}
                             

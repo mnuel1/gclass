@@ -199,7 +199,7 @@ const GetAssignmentsService = async (class_id, student_id) => {
     }
 };
 
-const GetGradeAssignmentService = async(class_id) => {
+const GetGradeAssignmentService = async(class_id, student_id) => {
     try {        
         const [result] = await db.query(
             `
@@ -217,13 +217,13 @@ const GetGradeAssignmentService = async(class_id) => {
                 students.email_address
             FROM assignments
             LEFT JOIN class_students ON class_students.class_id = assignments.class_id
-            LEFT JOIN students ON students.student_id = class_students.student_id
+            LEFT JOIN students ON students.student_id = ?
             LEFT JOIN class_assignments ON class_assignments.assignment_id = assignments.assignment_id
                 AND class_assignments.student_id = students.student_id
             WHERE assignments.class_id = ? 
             GROUP BY assignments.assignment_id
             ORDER BY assignments.start_date ASC`,
-            [class_id]
+            [student_id, class_id]
         );
                     
         if (!result.length) {

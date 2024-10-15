@@ -95,9 +95,9 @@ const GetAssignments = async (req, res) => {
 
 const GetStudentGrades = async (req, res) => {
     try {
-        const { class_id } = req.params
+        const { class_id, student_id } = req.params
 
-        const getGradeStudentGrades = await GetGradeAssignmentService(class_id)
+        const getGradeStudentGrades = await GetGradeAssignmentService(class_id, student_id)
 
         if (!getGradeStudentGrades.succesfull) {
             return res.status(200).json({ 

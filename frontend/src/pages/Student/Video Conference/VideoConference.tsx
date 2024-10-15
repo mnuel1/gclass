@@ -121,12 +121,14 @@ export const StudentVideoConference: React.FC = () => {
                   new faceApi.SsdMobilenetv1Options()
                 ).withFaceLandmarks().withFaceDescriptors();
 
-                if (detections.length > 0 && counter !== 3) {
-                  SuccessToast('You are present');
-                } else {
-                  FailedToast('You are not present');
-                  handleIncrement();
-                }
+                if(counter !== 3) {
+                  if (detections.length > 0) {
+                    SuccessToast('You are present');
+                  } else {
+                    FailedToast('You are not present');
+                    handleIncrement();
+                  }
+                }                
               }
             };
 
