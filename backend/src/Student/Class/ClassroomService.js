@@ -82,6 +82,8 @@ const GetClassesService = async (student_id) => {
                 teachers ON teachers.teacher_id = class.teacher_id
             WHERE 
                 student_id = ?
+            AND 
+                class_students.status = 'Approved'
 `,
             [student_id]
         )

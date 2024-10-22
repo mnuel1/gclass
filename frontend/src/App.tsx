@@ -9,6 +9,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
 /**
+ * ADMIN
+ * 
+ */
+import { AdminLogin } from './pages/Admin/auth';
+import { AdminDashboard } from './pages/Admin/dashboard';
+import { AdminSettings } from './pages/Admin/account';
+/**
  * LAYOUTS
  * 
  */
@@ -16,7 +23,7 @@ import { DefaultLayout } from './layout/DefaultLayout'
 import { TeacherLayout } from './layout/TeacherLayout'
 import { StudentLayout } from './layout/StudentLayout'
 import { ClassroomLayout } from './layout/ClassroomLayout';
-
+import { AdminLayout } from './layout/AdminLayout';
 /**
  * LANDING PAGE
  * 
@@ -203,6 +210,13 @@ function App() {
                             <Route path='account' element={<StudentAccountSettings/>} />
                         </Route>
                         <Route path='student/:student_id/class/:class_id/meeting' element={<StudentVideoConference/>} />
+                        
+                        <Route path='/admin/login' element={<AdminLogin/>} />
+                        <Route path='/admin' element={<AdminLayout />} >
+                            <Route path='teachers' element={<AdminDashboard/>} />
+                            <Route path='account' element={<AdminSettings/>} />
+                        </Route>
+                        
                         <Route path="*" element={<NotFound />} />
                         
                     </Routes>

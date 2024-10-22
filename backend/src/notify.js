@@ -2,17 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.hostinger.com',
-    port: 465,
-    secure: true, 
-    auth: {
-        user: 'noreplyedusync@resiboph.site',
-        pass: '$&2X9e:6k8+J'
-    }
-});
+const transporter = require("../mailer")
 
 
 router.post('/student/forgot', async(req, res) => {
@@ -22,7 +13,7 @@ router.post('/student/forgot', async(req, res) => {
         const forgotPasswordLink = `http://localhost:5173/student/reset?email=${encodeURIComponent(email_address)}`;
 
         const mailOptions = {
-            from: 'noreplyedusync@resiboph.site',
+            from: 'nreplyedusync@resiboph.site',
             to: email_address, // assuming email is the recipient
             subject: "Password Reset Request",
             html: `<h4 class='text-sm'>
@@ -68,7 +59,7 @@ router.post('/teacher/forgot', async(req, res) => {
         const forgotPasswordLink = `http://localhost:5173/teacher/reset?email=${encodeURIComponent(email_address)}`;
 
         const mailOptions = {
-            from: 'noreplyedusync@resiboph.site',
+            from: 'nreplyedusync@resiboph.site',
             to: email_address, // assuming email is the recipient
             subject: "Password Reset Request",
             html: `<h4 class='text-sm'>

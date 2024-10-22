@@ -1,17 +1,5 @@
 const db = require("../../database/db")
-const nodemailer = require('nodemailer');
-
-
-const transporter = nodemailer.createTransport({
-    host: 'smtp.hostinger.com',
-    port: 465,
-    secure: true, 
-    auth: {
-        user: 'noreplyedusync@resiboph.site',
-        pass: '$&2X9e:6k8+J'
-    }
-});
-
+const transporter = require("../../../mailer")
 
 const CreateMeetingService = async (meetingData) => {
     const connection = await db.getConnection()
@@ -49,7 +37,7 @@ const CreateMeetingService = async (meetingData) => {
         const year = date.getFullYear();
 
         const mailOptions = {
-            from: 'noreplyedusync@resiboph.site',
+            from: 'nreplyedusync@resiboph.site',
             to: emailAddresses,
             subject: `Scheduled Meeting on ${month}/${day}/${year}`,
             html: `<h4 class='text-sm'>
@@ -113,7 +101,7 @@ const EditMeetingService = async (meetingData) => {
         const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
         
         const mailOptions = {
-            from: 'noreplyedusync@resiboph.site',
+            from: 'nreplyedusync@resiboph.site',
             to: emailAddresses,
             subject: "Meeting now",
             html: `<h4 className='text-sm'>

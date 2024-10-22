@@ -68,7 +68,7 @@ const Login = async (req, res) => {
     try {
         
         const [result] = await db.query(
-            "SELECT * FROM teachers WHERE email_address = ?", 
+            "SELECT * FROM teachers WHERE teacher_string_id = ?", 
             [email_address]
         )
 

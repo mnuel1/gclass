@@ -8,7 +8,6 @@ export const fetchMembers = async (class_id : string) => {
     return response.data.data;
 }
 
-
 export const fetchAssignedMembers = async (class_id : string) => {
     const response = await api.get(`teacher/member/${class_id}`); 
     

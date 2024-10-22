@@ -1,11 +1,11 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { Authentication } from "../../../Auth/Authentication";
-import { authapi } from "../../../process/axios"
-import { SuccessToast } from "../../../components/Toast/SuccessToast";
-import { FailedToast } from "../../../components/Toast/FailedToast";
-import { Spinner } from "../../../components/Spinner/spinner";
-import useModalStore from "../../../process/Modal/useModalStore";
+import { Authentication } from "../../Auth/Authentication";
+import { authapi } from "../../process/axios"
+import { SuccessToast } from "../../components/Toast/SuccessToast";
+import { FailedToast } from "../../components/Toast/FailedToast";
+import { Spinner } from "../../components/Spinner/spinner";
+import useModalStore from "../../process/Modal/useModalStore";
 
 
 interface FormState {  
@@ -18,7 +18,7 @@ interface ErrorsState {
 }
 
 
-export const TeacherLogin:React.FC = () => {
+export const AdminLogin:React.FC = () => {
     const { login } = Authentication()
     const navigate = useNavigate()
     
@@ -63,29 +63,33 @@ export const TeacherLogin:React.FC = () => {
         const validationErrors = validate();
 
         if (Object.keys(validationErrors).length === 0) {
+                        
             startLoading()
             try {
-                const response = await authapi.post('/teacher/login', form)
-                               
-                const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`
-                const token = response.data.token
-                const id = response.data.teacher_id
-                const email = response.data.email_address
-                const role = 'Teacher'
-                            
-                login( user, token, id, email, role )     
+
+                const response = await authapi.post('/admin/login', form)
+                
+                const user = `Admin 1`
+                const token = ""
+                const id = response.data.id
+                const email = ""
+                const role = 'Admin'
+                                
+                login( user, token, id, email, role ) 
                 SuccessToast("Login Success")       
                 stopLoading()
                 
-                navigate(`/teacher/${response.data.teacher_id}/class`)
+                navigate(`/admin/teachers`)   
             } catch (error : any) {
                 if (error.code) {
                     FailedToast("Wrong username and password!")
                 } else {
                     FailedToast("Something went wrong!")
-                }                
-                stopLoading()              
-            } 
+                }
+                
+                stopLoading()
+              
+            }                         
 
         } else {
             setErrors(validationErrors);
@@ -98,13 +102,9 @@ export const TeacherLogin:React.FC = () => {
             <Spinner isLoading={isLoading}>        
                 <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-lg">
-                        <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl">Welcome to the Teacher Portal</h1>
+                        <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl">Welcome to Admin Portal</h1>
 
-                        <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
-                            Please log in to access your teaching resources and manage your classes. If you encounter any issues, feel free to contact support.
-                        </p>
-
-
+                     
                         <form action="#" className="mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8" onSubmit={handleSubmit}>
                         <p className="text-center text-lg font-medium">Sign in to your account</p>
 
@@ -188,19 +188,7 @@ export const TeacherLogin:React.FC = () => {
                         >
                             Sign in
                         </button>
-
-                        <div className="flex justify-between">                                                
-                            <p className="text-center text-sm text-gray-500">
-                                <a className="underline text-blue-500 ml-2" href="/teacher/forgot">
-                                    Forgot Password ?
-                                </a>
-                                                                
-                            </p>
-                            <p className="text-center text-sm text-gray-500">
-                                No account yet?
-                                <a className="underline text-blue-500 ml-2" href="/teacher/signup">Sign up </a>
-                            </p>
-                        </div>
+                  
                         </form>
                     </div>
                 </div>

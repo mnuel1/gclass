@@ -10,7 +10,7 @@ const url = require('url');
 const uploadRoute = require("./src/Teacher/upload")
 const teacherRoute = require("./src/Teacher/routes/route");
 const studentRoute = require("./src/Student/routes/route")
-
+const adminRoute = require("./src/Admin/route")
 const searchRoute = require('./src/routes/route')
 
 const forgotPass = require('./src/notify')
@@ -26,6 +26,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.urlencoded({extended: true}))
 app.use("/teacher", teacherRoute)
 app.use("/student", studentRoute)
+app.use("/admin", adminRoute)
 app.use(uploadRoute)
 app.use(searchRoute)
 app.use(forgotPass)

@@ -1,7 +1,8 @@
-import React, { useEffect }from 'react'
+import React, { useEffect, useState }from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { api } from '../../../process/axios'
 import useMemberStore from '../../../process/Member/useMemberStore'
-import { useMemberQuery } from '../../../process/Member/useMemberQuery'
+import { useMemberQuery, useAddMember, useRemoveMember } from '../../../process/Member/useMemberQuery'
 import useModalStore from '../../../process/Modal/useModalStore'
 import { Authentication } from '../../../Auth/Authentication'
 
@@ -10,6 +11,96 @@ import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
 import { FailedToast } from '../../../components/Toast/FailedToast'
 import { Accordion } from '../../../components/Accordion/Accordion'
 
+
+export const PendingMembers = ({class_id}) => {
+
+    const [ member, getMember ] = useState([])
+
+    const {startLoading, stopLoading} = useModalStore()
+    useEffect(() => {
+        const getPendingMembers = async () => {
+            try {
+                startLoading();
+                                   
+                const response = await api.get(`/teacher/pending/member/${class_id}`,);
+                
+                if (response.status !== 200) {
+                  FailedToast("Something went wrong");
+                  stopLoading();
+                  return;
+                }                
+                getMember(response.data.data)
+                            
+                stopLoading();
+            } catch (error) {
+                console.error('Error fetching teachers:', error);
+                FailedToast("An error occurred while fetching teachers.");
+                stopLoading();
+            }
+        }
+        getPendingMembers()
+        
+    }, []);
+
+    const addMembersMutation = useAddMember()
+    const handleAddSave = (id, student) => {
+                
+        const data = {
+            class_id: id,
+            members: [student]
+        }
+        console.log(data);
+        addMembersMutation.mutate(data)
+        
+        
+    }
+
+    const removeMemberMutation = useRemoveMember()
+    const handleRemoveSave = (id, student) => {
+        
+        const data = {
+            class_id: id,            
+            members: [student]
+        }
+        console.log(data);
+        
+        removeMemberMutation.mutate(data)        
+        window.location.reload()
+    }   
+
+    return (
+        <Accordion name={`Students requesting to join: ${member.length === 0 ? '' : member.length}`}>
+            {member.length !== 0 ? (
+                member.map((student, index) => (
+                <>       
+                    <div key={index} className='flex items-center justify-between my-2 p-2 '>
+                        <div className='flex gap-2 items-center '>
+                            <div className='rounded-full w-[40px] flex justify-center p-2 
+                            bg-green-400 font-bold flex-none self-start'> {student.fullname[0].toUpperCase()} </div>
+                            <span className='font-semibold'>{student.fullname} </span>
+                        </div>
+
+                        <div className='flex gap-4'>
+                            <button 
+                                className='px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700' 
+                                onClick={() => handleAddSave(class_id, student)}>
+                                    Accept
+                            </button>
+                            <button 
+                                className='px-4 py-2 rounded-md text-white bg-red-600 hover:bg-red-700' 
+                                onClick={() => handleRemoveSave(class_id, student)}>
+                                    Reject
+                            </button>
+
+                        </div>
+                    </div>                                                                
+                </>                      
+            ))): (
+                <></>
+            )}
+        </Accordion>
+    )
+}
 
 export const Members:React.FC = () => {
     const { getUser } = Authentication()
@@ -20,6 +111,7 @@ export const Members:React.FC = () => {
     const classroom : ClassroomTypes = location.state.classroom
     
     const { data, isSuccess, isError, isLoading } = useMemberQuery(classroom.class_id);
+    
     const { member, getMember } = useMemberStore()
     const {    
         startLoading,
@@ -89,13 +181,7 @@ export const Members:React.FC = () => {
             </div>
             
 
-            <div className='p-4 m-6 bg-white grow'>
-                {/* <div className='flex gap-4'>
-                    <button onClick={() => handleFilter("pending")}className={active === 'pending' ? aactive : notActive}>Pending</button>
-                    <button onClick={() => handleFilter("past")}className={active === 'past' ? aactive : notActive}>Past Due</button>
-                    <button onClick={() => handleFilter("complete")}className={active === 'complete' ? aactive : notActive}>Completed</button>
-                </div> */}
-
+            <div className='p-4 m-6 bg-white grow'>          
                 <div className='flex flex-col gap-4 p-2'>
                     <div className='flex border-b-2 border-gray-300'>
                         <span className='text-[11px] text-gray-400'>Teacher</span>                            
@@ -140,6 +226,8 @@ export const Members:React.FC = () => {
                         </h1>
                     )}
                 </Accordion>
+
+                <PendingMembers class_id={classroom.class_id}/>
             </div>
 
         </>

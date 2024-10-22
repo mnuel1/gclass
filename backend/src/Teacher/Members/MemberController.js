@@ -2,7 +2,8 @@
 const {
     CreateMemberService,
     GetMemberService,
-    RemoveMemberService } = require("./MemberService")
+    RemoveMemberService,
+    GetMemberPendingService } = require("./MemberService")
 
 
 
@@ -10,7 +11,6 @@ const AddMembers = async (req, res) => {
 
     try {
         const memberData = req.body
-        console.log(memberData);
         
         const addMemberResult = await CreateMemberService(memberData)
 
@@ -54,6 +54,30 @@ const GetMembers = async (req, res) => {
     }
 }
 
+const GetPendingMembers = async (req, res) => {
+
+    try {        
+        const { class_id } = req.params
+
+        const getMemberResult = await GetMemberPendingService(class_id)
+                
+        if (getMemberResult.error) {
+            return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
+        }
+
+        return res.status(200).json({ 
+            title: "Members Fetched", 
+            message: `Members fetched`,
+            data: getMemberResult.data
+            
+        });
+        
+    } catch (error) {       
+        console.log(error);
+        return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
+    }
+}
+
 const RemoveMembers = async (req, res) => {
 
     try {
@@ -79,5 +103,6 @@ const RemoveMembers = async (req, res) => {
 module.exports = {
     AddMembers,
     GetMembers,
-    RemoveMembers
+    RemoveMembers,
+    GetPendingMembers
 }

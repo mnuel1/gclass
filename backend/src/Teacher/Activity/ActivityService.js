@@ -8,19 +8,6 @@ const formatDateTimeForActivity = (date) => {
     return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }).format(date);
 };
 
-const nodemailer = require('nodemailer');
-
-
-const transporter = nodemailer.createTransport({
-    host: 'smtp.hostinger.com',
-    port: 465,
-    secure: true, 
-    auth: {
-        user: 'noreplyedusync@resiboph.site',
-        pass: '$&2X9e:6k8+J'
-    }
-});
-
 
 const GetActivityService = async (class_id) => {
     try {        
@@ -122,7 +109,7 @@ const CreateMeetingActivityService = async (meetingData) => {
         const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
 
         const mailOptions = {
-            from: 'noreplyedusync@resiboph.site',
+            from: 'nreplyedusync@resiboph.site',
             to: emailAddresses,
             subject: "Meeting now",
             html: `<h4 class='text-sm'>

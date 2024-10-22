@@ -17,7 +17,8 @@ const {
 const {
     AddMembers,
     GetMembers,
-    RemoveMembers } = require("../Members/MemberController")
+    RemoveMembers,
+    GetPendingMembers } = require("../Members/MemberController")
 
 const {
     CreateAssignment,
@@ -91,6 +92,7 @@ router.get("/meeting/:teacher_id", GetMeetings)
 router.post("/member", AddMembers)
 router.post("/member/remove", RemoveMembers)
 router.get("/member/:class_id", GetMembers)
+router.get("/pending/member/:class_id", GetPendingMembers)
 
 
 /* 

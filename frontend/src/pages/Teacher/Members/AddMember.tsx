@@ -77,9 +77,7 @@ export const AddMember:React.FC = () => {
             members: members
         }
         
-        addMembersMutation.mutate(data)
-        
-        
+        addMembersMutation.mutate(data)                
     }
 
     
