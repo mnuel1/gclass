@@ -55,8 +55,7 @@ export const useJoinClassroom = () => {
         onSuccess: (data, variables, context) => {           
             addClassroom(data)
             
-            SuccessToast("Join class successfully!")
-            console.log("class successfully added:", data);
+            SuccessToast("You have requested to join in this class. Wait for the proffessor to accept your request.!")            
             stopLoading()
         }   
     });

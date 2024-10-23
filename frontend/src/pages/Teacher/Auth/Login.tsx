@@ -72,7 +72,16 @@ export const TeacherLogin:React.FC = () => {
                 const id = response.data.teacher_id
                 const email = response.data.email_address
                 const role = 'Teacher'
-                            
+
+                if (response.status === 201) {
+                    FailedToast("Your account is still not activated. Please wait for the admin to approve your account. We will send an email regarding to your application")
+                    return
+                }
+                if (response.status === 202) {
+                    FailedToast("The admin rejected your application. You will not be able to use your account.")
+                    return
+                }
+                                            
                 login( user, token, id, email, role )     
                 SuccessToast("Login Success")       
                 stopLoading()

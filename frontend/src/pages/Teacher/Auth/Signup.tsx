@@ -101,20 +101,13 @@ export const TeacherSignup: React.FC = () => {
             } 
 
             if (response.status !== 200) {
-                FailedToast("Sign up Failed")
+                FailedToast("Creating an account failed. Something went wrong!")
                 stopLoading()
                 return;
-            } 
-            const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`
-            const token = response.data.token
-            const id = response.data.teacher_id
-            const email = response.data.email_address
-            const role = 'Teacher'
-                            
-            login( user, token, id, email, role )
-            SuccessToast("Success! Setting up your account. Please wait for a minute")
+            }                                                    
+            SuccessToast("You have successfully created your account. Please wait for the admin to approve your account. We will send an email regarding to your application")
             stopLoading()
-            navigate(`/teacher/${id}/class`)
+            navigate(`/teacher/signup`)
            
 
         } else {

@@ -38,21 +38,9 @@ const Register = async (req, res) => {
                 message: "Something went wrong. Please try again later. " 
             });
         }       
-        const token = jwt.sign(
-            {email_address: email_address},
-            process.env.JWT_TOKEN,
-            {expiresIn: '1d'}
-        )
-        
         return res.status(200).json({ 
             title: "Successful Registration", 
-            message: "!",
-            teacher_id: registerResult.insertId,
-            first_name: first_name,
-            last_name: last_name,
-            middle_name: middle_name,
-            email_address: email_address,
-            token: token
+            message: "!",           
         });
 
     } catch (error) {
@@ -66,16 +54,29 @@ const Login = async (req, res) => {
     const {email_address, password} = req.body
 
     try {
-        
+                
         const [result] = await db.query(
             "SELECT * FROM teachers WHERE teacher_string_id = ?", 
             [email_address]
         )
-
+        
         if (!result.length) {
             return res.status(401).json({ 
                 title: "Login Failed", 
                 message: "Wrong username!",                
+            });
+        }
+
+        if (result[0].status === 'Pending') {
+            return res.status(201).json({ 
+                title: "Login Failed", 
+                message: "Pending account!",                
+            });
+        }
+        if (result[0].status === 'Rejected') {
+            return res.status(202).json({ 
+                title: "Login Failed", 
+                message: "Rejected Account!",                
             });
         }
         bcrypt.compare(password, result[0].password, 
