@@ -103,6 +103,7 @@ import { StudentMembers } from "./pages/Student/Members/ViewMembers";
 import { StudentGrades } from "./pages/Student/Grade/ViewAllGrade";
 import { StudentViewAssignment } from "./pages/Student/Assignment/ViewAssignment";
 import { StudentVideoConference } from "./pages/Student/Video Conference/VideoConference";
+import StudentViewDashboard from "./pages/Student/Dashboard/ViewDashboard";
 function App() {
   return (
     <>
@@ -253,6 +254,10 @@ function App() {
             <Route path="/student/:student_id" element={<StudentLayout />}>
               <Route path="class" element={<StudentHome />} />
               <Route path="class" element={<ClassroomLayout />}>
+                <Route
+                  path=":class_id/dashboard"
+                  element={<StudentViewDashboard />}
+                />
                 <Route
                   path=":class_id/posts"
                   element={<StudentClassroomView />}

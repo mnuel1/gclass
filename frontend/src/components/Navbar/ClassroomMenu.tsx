@@ -4,7 +4,14 @@ import { MoreModal } from "../Modal/More";
 import { Clipboard } from "../Clipboard/Clipboard";
 import { ClassroomTypes } from "../../process/Classroom/classroomTypes";
 import { fetchBackgroundImage } from "../../utils/imageCache";
-import { FileText, BookOpen, BarChart2, Users, Calendar } from "lucide-react";
+import {
+  FileText,
+  BookOpen,
+  BarChart2,
+  Users,
+  Calendar,
+  LayoutDashboard,
+} from "lucide-react";
 
 const activeIcon =
   "p-2 bg-blue-500 text-white rounded-full shadow-lg transform scale-110 transition-all duration-300";
@@ -46,6 +53,11 @@ export const ClassroomMenu: React.FC<MainMenuProps> = ({ children }) => {
 
   const routes = [
     {
+      name: "dashboard",
+      icon: <LayoutDashboard size={18} />,
+      showAlways: false,
+    },
+    {
       name: "posts",
       icon: <FileText size={18} />,
       showAlways: true,
@@ -76,12 +88,15 @@ export const ClassroomMenu: React.FC<MainMenuProps> = ({ children }) => {
     if (route.name === "schedule" && isStudent === "student") {
       return false;
     }
+    if (route.name === "dashboard" && isStudent !== "student") {
+      return false;
+    }
     return route.showAlways || localStorage.getItem("role") !== "student";
   });
 
   return (
     <div className="flex h-full w-full bg-slate-100">
-      <div className="flex flex-col gap-4 ml-4 my-4 rounded-xl h-[calc(100vh-7rem)] z-0 w-[30%] p-4 bg-white">
+      <div className="flex flex-col gap-4 ml-4 my-4 rounded-xl h-[calc(100vh-7rem)] z-0 w-[30%] md:w-[300px] p-4 bg-white">
         <div className="flex items-center justify-between pb-2 relative border-b border-gray-200">
           <div className="flex w-full items-center justify-between">
             <h1 className="text-xl font-bold">{classroom?.name}</h1>
@@ -134,7 +149,7 @@ export const ClassroomMenu: React.FC<MainMenuProps> = ({ children }) => {
           ))}
         </div>
       </div>
-      <div className="w-[70%] overflow-hidden h-[calc(100vh-75px)]">
+      <div className="w-full overflow-hidden h-[calc(100vh-75px)]">
         {children}
       </div>
     </div>
