@@ -3,13 +3,23 @@
 @tailwind utilities;
 
 input:disabled {
-    background-color: white;  /* Set a custom background color */
-    color: black;             /* Set custom text color */    
-    opacity: .5;               /* Ensure opacity is fully visible */
-    cursor: default;          /* Set cursor to default */
+  background-color: white; /* Set a custom background color */
+  color: black; /* Set custom text color */
+  opacity: 0.5; /* Ensure opacity is fully visible */
+  cursor: default; /* Set cursor to default */
 }
 
 /* Optional: Customize hover effect for disabled inputs */
 input:disabled:hover {
-    border-color: #999;       /* Optional hover effect */
+  border-color: #999; /* Optional hover effect */
+}
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}
+
+.post-content {
+  font-size: 0.75rem !important;
+  line-height: 1rem;
 }

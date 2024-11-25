@@ -1,95 +1,142 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { MoreModal } from "../Modal/More";
+import { Clipboard } from "../Clipboard/Clipboard";
+import { ClassroomTypes } from "../../process/Classroom/classroomTypes";
+import { fetchBackgroundImage } from "../../utils/imageCache";
+import { FileText, BookOpen, BarChart2, Users, Calendar } from "lucide-react";
 
-import { useNavigate } from 'react-router-dom'
-import { MoreModal } from '../Modal/More'
-import { Clipboard } from '../Clipboard/Clipboard'
-import { ClassroomTypes } from '../../process/Classroom/classroomTypes'
-
-const active = 'h-[2rem] text-sm bg-gray-200 text-gray-500 text-left px-6'
-const notActive = 'h-[2rem] text-sm hover:bg-gray-200 text-gray-500 text-left px-6'
+const activeIcon =
+  "p-2 bg-blue-500 text-white rounded-full shadow-lg transform scale-110 transition-all duration-300";
+const notActiveIcon =
+  "p-2 text-gray-500 group-hover:bg-blue-500 group-hover:text-white group-hover:rounded-full group-hover:shadow-lg group-hover:scale-110 transition-all duration-300";
 
 type MainMenuProps = {
-    children: React.ReactNode
-}
-export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
-    
-    const [classroom, setclassroom] = useState<ClassroomTypes>();    
-    const length : number  = window.location.href.split("/").length
-    const class_id = window.location.href.split("/")[length-2]
-    const isStudent = window.location.href.split("/")[(length-length) + 3]
+  children: React.ReactNode;
+};
 
-    const navigate = useNavigate()
+export const ClassroomMenu: React.FC<MainMenuProps> = ({ children }) => {
+  const [classroom, setClassroom] = useState<ClassroomTypes | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string>("");
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const storedClassroom = localStorage.getItem('selectedClassroom');
-        if (storedClassroom) {
-            setclassroom(JSON.parse(storedClassroom));
-        }
-    }, []);
-        
-    const getLinkID = () => {
+  const length = window.location.href.split("/").length;
+  const isStudent = window.location.href.split("/")[length - length + 3];
 
-        if (window.location.href.split("/").pop() === 'new' ){            
-            return window.location.href.split("/")[length-2]
-        } else if (window.location.href.split("/").pop() === 'view' ) {           
-            return window.location.href.split("/")[length-3]   
-        }
-        return window.location.href.split("/").pop()
+  useEffect(() => {
+    const storedClassroom = localStorage.getItem("selectedClassroom");
+    if (storedClassroom) {
+      const parsedClassroom = JSON.parse(storedClassroom);
+      setClassroom(parsedClassroom);
+      const loadImage = async () => {
+        const image = await fetchBackgroundImage(
+          parsedClassroom.class_id,
+          parsedClassroom.name
+        );
+        setBackgroundImage(image);
+      };
+      loadImage();
     }
+  }, []);
 
-    const [isActive, setActive] = useState(getLinkID)
-    const navigateTo = (name : string) =>{        
-        setActive(name)             
-        navigate(`${class_id}/${name}`, {state:{classroom}})
+  const navigateTo = (route: string) => {
+    if (!classroom) return;
+    navigate(`${classroom.class_id}/${route}`, { state: { classroom } });
+  };
+
+  const routes = [
+    {
+      name: "posts",
+      icon: <FileText size={18} />,
+      showAlways: true,
+    },
+    {
+      name: "assignments",
+      icon: <BookOpen size={18} />,
+      showAlways: true,
+    },
+    {
+      name: "grades",
+      icon: <BarChart2 size={18} />,
+      showAlways: true,
+    },
+    {
+      name: "schedule",
+      icon: <Calendar size={18} />,
+      showAlways: false,
+    },
+    {
+      name: "members",
+      icon: <Users size={18} />,
+      showAlways: true,
+    },
+  ];
+
+  const filteredRoutes = routes.filter((route) => {
+    if (route.name === "schedule" && isStudent === "student") {
+      return false;
     }
-        
-    return (
-        <>                        
-            <div className={`flex h-full w-full`}>
-                                
-                <div className={`flex flex-col gap-4 
-                border-r border-gray-200 h-full z-0 w-[30%] bg-white
-                ${window.location.href.split("/").pop() === "meeting" ? `hidden` : 'flex'}`}>
-                    <div className='h-[15rem] bg-[green]'></div>
+    return route.showAlways || localStorage.getItem("role") !== "student";
+  });
 
-                    <div className='flex items-center justify-between mx-6 my-2 relative'>
-                        <h1 className='text-xl font-bold'>{classroom?.name}</h1>
-                        
-                        <div className='flex gap-4'>
-                            {isStudent !== 'student' && <Clipboard class_code={classroom?.class_string_id}/> }
-                            {isStudent !== 'student' && <MoreModal 
-                                class_id={classroom?.class_id || ""} 
-                                name={classroom?.name} 
-                                description={classroom?.description}/>}
-                            
-                        </div>
-                        
-                    </div>
+  return (
+    <div className="flex h-full w-full bg-slate-100">
+      <div className="flex flex-col gap-4 ml-4 my-4 rounded-xl h-[calc(100vh-7rem)] z-0 w-[30%] p-4 bg-white">
+        <div className="flex items-center justify-between pb-2 relative border-b border-gray-200">
+          <div className="flex w-full items-center justify-between">
+            <h1 className="text-xl font-bold">{classroom?.name}</h1>
+            <div className="flex">
+              <Clipboard class_code={classroom?.class_string_id || ""} />
+              <MoreModal
+                class_id={classroom?.class_id || ""}
+                name={classroom?.name || ""}
+                description={classroom?.description || ""}
+              />
+            </div>
+          </div>
+        </div>
 
-                    <div className='flex flex-col '>
-                        <button type='button' className={isActive === "posts" ? active : notActive} onClick={() => navigateTo("posts")}>
-                            Posts
-                        </button>
-                        <button type='button' className={isActive === "assignments" ? active : notActive} onClick={() => navigateTo("assignments")}>
-                            Assignments
-                        </button>
-                        <button type='button' className={isActive === "grades" ? active : notActive} onClick={() => navigateTo("grades")}>
-                            Grade
-                        </button>
-                        {isStudent !== 'student' && <button type='button' className={isActive === "schedule" ? active : notActive} onClick={() => navigateTo("schedule")}>
-                            Schedule Meeting
-                        </button> }
-                        <button type='button' className={isActive === "members" ? active : notActive} onClick={() => navigateTo("members")}>
-                            Members
-                        </button>
-                    </div>                                
-                </div>
-                
-                <div className={`${window.location.href.split("/").pop() === "meeting" ? `w-screen` : 'w-[70%]'} bg-white overflow-hidden h-[calc(100vh-75px)]`}>                    
-                        {children}
-                </div>
-            </div>  
-            
-        </>       
-    )
-}
+        <div
+          className={`h-[15rem] transition-all duration-300 rounded-xl ${
+            backgroundImage ? "bg-cover bg-center" : "bg-green-600"
+          }`}
+          style={
+            backgroundImage
+              ? { backgroundImage: `url(${backgroundImage})` }
+              : {}
+          }
+        />
+
+        <div className="flex flex-col py-4 border-y border-gray-200 p-2 space-y-2">
+          <p className="uppercase text-[0.7rem] opacity-60 mb-2">Menu</p>
+          {filteredRoutes.map((route) => (
+            <button
+              key={route.name}
+              type="button"
+              className={`text-sm text-left flex items-center gap-2 text-gray-500 group ${
+                window.location.href.includes(route.name) ? "font-semibold" : ""
+              }`}
+              onClick={() => navigateTo(route.name)}
+            >
+              <div
+                className={
+                  window.location.href.includes(route.name)
+                    ? activeIcon
+                    : notActiveIcon
+                }
+              >
+                {route.icon}
+              </div>
+              {route.name === "schedule"
+                ? "Schedule Meeting"
+                : route.name.charAt(0).toUpperCase() + route.name.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="w-[70%] overflow-hidden h-[calc(100vh-75px)]">
+        {children}
+      </div>
+    </div>
+  );
+};
