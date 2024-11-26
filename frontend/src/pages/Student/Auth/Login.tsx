@@ -1,12 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Authentication } from "../../../Auth/Authentication";
+import { authapi } from "../../../process/axios";
+import { SuccessToast } from "../../../components/Toast/SuccessToast";
+import { FailedToast } from "../../../components/Toast/FailedToast";
 import { Spinner } from "../../../components/Spinner/spinner";
 import useModalStore from "../../../process/Modal/useModalStore";
 
 interface FormState {
   email_address: string;
   password: string;
+}
+interface ErrorsState {
+  email_address?: string;
+  password?: string;
 }
 
 export const StudentLogin: React.FC = () => {
@@ -18,6 +26,7 @@ export const StudentLogin: React.FC = () => {
     password: "",
   });
 
+  const [errors, setErrors] = useState<ErrorsState>({});
   const [show, setShow] = useState(false);
   const { isLoading, startLoading, stopLoading } = useModalStore();
 
@@ -29,48 +38,52 @@ export const StudentLogin: React.FC = () => {
     }));
   };
 
-  // Commented out validation
-  // const validate = () => {
-  //     const newErrors: { [key: string]: string } = {};
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
 
-  //     if (form.email_address.length <= 0) {
-  //         newErrors.email_address = "Email Address is required.";
-  //     }
+    if (form.email_address.length <= 0) {
+      newErrors.email_address = "Email Address is required.";
+    }
 
-  //     if (form.password.length <= 0) {
-  //         newErrors.password = "Password is required.";
-  //     }
+    if (form.password.length <= 0) {
+      newErrors.password = "Password is required.";
+    }
 
-  //     return newErrors;
-  // };
-
+    return newErrors;
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Removed validation errors check
-    // const validationErrors = validate();
+    const validationErrors = validate();
 
-    // if (Object.keys(validationErrors).length === 0) {
-    startLoading();
-    try {
-      // Simulating a successful login
-      const user = "Doe, John, Michael";
-      const token = "dummy-token";
-      const id = 16;
-      const email = form.email_address;
-      const role = "Student";
+    if (Object.keys(validationErrors).length === 0) {
+      startLoading();
+      try {
+        const response = await authapi.post("/student/login", form);
 
-      login(user, token, id, email, role);
-      stopLoading();
+        const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`;
+        const token = response.data.token;
+        const id = response.data.student_id;
+        const email = response.data.email_address;
+        const role = "Student";
 
-      navigate(`/student/${id}/class`);
-    } catch (error) {
-      console.error("Login error", error);
-      stopLoading();
+        login(user, token, id, email, role);
+        SuccessToast("Login Success");
+        stopLoading();
+
+        navigate(`/student/${id}/class`);
+      } catch (error: any) {
+        if (error.code) {
+          FailedToast("Wrong username and password!");
+        } else {
+          FailedToast("Something went wrong!");
+        }
+
+        stopLoading();
+      }
+    } else {
+      setErrors(validationErrors);
     }
-    // } else {
-    //     setErrors(validationErrors);
-    // }
   };
 
   return (
@@ -129,6 +142,9 @@ export const StudentLogin: React.FC = () => {
                     </svg>
                   </span>
                 </div>
+                {errors.email_address && (
+                  <p className="text-red-500 text-sm">{errors.email_address}</p>
+                )}
               </div>
 
               <div>
@@ -172,6 +188,9 @@ export const StudentLogin: React.FC = () => {
                     </svg>
                   </span>
                 </div>
+                {errors.password && (
+                  <p className="text-red-500 text-sm">{errors.password}</p>
+                )}
               </div>
 
               <button

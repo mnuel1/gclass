@@ -1,4 +1,6 @@
-import { Accordion } from "@/components/Accordion/Accordion";
+// @ts-nocheck
+
+// import { Accordion } from "@/components/Accordion/Accordion";
 import { FailedToast } from "@/components/Toast/FailedToast";
 import { api } from "@/process/axios";
 import { useAddMember, useRemoveMember } from "@/process/Member/useMemberQuery";

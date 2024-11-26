@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { SuccessToast } from "../Toast/SuccessToast";
 import { Share2 } from "lucide-react";

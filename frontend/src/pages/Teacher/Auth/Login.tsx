@@ -1,12 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Authentication } from "../../../Auth/Authentication";
-import useModalStore from "../../../process/Modal/useModalStore";
+import { authapi } from "../../../process/axios";
+import { SuccessToast } from "../../../components/Toast/SuccessToast";
+import { FailedToast } from "../../../components/Toast/FailedToast";
 import { Spinner } from "../../../components/Spinner/spinner";
+import useModalStore from "../../../process/Modal/useModalStore";
 
 interface FormState {
   email_address: string;
   password: string;
+}
+interface ErrorsState {
+  email_address?: string;
+  password?: string;
 }
 
 export const TeacherLogin: React.FC = () => {
@@ -18,6 +26,7 @@ export const TeacherLogin: React.FC = () => {
     password: "",
   });
 
+  const [errors, setErrors] = useState<ErrorsState>({});
   const [show, setShow] = useState(false);
   const { isLoading, startLoading, stopLoading } = useModalStore();
 
@@ -29,45 +38,64 @@ export const TeacherLogin: React.FC = () => {
     }));
   };
 
-  // Commented out validation
-  // const validate = () => {
-  //   const newErrors: { [key: string]: string } = {};
-  //   if (form.email_address.length <= 0) {
-  //     newErrors.email_address = "Email Address is required.";
-  //   }
-  //   if (form.password.length <= 0) {
-  //     newErrors.password = "Password is required.";
-  //   }
-  //   return newErrors;
-  // };
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
 
+    if (form.email_address.length <= 0) {
+      newErrors.email_address = "Email Address is required.";
+    }
+
+    if (form.password.length <= 0) {
+      newErrors.password = "Password is required.";
+    }
+
+    return newErrors;
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Removed validation check
-    // const validationErrors = validate();
-    // if (Object.keys(validationErrors).length === 0) {
-    startLoading();
-    try {
-      // Simulating a successful login
-      const user = "Doe, John, Michael";
-      const token = "dummy-token";
-      const id = 1;
-      const email = form.email_address;
-      const role = "Teacher";
+    const validationErrors = validate();
 
-      login(user, token, id, email, role);
-      stopLoading();
+    if (Object.keys(validationErrors).length === 0) {
+      startLoading();
+      try {
+        const response = await authapi.post("/teacher/login", form);
 
-      navigate(`/teacher/${id}/class`);
-    } catch (error) {
-      // Handle any unexpected errors
-      console.error("Login error", error);
-      stopLoading();
+        const user = `${response.data.last_name}, ${response.data.first_name}, ${response.data.middle_name}`;
+        const token = response.data.token;
+        const id = response.data.teacher_id;
+        const email = response.data.email_address;
+        const role = "Teacher";
+
+        if (response.status === 201) {
+          FailedToast(
+            "Your account is still not activated. Please wait for the admin to approve your account. We will send an email regarding to your application"
+          );
+          return;
+        }
+        if (response.status === 202) {
+          FailedToast(
+            "The admin rejected your application. You will not be able to use your account."
+          );
+          return;
+        }
+
+        login(user, token, id, email, role);
+        SuccessToast("Login Success");
+        stopLoading();
+
+        navigate(`/teacher/${response.data.teacher_id}/class`);
+      } catch (error: any) {
+        if (error.code) {
+          FailedToast("Wrong username and password!");
+        } else {
+          FailedToast("Something went wrong!");
+        }
+        stopLoading();
+      }
+    } else {
+      setErrors(validationErrors);
     }
-    // } else {
-    //   setErrors(validationErrors);
-    // }
   };
 
   return (
@@ -126,6 +154,9 @@ export const TeacherLogin: React.FC = () => {
                     </svg>
                   </span>
                 </div>
+                {errors.email_address && (
+                  <p className="text-red-500 text-sm">{errors.email_address}</p>
+                )}
               </div>
 
               <div>
@@ -169,6 +200,9 @@ export const TeacherLogin: React.FC = () => {
                     </svg>
                   </span>
                 </div>
+                {errors.password && (
+                  <p className="text-red-500 text-sm">{errors.password}</p>
+                )}
               </div>
 
               <button

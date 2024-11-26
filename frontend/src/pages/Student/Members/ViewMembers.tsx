@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Users, ChevronDown } from "lucide-react";
+import { Users } from "lucide-react";
 import useMemberStore from "../process/Member/useMemberStore";
 import { useMemberQuery } from "../process/Member/useMemberQuery";
 import useModalStore from "../../../process/Modal/useModalStore";
 import { ClassroomTypes } from "../../../process/Classroom/classroomTypes";
 import { FailedToast } from "../../../components/Toast/FailedToast";
-import { Accordion } from "../../../components/Accordion/Accordion";
 
 export const StudentMembers: React.FC = () => {
   const location = useLocation();

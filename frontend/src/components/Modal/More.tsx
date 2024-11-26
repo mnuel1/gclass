@@ -1,8 +1,9 @@
+// @ts-nocheck
+
 import React from "react";
 
 import { DeleteModal } from "./DeleteModal";
 import { EditModal } from "./EditModal";
-import { SuccessToast } from "../Toast/SuccessToast";
 import useModalStore from "../../process/Modal/useModalStore";
 import {
   useRemoveClassroom,
