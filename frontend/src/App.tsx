@@ -3,7 +3,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'slick-carousel/slick/slick.css'; 
 import 'slick-carousel/slick/slick-theme.css';
 import MeetingPage from './meeting';
-import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './Auth/ProtectedRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
@@ -74,8 +74,8 @@ import { TeacherReset } from './pages/Teacher/Auth/Reset';
  * VIDEO CONFRENCE
  * 
  */
-import { VideoConference } from './pages/Video Conference/VideoConference';
-
+import VideoConference from './pages/Video Conference/VideoConference';
+import StudVideoConference from './pages/Video Conference/StudVideoConference';
 /**
  * STUDENT AUTH
  * 
@@ -98,6 +98,10 @@ import { StudentMembers } from './pages/Student/Members/ViewMembers';
 import { StudentGrades } from './pages/Student/Grade/ViewAllGrade';
 import { StudentViewAssignment } from './pages/Student/Assignment/ViewAssignment';
 import { StudentVideoConference } from './pages/Student/Video Conference/VideoConference';
+
+import { VideoLayout } from './layout/VideoLayout';
+import Main from './components/Main/Main';
+import Room from './components/Room/Room';
 function App() {
       
     return (
@@ -193,8 +197,9 @@ function App() {
                             <Route path='account' element={<AccountSettings/>} /> 
                         
                         </Route>
-                        <Route path='teacher/:teacher_id/class/:class_id/meeting' element={<VideoConference/>} />
-                        
+                        {/* <Route path='teacher/:teacher_id/class/:class_id/meeting' element={<VideoConference/>} /> */}
+                        <Route path='meeting' element={<VideoConference/>} />
+                        <Route path='meeting/student' element={<StudVideoConference/>} />
                         <Route path={`/student`} element={<Navigate to={`login`} replace />} />
                         <Route path={`/student/:teacher_id`} element={<Navigate to={`class`} replace />} />
                         <Route path='/student/:student_id' element={<StudentLayout />} >
@@ -218,8 +223,20 @@ function App() {
                         </Route>
                         
                         <Route path="*" element={<NotFound />} />
+
+                       
                         
+                        
+                                                                                                                    
+                        <Route path="/room" element={<VideoLayout />} >
+                            <Route index element={<Main/>} />
+                            <Route path="/room/:roomId" element={<Room/>} />
+                        </Route>
+                    
                     </Routes>
+                    
+
+
                 </Router>
             </QueryClientProvider>
         </>
