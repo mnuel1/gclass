@@ -41,9 +41,7 @@ const GetMeetingsService = async (student_id) => {
         
             return meeting; 
         });
-        
-
-        
+                
         return {
             error: false,
             succesfull: true,
