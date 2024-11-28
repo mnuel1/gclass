@@ -64,20 +64,14 @@ exports.createPostRecord = async (classId, postData) => {
 
 exports.getAllPostRecordsFromClass = async (classId) => {
   try {
-    // Step 1: Fetch all posts
-    const [postResults] = await db.query(`SELECT * FROM posts WHERE class_id = ?`,
-      [classId]
-    );
+    const [postResults] = await db.query(`SELECT * FROM posts WHERE class_id = ?`, [classId]);
 
-    // Step 2: Prepare post IDs for fetching attachments, replies, and reactions
     const postIds = postResults.map((post) => post.post_id);
 
-    // Fetch attachments for each post
     const attachmentsResults = await Promise.all(
-      postIds.map(postId => getAllAttachmentRecordsFromPost(postId))
+      postIds.map((postId) => getAllAttachmentRecordsFromPost(postId))
     );
 
-    // Fetch replies for each post
     const repliesResults = await Promise.all(
       postIds.map(async (postId) => {
         const [replies] = await db.query('SELECT * FROM replies WHERE post_id = ?', [postId]);
@@ -85,7 +79,6 @@ exports.getAllPostRecordsFromClass = async (classId) => {
       })
     );
 
-    // Fetch reactions for each post
     const reactionsResults = await Promise.all(
       postIds.map(async (postId) => {
         const [reactions] = await db.query('SELECT * FROM reactions WHERE post_id = ?', [postId]);
@@ -93,36 +86,29 @@ exports.getAllPostRecordsFromClass = async (classId) => {
       })
     );
 
-    // Step 3: Map and format the data
     const formattedPosts = await Promise.all(postResults.map(async (post, index) => {
       let student = null;
       let teacher = null;
 
-      // Fetch student data if student_id is not null
       if (post.student_id) {
         student = await getStudentData(post.student_id);
-        if (student) delete student.password; // Exclude password field
+        if (student) delete student.password;
       }
 
-      // Fetch teacher data if teacher_id is not null
       if (post.teacher_id) {
         teacher = await getTeacherData(post.teacher_id);
-        if (teacher) delete teacher.password; // Exclude password field
+        if (teacher) delete teacher.password;
       }
 
-      // Get attachments for the current post
       const attachments = attachmentsResults[index]?.data || [];
 
-      // Get replies for the current post
       const replies = await Promise.all(
         repliesResults[index]?.map(async (reply) => {
           const replyStudent = reply.student_id ? await getStudentData(reply.student_id) : null;
           const replyTeacher = reply.teacher_id ? await getTeacherData(reply.teacher_id) : null;
 
-          // Fetch reactions for this specific reply
           const [replyReactions] = await db.query('SELECT * FROM reactions WHERE reply_id = ?', [reply.reply_id]);
 
-          // Process reply reactions similar to post reactions
           const processedReplyReactions = await Promise.all(
             replyReactions.map(async (reaction) => {
               const reactionStudent = reaction.student_id ? await getStudentData(reaction.student_id) : null;
@@ -139,20 +125,34 @@ exports.getAllPostRecordsFromClass = async (classId) => {
             })
           );
 
+          // Fetch attachments for the reply
+          const replyAttachments = await db.query(
+            'SELECT * FROM attachments WHERE reply_id = ?',
+            [reply.reply_id]
+          );
+
           return {
+            replyId: reply.reply_id,
             postId: reply.post_id,
-            replyId: reply.reply_id, // Add reply_id to the response
             teacher: replyTeacher ? { ...replyTeacher, password: undefined } : undefined,
             student: replyStudent ? { ...replyStudent, password: undefined } : undefined,
             content: reply.content,
+            reactions: processedReplyReactions,
+            attachments: replyAttachments[0].map((attachment) => ({
+              attachmentId: attachment.attachment_id,
+              replyId: attachment.reply_id,
+              fileName: attachment.file_name,
+              filePath: attachment.file_path,
+              type: attachment.type,
+              uploadedAt: format(new Date(attachment.uploaded_at), 'yyyy-MM-dd HH:mm:ss'),
+            })),
             createdAt: format(new Date(reply.created_at), 'yyyy-MM-dd HH:mm:ss'),
             updatedAt: format(new Date(reply.updated_at), 'yyyy-MM-dd HH:mm:ss'),
-            reactions: processedReplyReactions, // Add reactions to the reply
+
           };
         }) || []
       );
 
-      // Get reactions for the current post
       const reactions = await Promise.all(
         reactionsResults[index]?.map(async (reaction) => {
           const reactionStudent = reaction.student_id ? await getStudentData(reaction.student_id) : null;
@@ -168,13 +168,10 @@ exports.getAllPostRecordsFromClass = async (classId) => {
           };
         }) || []
       );
-      
 
-      // Format the dates using date-fns
       const formattedCreatedAt = format(new Date(post.created_at), 'yyyy-MM-dd HH:mm:ss');
       const formattedUpdatedAt = format(new Date(post.updated_at), 'yyyy-MM-dd HH:mm:ss');
 
-      // Prepare the response object
       const postResponse = {
         postId: post.post_id,
         classId: post.class_id || 0,
@@ -184,11 +181,10 @@ exports.getAllPostRecordsFromClass = async (classId) => {
         attachments: attachments.map((attachment) => ({
           attachmentId: attachment.attachment_id,
           postId: attachment.post_id,
-          replyId: attachment.reply_id, // Make sure to reference the correct `reply_id`
           fileName: attachment.file_name,
           filePath: attachment.file_path,
           type: attachment.type,
-          uploadedAt: format(new Date(attachment.uploaded_at), 'yyyy-MM-dd HH:mm:ss') // Format uploadedAt
+          uploadedAt: format(new Date(attachment.uploaded_at), 'yyyy-MM-dd HH:mm:ss'),
         })),
         replies,
         reactions,
@@ -196,7 +192,6 @@ exports.getAllPostRecordsFromClass = async (classId) => {
         updatedAt: formattedUpdatedAt,
       };
 
-      // Conditionally add student and teacher if they are not null
       if (student) {
         postResponse.student = student;
       }
@@ -221,18 +216,14 @@ exports.getAllPostRecordsFromClass = async (classId) => {
         posts: formattedPosts,
       };
     }
-
-    // Step 4: Return the response
-
   } catch (err) {
     console.log(err);
     return {
-      status: 500, // Internal Server Error
+      status: 500,
       message: "An error occurred while retrieving the post records. Please try again later.",
     };
   }
 };
-
 
 // Helper function to fetch student data by student_id
 const getStudentData = async (studentId) => {

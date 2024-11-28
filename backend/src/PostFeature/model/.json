@@ -7,8 +7,65 @@
             "subject": "Research about rizal",
             "content": "at least 3 paragraphs",
             "postType": "Regular",
-            "attachments": [],
-            "replies": [],
+            "attachments": [
+                {
+                    "attachmentId": 1,
+                    "postId": 1,
+                    "fileName": "rizal.pdf",
+                    "filePath": "uploads/attachments/documents-231232-rizal.pdf",
+                    "type": "pdf",
+                    "uploadedAt": "2024-11-28 20:46:49"
+                }
+            ],
+            "replies": [
+                {
+                    "replyId": 1,
+                    "postId": 1,
+                    "student": {
+                        "studentId": 2,
+                        "studentStringId": "S1002",
+                        "firstName": "Jane",
+                        "middleName": "Elizabeth",
+                        "lastName": "Smith",
+                        "email": "jane.smith@example.com",
+                        "createdTime": "2024-01-16 09:00:00",
+                        "modifiedTime": "2024-01-16 09:05:00"
+                    },
+                    "content": "Pwede po pa extend?",
+                    "reactions": [],
+                    "attachments": [],
+                    "createdAt": "2024-11-28 20:36:56",
+                    "updatedAt": "2024-11-28 20:36:56"
+                },
+                {
+                    "replyId": 2,
+                    "postId": 1,
+                    "student": {
+                        "studentId": 2,
+                        "studentStringId": "S1002",
+                        "firstName": "Jane",
+                        "middleName": "Elizabeth",
+                        "lastName": "Smith",
+                        "email": "jane.smith@example.com",
+                        "createdTime": "2024-01-16 09:00:00",
+                        "modifiedTime": "2024-01-16 09:05:00"
+                    },
+                    "content": "Ma'am, ganito po ba yung format?",
+                    "reactions": [],
+                    "attachments": [
+                        {
+                            "attachmentId": 3,
+                            "replyId": 2,
+                            "fileName": "sample.pdf",
+                            "filePath": "uploads/attachments/documents-31029309-sample.pdf",
+                            "type": "pdf",
+                            "uploadedAt": "2024-11-28 20:51:44"
+                        }
+                    ],
+                    "createdAt": "2024-11-28 20:38:56",
+                    "updatedAt": "2024-11-28 20:38:56"
+                }
+            ],
             "reactions": [
                 {
                     "reactionId": 4,
