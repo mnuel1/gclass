@@ -68,10 +68,10 @@ export const StudentHome: React.FC = () => {
 
   const joinClassMutation = useJoinClassroom();
   const handleJoinClass = (data: any) => {
-    console.log(data);
+    // console.log(data);
 
     joinClassMutation.mutate(data);
-    window.location.reload();
+    // window.location.reload();
   };
   return (
     <>
