@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-import { Authentication } from "../../../Auth/Authentication";
 import { useActivityQuery } from "../../../process/Activity/useActivityQuery";
 import useActivityStore from "../../../process/Activity/useActivityStore";
 import useModalStore from "../../../process/Modal/useModalStore";

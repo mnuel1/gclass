@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ClassroomTypes } from "../../../process/Classroom/classroomTypes";
+// import { ClassroomTypes } from "../../../process/Classroom/classroomTypes";
 import { AssignmentType } from "../../../process/Assignment/assignmentType";
 import useModalStore from "../../../process/Modal/useModalStore";
 import { FailedToast } from "../../../components/Toast/FailedToast";
 import { SERVER } from "../../../process/axios";
-import { Accordion } from "../../../components/Accordion/Accordion";
+// import { Accordion } from "../../../components/Accordion/Accordion";
 import { Authentication } from "../../../Auth/Authentication";
 import { SuccessToast } from "../../../components/Toast/SuccessToast";
 import { ConfirmModal } from "../../../components/Modal/ConfirmModal";
@@ -22,7 +22,7 @@ export const StudentViewAssignment: React.FC = () => {
   const { getID } = Authentication();
   const location = useLocation();
   const navigate = useNavigate();
-  const classroom: ClassroomTypes = location.state.classroom;
+  // const classroom: ClassroomTypes = location.state.classroom;
   const ass: AssignmentType = location.state.assignment;
   const [errors, setErrors] = useState<ErrorsState>({});
   const [form, setForm] = useState({
@@ -33,25 +33,25 @@ export const StudentViewAssignment: React.FC = () => {
 
   const { startLoading, stopLoading } = useModalStore();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
+  // const handleChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  // ) => {
+  //   const { name, value, type } = e.target;
 
-    if (type === "file") {
-      const fileInput = e.target as HTMLInputElement;
-      const file = fileInput.files ? fileInput.files[0] : null;
-      setForm((prevForm) => ({
-        ...prevForm,
-        ["attachment"]: file,
-      }));
-    } else {
-      setForm((prevForm) => ({
-        ...prevForm,
-        [name]: value,
-      }));
-    }
-  };
+  //   if (type === "file") {
+  //     const fileInput = e.target as HTMLInputElement;
+  //     const file = fileInput.files ? fileInput.files[0] : null;
+  //     setForm((prevForm) => ({
+  //       ...prevForm,
+  //       ["attachment"]: file,
+  //     }));
+  //   } else {
+  //     setForm((prevForm) => ({
+  //       ...prevForm,
+  //       [name]: value,
+  //     }));
+  //   }
+  // };
 
   const handleDownload = () => {
     if (ass.attachments) {

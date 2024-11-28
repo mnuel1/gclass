@@ -1,4 +1,6 @@
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Authentication } from "@/Auth/Authentication";
 import { FailedToast } from "@/components/Toast/FailedToast";
 import useAssignmentStore from "@/process/Assignment/useAssignmentStore";

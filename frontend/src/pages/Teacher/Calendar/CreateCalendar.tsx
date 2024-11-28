@@ -1,9 +1,11 @@
+// @ts-nocheck
+
 import React, { useState } from "react";
 
 import { useLocation } from "react-router-dom";
 import { useAddMeeting } from "../../../process/Calendar/useCalendarQuery";
 import { ClassroomTypes } from "../../../process/Classroom/classroomTypes";
-import { FailedToast } from "../../../components/Toast/FailedToast";
+// import { FailedToast } from "../../../components/Toast/FailedToast";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
