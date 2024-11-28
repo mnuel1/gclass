@@ -12,6 +12,7 @@ const teacherRoute = require("./src/Teacher/routes/route");
 const studentRoute = require("./src/Student/routes/route")
 const adminRoute = require("./src/Admin/route")
 const searchRoute = require('./src/routes/route')
+const postRoute = require('./src/PostFeature/routes/route')
 
 const forgotPass = require('./src/notify')
 
@@ -23,10 +24,11 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 app.use("/teacher", teacherRoute)
 app.use("/student", studentRoute)
 app.use("/admin", adminRoute)
+app.use('/class', postRoute)
 app.use(uploadRoute)
 app.use(searchRoute)
 app.use(forgotPass)
@@ -52,22 +54,22 @@ wss.on('connection', (ws, queryParams) => {
     console.error('Class ID is missing!');
     return;
   }
-        
+
   if (!classes[classId]) {
     classes[classId] = { teacherSocket: null, students: {} };
   }
 
   if (role === 'teacher') {
-    classes[classId].teacherSocket = ws;    
+    classes[classId].teacherSocket = ws;
   } else if (role === 'student') {
-    classes[classId].students[studentId] = 0;    
+    classes[classId].students[studentId] = 0;
     ws.on('message', (message) => {
-            
+
       const data = JSON.parse(message.toString());
       const { action } = data;
 
-      if (action === 'increment') {        
-        classes[classId].students[studentId] += 1;        
+      if (action === 'increment') {
+        classes[classId].students[studentId] += 1;
         if (classes[classId].students[studentId] === 3) {
           const teacherSocket = classes[classId].teacherSocket;
           if (teacherSocket && teacherSocket.readyState === WebSocket.OPEN) {
@@ -83,19 +85,19 @@ wss.on('connection', (ws, queryParams) => {
   }
 
   ws.on('close', () => {
-    if (role === 'teacher') {      
+    if (role === 'teacher') {
       classes[classId].teacherSocket = null;
-    } else if (role === 'student') {      
+    } else if (role === 'student') {
       delete classes[classId].students[studentId];
     }
   });
 });
 
 server.on('upgrade', (request, socket, head) => {
-  
+
   const parsedUrl = url.parse(request.url || '', true);
   const queryParams = new URLSearchParams(parsedUrl.query);
-  
+
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit('connection', ws, queryParams);
   });
