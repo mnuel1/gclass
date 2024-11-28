@@ -3,7 +3,7 @@ const router = express.Router();
 
 // Dependencies
 const { createPost, getAllPost } = require('../Post/PostController');
-const { createAttachment, getOneAttachment, getAllAttachmentFromPost, getAllAttachmentFromReplies } = require('../Attachment/AttachmentController')
+const { createAttachmentForPost, createAttachmentForReply, getOneAttachmentFromPost, getAllAttachmentFromPost, getAllAttachmentFromReplies } = require('../Attachment/AttachmentController')
 const { createReactionToPost, createReactionToReply, deleteReaction } = require('../Reaction/ReactionController');
 const { createReply } = require('../Reply/ReplyController')
 
@@ -12,10 +12,11 @@ router.post('/:classId/posts', createPost);
 router.get('/:classId/posts', getAllPost);
 
 // ATTACHMENT ROUTES
-router.post('/posts/attachments', createAttachment);
-router.get('/posts/attachments/:attachmentId', getOneAttachment);
+router.post('/posts/:postId/attachments', createAttachmentForPost);
+router.post('/posts/replies/:replyId/attachments', createAttachmentForReply);
+router.get('/posts/:postId/attachments/:attachmentId', getOneAttachmentFromPost);
 router.get('/posts/:postId/attachments', getAllAttachmentFromPost);
-router.get('/posts/reply/:replyId/attachments', getAllAttachmentFromReplies);
+router.get('/posts/:postId/reply/:replyId/attachments', getAllAttachmentFromReplies);
 
 // REACTION ROUTES
 // Post Reactions

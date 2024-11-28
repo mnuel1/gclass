@@ -1,15 +1,24 @@
-const { createAttachmentRecord, getOneAttachmentRecord, getAllAttachmentRecordsFromPost, getAllAttachmentRecordsFromReplies } = require('../Attachment/AttachmentService');
+const { createAttachmentRecordForPost, createAttachmentRecordForReply, getOneAttachmentRecordFromPost, getAllAttachmentRecordsFromPost, getAllAttachmentRecordsFromReplies } = require('../Attachment/AttachmentService');
 
 
-exports.createAttachment = async (req, res) => {
+exports.createAttachmentForPost = async (req, res) => {
+    const postId = req.params.postId;
     const attachment = req.body;
-    const response = await createAttachmentRecord(attachment);
+    const response = await createAttachmentRecordForPost(postId, attachment);
     res.status(response.status).json({ message: response.message });
 }
 
-exports.getOneAttachment = async (req, res) => {
+exports.createAttachmentForReply = async (req, res) => {
+    const replyId = req.params.replyId;
+    const attachment = req.body;
+    const response = await createAttachmentRecordForReply(replyId, attachment);
+    res.status(response.status).json({ message: response.message });
+};
+
+exports.getOneAttachmentFromPost = async (req, res) => {
+    const postId = req.params.postId;
     const attachmentId = req.params.attachmentId;
-    const response = await getOneAttachmentRecord(attachmentId);
+    const response = await getOneAttachmentRecordFromPost(postId, attachmentId);
     res.status(response.status).json({ message: response.message, data: response.data })
 }
 
@@ -20,7 +29,8 @@ exports.getAllAttachmentFromPost = async (req, res) => {
 };
 
 exports.getAllAttachmentFromReplies = async (req, res) => {
+    const postId = req.params.postId;
     const replyId = req.params.replyId;
-    const response = await getAllAttachmentRecordsFromReplies(replyId);
+    const response = await getAllAttachmentRecordsFromReplies(postId, replyId);
     res.status(response.status).json({ message: response.message, data: response.data });
 };

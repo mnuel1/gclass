@@ -2,10 +2,8 @@ const db = require("../../database/db");
 const Attachment = require('../model/Attachment');
 const { format } = require('date-fns');
 
-exports.createAttachmentRecord = async (attachmentData) => {
+exports.createAttachmentRecordForPost = async (postId, attachmentData) => {
     const {
-        postId,
-        replyId,
         filePath,
         type,
     } = attachmentData;
@@ -15,7 +13,7 @@ exports.createAttachmentRecord = async (attachmentData) => {
     const attachment = new Attachment(
         attachmentId = null,
         postId,
-        replyId,
+        replyId = null,
         fileName,
         filePath,
         type
@@ -60,11 +58,71 @@ exports.createAttachmentRecord = async (attachmentData) => {
     }
 }
 
-exports.getOneAttachmentRecord = async (attachmentId) => {
+exports.createAttachmentRecordForReply = async (replyId, attachmentData) => {
+    const {
+        filePath,
+        type,
+    } = attachmentData;
+
+    const fileName = filePath.replace(/.*\d+-/, '');
+
+    const attachment = new Attachment(
+        attachmentId = null,
+        postId = null,
+        replyId,
+        fileName,
+        filePath,
+        type
+    );
+
+    attachment.uploadedAt = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+
     try {
         const [attachmentQueryResult] = await db.query(
-            `SELECT * FROM attachments WHERE attachment_id = ?`,
-            [attachmentId]
+            `INSERT INTO attachments (post_id, reply_id, file_name, file_path, type, uploaded_at) VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+                attachment.postId,
+                attachment.replyId,
+                attachment.fileName,
+                attachment.filePath,
+                attachment.type,
+                attachment.uploadedAt
+            ]
+        );
+
+        if (attachmentQueryResult.affectedRows) {
+            return {
+                status: 201,
+                message: "Attachment created for reply.",
+            };
+        } else {
+            return {
+                status: 500, // Internal Server Error
+                message: "Failed to create the attachment.",
+            };
+        }
+    } catch (err) {
+        console.error(err);
+        if (err.errno === 1048) {
+            return {
+                status: 400,
+                message: "Required fields cannot be empty.",
+            };
+        } else {
+            return {
+                status: 500, // Internal Server Error
+                message: "An unexpected error occurred. Please try again later.",
+            };
+        }
+    }
+};
+
+
+exports.getOneAttachmentRecordFromPost = async (postId, attachmentId) => {
+    try {
+        const [attachmentQueryResult] = await db.query(
+            `SELECT * FROM attachments WHERE post_id = ? AND attachment_id = ?`,
+            [postId, attachmentId]
         );
 
         if (attachmentQueryResult.length > 0) {
@@ -76,10 +134,19 @@ exports.getOneAttachmentRecord = async (attachmentId) => {
                 attachment.uploaded_at = format(localUploadedAt, "yyyy-MM-dd HH:mm:ss");
             }
 
+            const formattedAttachment = {
+                attachmentId: attachment.attachment_id,
+                postId: attachment.post_id,
+                fileName: attachment.file_name,
+                filePath: attachment.file_path,
+                type: attachment.type,
+                uploadedAt: attachment.uploaded_at
+            }
+
             return {
                 status: 200,
                 message: "Attachment retrieved successfully.",
-                data: attachment,
+                data: formattedAttachment,
             };
         } else {
             return {
@@ -133,12 +200,12 @@ exports.getAllAttachmentRecordsFromPost = async (postId) => {
     }
 };
 
-exports.getAllAttachmentRecordsFromReplies = async (replyId) => {
+exports.getAllAttachmentRecordsFromReplies = async (postId, replyId) => {
     try {
         // Query to get all attachments associated with a specific replyId
         const [attachmentsQueryResult] = await db.query(
-            `SELECT * FROM attachments WHERE reply_id = ?`,
-            [replyId]
+            `SELECT * FROM attachments WHERE post_id = ? AND reply_id = ?`,
+            [postId, replyId]
         );
 
         if (attachmentsQueryResult.length > 0) {
