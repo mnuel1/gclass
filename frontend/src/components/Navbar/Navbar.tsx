@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import logo from "../../assets/5.png";
+import logo from "../../../public/logo.png";
 type MainMenuProps = {
   children: React.ReactNode;
 };
