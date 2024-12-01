@@ -32,7 +32,7 @@ export const Navbar: React.FC<MainMenuProps> = ({ children }) => {
         >
           <div className="flex gap-4 pl-8">
             <a className="" href="/#">
-              <img src={logo} alt="" className="w-32" />
+              <img src={logo} alt="" className="w-14" />
             </a>
           </div>
           <div className="flex gap-4 pr-8">
