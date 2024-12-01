@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 22, 2024 at 03:32 PM
+-- Generation Time: Dec 01, 2024 at 07:55 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -45,7 +45,11 @@ INSERT INTO `activity` (`activity_id`, `class_id`, `class_meeting_id`, `posts`, 
 (33, 47, NULL, 'A new assignment, Second assignment, has been created. Please review \n        the assignment details and submit it before the deadline.', NULL, '2024-10-14 19:18:09'),
 (35, 47, 16, '<h4 class=\'text-sm\'>\n            Meeting now: First Meeting<br />\n            Don\'t forget, we\'ve got a meeting today! Click the link below to join:<br />            \n            See you there!\n            </h4>', '/meeting/47/First%20Meeting', '2024-10-14 20:14:43'),
 (36, 47, NULL, 'A new assignment, New assignment, has been created. Please review \n        the assignment details and submit it before the deadline.', NULL, '2024-10-15 12:25:28'),
-(37, 47, NULL, 'A new assignment, test again, has been created. Please review \n        the assignment details and submit it before the deadline.', NULL, '2024-10-15 13:19:32');
+(37, 47, NULL, 'A new assignment, test again, has been created. Please review \n        the assignment details and submit it before the deadline.', NULL, '2024-10-15 13:19:32'),
+(38, 48, 20, '<h4 class=\'text-sm\'>\n            Meeting now : test<br />\n            Don\'t forget, we\'ve got a meeting today! Click the link below to join:<br />            \n            See you there!\n            </h4>', '/meeting/48/test48', '2024-11-10 08:02:17'),
+(39, 47, 21, '<h4 class=\'text-sm\'>\n            Meeting now : The meeting<br />\n            Don\'t forget, we\'ve got a meeting today! Click the link below to join:<br />            \n            See you there!\n            </h4>', '/meeting/47/The%20meeting47', '2024-12-01 08:08:41'),
+(40, 47, 22, '<h4 class=\'text-sm\'>\n            Meeting now : sadadadasdsd<br />\n            Don\'t forget, we\'ve got a meeting today! Click the link below to join:<br />            \n            See you there!\n            </h4>', '/meeting/47/sadadadasdsd47', '2024-12-01 08:10:58'),
+(41, 47, 23, '<h4 class=\'text-sm\'>\n            Meeting now : asdadasasdasd<br />\n            Don\'t forget, we\'ve got a meeting today! Click the link below to join:<br />            \n            See you there!\n            </h4>', '/meeting/47/asdadasasdasd47', '2024-12-01 08:12:27');
 
 -- --------------------------------------------------------
 
@@ -97,6 +101,30 @@ INSERT INTO `assignments` (`assignment_id`, `class_id`, `name`, `instruction`, `
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `attachments`
+--
+
+CREATE TABLE `attachments` (
+  `attachment_id` int(11) NOT NULL,
+  `post_id` int(11) DEFAULT NULL,
+  `reply_id` int(11) DEFAULT NULL,
+  `file_name` varchar(60) NOT NULL,
+  `file_path` varchar(100) NOT NULL,
+  `type` varchar(45) NOT NULL,
+  `uploaded_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `attachments`
+--
+
+INSERT INTO `attachments` (`attachment_id`, `post_id`, `reply_id`, `file_name`, `file_path`, `type`, `uploaded_at`) VALUES
+(1, 16, NULL, 'document-e8dc0f19-excuse letter.pdf', 'uploads/attachments/documents', 'pdf', '2024-12-02 02:00:08'),
+(2, 25, NULL, 'document-8a7b176c-excuse letter.pdf', 'uploads/attachments/documents', 'pdf', '2024-12-02 02:35:01');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `class`
 --
 
@@ -125,7 +153,8 @@ INSERT INTO `class` (`class_id`, `class_string_id`, `teacher_id`, `name`, `descr
 (14, 'C3014', 3, 'Environmental Science', 'Study of environmental issues and sustainability.', '2024-03-14 03:00:00'),
 (15, 'C3015', 3, 'Statistics 101', 'Introduction to statistical methods and analysis.', '2024-03-15 04:00:00'),
 (37, 'CFC-0016', 16, 'FIRST CLASS', 'CLASS 1', '2024-09-18 12:28:20'),
-(47, 'viZohQ', 1, 'Class 101', '', '2024-10-14 18:02:46');
+(47, 'viZohQ', 1, 'Class 101', '', '2024-10-14 18:02:46'),
+(48, '1ub61o', 18, 'test class', '', '2024-11-10 08:01:35');
 
 -- --------------------------------------------------------
 
@@ -152,7 +181,7 @@ CREATE TABLE `class_assignments` (
 INSERT INTO `class_assignments` (`class_assignment_id`, `assignment_id`, `student_id`, `form_id`, `form_answers`, `assignment_status`, `pass_date`, `grade`, `attachments`) VALUES
 (180, 65, 16, NULL, NULL, 'Returned', '2024-10-14 18:04:50', 100, 'uploads/attachment-1728929090614.pdf'),
 (181, 65, 15, NULL, NULL, 'Not Turned In', NULL, 0, ''),
-(182, 65, 1, NULL, NULL, 'Not Turned In', NULL, 0, ''),
+(182, 65, 1, NULL, NULL, 'Late Turned In', '2024-12-01 09:11:17', 0, 'uploads/attachment-1733044276992.pdf'),
 (183, 66, 16, NULL, NULL, 'Late Turned In', '2024-10-14 19:24:22', 0, 'uploads/attachment-1728933862637.pdf'),
 (184, 66, 1, NULL, NULL, 'Not Turned In', NULL, 0, ''),
 (185, 66, 15, NULL, NULL, 'Not Turned In', NULL, 0, ''),
@@ -161,7 +190,7 @@ INSERT INTO `class_assignments` (`class_assignment_id`, `assignment_id`, `studen
 (188, 67, 15, NULL, NULL, 'Not Turned In', NULL, 0, ''),
 (189, 68, 16, NULL, NULL, 'Turned In', '2024-10-15 21:58:36', 0, 'uploads/attachment-1729029516177.pdf'),
 (190, 68, 1, NULL, NULL, 'Returned', '2024-10-15 22:00:03', 100, 'uploads/attachment-1729029603328.pdf'),
-(191, 68, 15, NULL, NULL, 'Pending', NULL, 0, '');
+(191, 68, 15, NULL, NULL, 'Not Turned In', NULL, 0, '');
 
 -- --------------------------------------------------------
 
@@ -186,7 +215,11 @@ INSERT INTO `class_meetings` (`class_meeting_id`, `class_id`, `title`, `link`, `
 (16, 47, 'First Meeting', '/meeting/47/First%20Meeting', '2024-10-14 20:11:20', '2024-10-14 20:11:20'),
 (17, 47, 'Scheduled meeting', '/meeting/47/Scheduled%20meeting', '2024-10-16 20:42:00', '2024-10-14 20:42:43'),
 (18, 47, 'Ecommerce Site', '/meeting/47/Ecommerce%20Site', '2024-10-18 20:43:00', '2024-10-14 20:43:34'),
-(19, 47, 'Ecommerce Site', '/meeting/47/Ecommerce%20Site', '2024-10-18 20:43:00', '2024-10-14 20:44:42');
+(19, 47, 'Ecommerce Site', '/meeting/47/Ecommerce%20Site', '2024-10-18 20:43:00', '2024-10-14 20:44:42'),
+(20, 48, 'test', '/meeting/48/test48', '2024-11-10 08:02:17', '2024-11-10 08:02:17'),
+(21, 47, 'The meeting', '/meeting/47/The%20meeting47', '2024-12-01 13:08:41', '2024-12-01 08:09:29'),
+(22, 47, 'sadadadasdsd', '/meeting/47/sadadadasdsd47', '2024-12-01 08:10:58', '2024-12-01 08:10:58'),
+(23, 47, 'asdadasasdasd', '/meeting/47/asdadasasdasd47', '2024-12-01 08:12:27', '2024-12-01 08:12:27');
 
 -- --------------------------------------------------------
 
@@ -220,7 +253,10 @@ INSERT INTO `class_students` (`class_student_id`, `class_id`, `student_Id`, `sta
 (26, 9, 11, 'Pending', '2024-03-09 08:00:00'),
 (27, 9, 12, 'Pending', '2024-03-09 08:00:00'),
 (42, 47, 16, 'Approved', '2024-10-22 13:32:05'),
-(43, 47, 1, 'Approved', '2024-10-22 12:40:27');
+(43, 47, 1, 'Approved', '2024-12-01 08:06:14'),
+(50, 47, 26, 'Approved', '2024-11-28 15:00:12'),
+(51, 47, 15, 'Approved', '2024-11-28 14:52:00'),
+(52, 47, 19, 'Approved', '2024-12-01 08:06:26');
 
 -- --------------------------------------------------------
 
@@ -232,6 +268,87 @@ CREATE TABLE `form` (
   `form_id` int(11) NOT NULL,
   `form_questions` longtext NOT NULL,
   `form_right_answers` longtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `posts`
+--
+
+CREATE TABLE `posts` (
+  `post_id` int(11) NOT NULL,
+  `student_id` int(11) DEFAULT NULL,
+  `teacher_id` int(11) DEFAULT NULL,
+  `class_id` int(11) DEFAULT NULL,
+  `subject` varchar(100) NOT NULL,
+  `content` varchar(600) DEFAULT NULL,
+  `post_type` enum('Meeting','Assignment','Regular') DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `posts`
+--
+
+INSERT INTO `posts` (`post_id`, `student_id`, `teacher_id`, `class_id`, `subject`, `content`, `post_type`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, 4, 'Research about rizal', 'Research about the way rizal\'s life progress throught from his childhood upto his adulthood. Atleast 5 paragraphs.', NULL, '2024-12-02 00:21:04', '2024-12-02 00:21:04'),
+(2, NULL, 1, 47, '', 'asdasdadasdas', NULL, '2024-12-02 00:24:21', '2024-12-02 00:24:21'),
+(3, NULL, 1, 47, '', 'asdsadasdasdasd', NULL, '2024-12-02 00:42:16', '2024-12-02 00:42:16'),
+(4, NULL, 1, 47, '', 'Research about the way rizal\'s life progress throught from his childhood upto his adulthood. Atleast 5 paragraphs.', NULL, '2024-12-02 01:27:49', '2024-12-02 01:27:49'),
+(5, NULL, 1, 47, '', 'Research about the way rizal\'s life progress throught from his childhood upto his adulthood. Atleast 5 paragraphs.', NULL, '2024-12-02 01:28:12', '2024-12-02 01:28:12'),
+(6, NULL, 1, 47, '', 'Research about the way rizal\'s life progress throught from his childhood upto his adulthood. Atleast 5 paragraphs.', NULL, '2024-12-02 01:28:21', '2024-12-02 01:28:21'),
+(7, NULL, 1, 47, '', 'test attachment', NULL, '2024-12-02 01:44:19', '2024-12-02 01:44:19'),
+(8, NULL, 1, 47, '', 'test attachment', NULL, '2024-12-02 01:46:35', '2024-12-02 01:46:35'),
+(9, NULL, 1, 47, '', 'test attachment', NULL, '2024-12-02 01:47:13', '2024-12-02 01:47:13'),
+(10, NULL, 1, 47, '', 'asdasdasd', NULL, '2024-12-02 01:52:16', '2024-12-02 01:52:16'),
+(11, NULL, 1, 47, '', 'test', NULL, '2024-12-02 01:55:07', '2024-12-02 01:55:07'),
+(12, NULL, 1, 47, '', 'adadasd', NULL, '2024-12-02 01:56:17', '2024-12-02 01:56:17'),
+(13, NULL, 1, 47, '', 'adadasd', NULL, '2024-12-02 01:57:50', '2024-12-02 01:57:50'),
+(14, NULL, 1, 47, '', 'adadasd', NULL, '2024-12-02 01:58:57', '2024-12-02 01:58:57'),
+(15, NULL, 1, 47, '', 'adadasd', NULL, '2024-12-02 01:59:34', '2024-12-02 01:59:34'),
+(16, NULL, 1, 47, '', 'this is a test attachment', NULL, '2024-12-02 02:00:08', '2024-12-02 02:00:08'),
+(17, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:31:26', '2024-12-02 02:31:26'),
+(18, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:31:29', '2024-12-02 02:31:29'),
+(19, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:32:56', '2024-12-02 02:32:56'),
+(20, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:33:12', '2024-12-02 02:33:12'),
+(21, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:33:14', '2024-12-02 02:33:14'),
+(22, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:33:46', '2024-12-02 02:33:46'),
+(23, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:33:55', '2024-12-02 02:33:55'),
+(24, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:34:23', '2024-12-02 02:34:23'),
+(25, NULL, 1, 47, '', 'test ulit', NULL, '2024-12-02 02:35:00', '2024-12-02 02:35:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reactions`
+--
+
+CREATE TABLE `reactions` (
+  `reaction_id` int(11) NOT NULL,
+  `teacher_id` int(11) DEFAULT NULL,
+  `student_id` int(11) DEFAULT NULL,
+  `post_id` int(11) DEFAULT NULL,
+  `reply_id` int(11) DEFAULT NULL,
+  `type` enum('like','love','laugh','sad','angry') DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `replies`
+--
+
+CREATE TABLE `replies` (
+  `reply_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `teacher_id` int(11) DEFAULT NULL,
+  `student_id` int(11) DEFAULT NULL,
+  `content` varchar(500) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -257,7 +374,7 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`student_id`, `student_string_id`, `first_name`, `last_name`, `middle_name`, `email_address`, `password`, `created_time`, `modified_time`) VALUES
-(1, 'S1001', 'John', 'Doe', 'Michael', 'abc888043@gmail.com', '$2b$10$zWmSMhf2BD5LnEViPJSthu8w1EmxyOXElUC6Gt/UDglyyV1yWHKPe', '2024-01-15 00:30:00', '2024-01-15 00:35:00'),
+(1, 'S1001', 'John', 'Doe', 'Michael', 'abc888043@gmail.com', '$2b$10$t3vgGrNXD1GurAHDN3kdAuxcp6Vs2xXcL/iuo2NdmeALtkhhxVIby', '2024-01-15 00:30:00', '2024-01-15 00:35:00'),
 (2, 'S1002', 'Jane', 'Smith', 'Elizabeth', 'jane.smith@example.com', 'securepass', '2024-01-16 01:00:00', '2024-01-16 01:05:00'),
 (3, 'S1003', 'Emily', 'Johnson', 'Rose', 'emily.johnson@example.com', 'mypassword', '2024-01-17 01:30:00', '2024-01-17 01:35:00'),
 (4, 'S1004', 'Michael', 'Brown', 'James', 'michael.brown@example.com', 'password456', '2024-01-18 02:00:00', '2024-01-18 02:05:00'),
@@ -276,7 +393,10 @@ INSERT INTO `students` (`student_id`, `student_string_id`, `first_name`, `last_n
 (17, '2F0PgJ', 'Man', 'Man', 'Mans', 'mansplinterlands.2@gmail.com', '$2b$10$3RKMe/TyASG71IVIP7CpfexvcAS9DtqHnAl3nOoljkkh6PjqEV3va', '2024-10-01 16:41:21', '2024-10-01 16:41:21'),
 (19, 'BmXkZM', 'assada', 'asdsad', 'test', 'mansplinterlands.22@gmail.com', '$2b$10$hv1Lx5S.SHGj3YHfHesm6uw0OZzJZxLWVpC7yv4/Qznbs7DFr1ms2', '2024-10-14 15:12:10', '2024-10-14 15:12:10'),
 (20, 'johcFA', 'asdasd', 'asdasdas', 'asdasd', 'mansplinterlands.222@gmail.com', '$2b$10$GQ2954QY9zD8rtMsbwGqFeW1P21Hx2O2p52hmE9qTtY80z2H.AD7S', '2024-10-14 15:15:05', '2024-10-14 15:15:05'),
-(23, 'vkVIzq', 'another', 'one', 'one', 'abc8188043@gmail.com', '$2b$10$f89UR3cVMmRaIn2cyQmlVemFlMgTUNbfWXuutcYzDPGC7YSR7nxWO', '2024-10-15 12:37:15', '2024-10-15 12:37:15');
+(23, 'vkVIzq', 'another', 'one', 'one', 'abc8188043@gmail.com', '$2b$10$f89UR3cVMmRaIn2cyQmlVemFlMgTUNbfWXuutcYzDPGC7YSR7nxWO', '2024-10-15 12:37:15', '2024-10-15 12:37:15'),
+(24, 'cdm9iN', 'Manuel', 'Marin', 'Armentano', 'abc88801212121243@gmail.com', '$2b$10$NsiL7IPX7fjhXsBuEhksYe08UkeI0MYCNq6HIKsEZyMzFSU91WG2m', '2024-11-27 14:56:22', '2024-11-27 14:56:22'),
+(25, 'xEzMPQ', 'Manuel', 'Marin', 'Armentano', 'abc888012313131233143@gmail.com', '$2b$10$izMMkx2CcO/KfFvZL1BCx.tzEc.eDoTXogs/Z.VIFUuTUv5IrO7K2', '2024-11-27 16:36:55', '2024-11-27 16:36:55'),
+(26, 'vGPoBC', 'Manuel', 'Marin', 'Armentano', 'abc88801212121212313131233143@gmail.com', '$2b$10$oH/hocdQhN3Tz3yOvjK6ZOXdq.MZz0iA5APVIOLLS2qZwzJOOHRMu', '2024-11-28 13:10:43', '2024-11-28 13:10:43');
 
 -- --------------------------------------------------------
 
@@ -302,7 +422,7 @@ CREATE TABLE `teachers` (
 --
 
 INSERT INTO `teachers` (`teacher_id`, `teacher_string_id`, `first_name`, `last_name`, `middle_name`, `email_address`, `password`, `status`, `created_time`, `modified_time`) VALUES
-(1, 'T2001', 'Alice', 'Johnson', 'Marie', 'alice.johnson@example.com', '$2b$10$Fr2IbXu2AwNIAyL6F34kEOP3Ovnfd/iIxKqjue0z1YYyRjsoTQaXK', 'Approved', '2024-02-01 00:30:00', '2024-02-01 00:35:00'),
+(1, 'T2001', 'Alice', 'Johnson', 'Marie', 'alice.johnson@example.com', '$2b$10$izMMkx2CcO/KfFvZL1BCx.tzEc.eDoTXogs/Z.VIFUuTUv5IrO7K2', 'Approved', '2024-02-01 00:30:00', '2024-02-01 00:35:00'),
 (2, 'T2002', 'Bob', 'Smith', 'Lee', 'bob.smith@example.com', 'teachpass2', 'Pending', '2024-02-02 01:00:00', '2024-02-02 01:05:00'),
 (3, 'T2003', 'Catherine', 'Williams', 'Anne', 'catherine.williams@example.com', 'teachpass3', 'Pending', '2024-02-03 01:30:00', '2024-02-03 01:35:00'),
 (4, 'T2004', 'David', 'Brown', 'Charles', 'david.brown@example.com', 'teachpass4', 'Pending', '2024-02-04 02:00:00', '2024-02-04 02:05:00'),
@@ -318,7 +438,8 @@ INSERT INTO `teachers` (`teacher_id`, `teacher_string_id`, `first_name`, `last_n
 (14, 'EjuN27', 'Noah', 'Taylor', 'Samuel', 'abc888043@gmail.com', '$2b$10$Fr2IbXu2AwNIAyL6F34kEOP3Ovnfd/iIxKqjue0z1YYyRjsoTQaXK', 'Approved', '2024-02-14 07:00:00', '2024-02-14 07:05:00'),
 (15, 'g9YJyJ', 'Olivia', 'Jackson', 'Ava', 'olivia.jackson@example.com', 'teachpass15', 'Approved', '2024-02-15 07:30:00', '2024-02-15 07:35:00'),
 (16, 'F2BSnw', 'Manuel', 'Marin', 'Armentano', 'abc8880431@gmail.com', '$2b$10$Fr2IbXu2AwNIAyL6F34kEOP3Ovnfd/iIxKqjue0z1YYyRjsoTQaXK', 'Approved', '2024-09-18 11:35:42', '2024-09-18 11:35:42'),
-(17, NULL, 'test', 'test', 'test', 'mansplinterlands.2@gmail.com', '$2b$10$ZzG8NKyQIC6nrbZ/0MhaJujipQ5cMQK5/iAkQGdFtuRJajgBZjLey', 'Approved', '2024-10-13 02:30:58', '2024-10-13 02:30:58');
+(17, NULL, 'test', 'test', 'test', 'mansplinterlands.2@gmail.com', '$2b$10$ZzG8NKyQIC6nrbZ/0MhaJujipQ5cMQK5/iAkQGdFtuRJajgBZjLey', 'Approved', '2024-10-13 02:30:58', '2024-10-13 02:30:58'),
+(18, 'g9YJaJ', 'test', 'test', 'test', 'abc8881043@gmail.com', '$2b$10$eERYzyBrbGKnw2RJzwNHyuZcnlDK3rAQt27gj7n1yjwlGmqoj7jCm', 'Approved', '2024-11-10 07:55:26', '2024-11-10 07:55:26');
 
 --
 -- Indexes for dumped tables
@@ -344,6 +465,12 @@ ALTER TABLE `admin`
 ALTER TABLE `assignments`
   ADD PRIMARY KEY (`assignment_id`),
   ADD KEY `class-relation-assignment` (`class_id`);
+
+--
+-- Indexes for table `attachments`
+--
+ALTER TABLE `attachments`
+  ADD PRIMARY KEY (`attachment_id`);
 
 --
 -- Indexes for table `class`
@@ -383,6 +510,33 @@ ALTER TABLE `form`
   ADD PRIMARY KEY (`form_id`);
 
 --
+-- Indexes for table `posts`
+--
+ALTER TABLE `posts`
+  ADD PRIMARY KEY (`post_id`),
+  ADD UNIQUE KEY `post_id_UNIQUE` (`post_id`),
+  ADD KEY `fk_students_idx` (`student_id`),
+  ADD KEY `fk_teachers_idx` (`teacher_id`);
+
+--
+-- Indexes for table `reactions`
+--
+ALTER TABLE `reactions`
+  ADD PRIMARY KEY (`reaction_id`),
+  ADD KEY `fk_teachers_idx` (`teacher_id`),
+  ADD KEY `fk_students_idx` (`student_id`),
+  ADD KEY `fk_posts_idx` (`post_id`);
+
+--
+-- Indexes for table `replies`
+--
+ALTER TABLE `replies`
+  ADD PRIMARY KEY (`reply_id`),
+  ADD KEY `post_ibfk_1_idx` (`post_id`),
+  ADD KEY `teacher_ibfk_1_idx` (`teacher_id`),
+  ADD KEY `student_ibfk_1_idx` (`student_id`);
+
+--
 -- Indexes for table `students`
 --
 ALTER TABLE `students`
@@ -406,7 +560,7 @@ ALTER TABLE `teachers`
 -- AUTO_INCREMENT for table `activity`
 --
 ALTER TABLE `activity`
-  MODIFY `activity_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `activity_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `admin`
@@ -421,10 +575,16 @@ ALTER TABLE `assignments`
   MODIFY `assignment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
+-- AUTO_INCREMENT for table `attachments`
+--
+ALTER TABLE `attachments`
+  MODIFY `attachment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `class`
 --
 ALTER TABLE `class`
-  MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `class_assignments`
@@ -436,13 +596,13 @@ ALTER TABLE `class_assignments`
 -- AUTO_INCREMENT for table `class_meetings`
 --
 ALTER TABLE `class_meetings`
-  MODIFY `class_meeting_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `class_meeting_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `class_students`
 --
 ALTER TABLE `class_students`
-  MODIFY `class_student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `class_student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `form`
@@ -451,16 +611,34 @@ ALTER TABLE `form`
   MODIFY `form_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `posts`
+--
+ALTER TABLE `posts`
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `reactions`
+--
+ALTER TABLE `reactions`
+  MODIFY `reaction_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `replies`
+--
+ALTER TABLE `replies`
+  MODIFY `reply_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `teachers`
 --
 ALTER TABLE `teachers`
-  MODIFY `teacher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `teacher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables
@@ -505,6 +683,29 @@ ALTER TABLE `class_meetings`
 ALTER TABLE `class_students`
   ADD CONSTRAINT `class-class-relation` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `class-students-relation` FOREIGN KEY (`student_Id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `posts`
+--
+ALTER TABLE `posts`
+  ADD CONSTRAINT `fk_students` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`),
+  ADD CONSTRAINT `fk_teachers` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`teacher_id`);
+
+--
+-- Constraints for table `reactions`
+--
+ALTER TABLE `reactions`
+  ADD CONSTRAINT `fk_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`),
+  ADD CONSTRAINT `fk_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`),
+  ADD CONSTRAINT `fk_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`teacher_id`);
+
+--
+-- Constraints for table `replies`
+--
+ALTER TABLE `replies`
+  ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`),
+  ADD CONSTRAINT `student_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`),
+  ADD CONSTRAINT `teacher_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`teacher_id`);
 
 DELIMITER $$
 --
