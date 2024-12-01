@@ -133,7 +133,7 @@ export const StudentVideoConference: React.FC = () => {
             };
 
             await loadModels();
-            setInterval(detectFaces, 5000);
+            setInterval(detectFaces, 900000);
           }
         });
 

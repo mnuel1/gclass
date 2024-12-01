@@ -8,21 +8,20 @@ const CreateMemberService = async (memberData) => {
     try {
         const { class_id, members } = memberData;
         const status = "Approved";
-
+        
         for (const student of members) {
             const student_id = student.student_id;
-            
-            const existingEntry = await db.query(
+                        
+            const [existingEntry] = await db.query(
                 `SELECT * FROM class_students WHERE class_id = ? AND student_id = ?`,
                 [class_id, student_id]
-            );
-
-            if (existingEntry.length > 0) {                
+            );        
+            if (existingEntry.length > 0) {                         
                 await db.query(
                     `UPDATE class_students SET status = ? WHERE class_id = ? AND student_id = ?`,
                     [status, class_id, student_id]
                 );
-            } else {                
+            } else {                                                
                 await db.query(
                     `INSERT INTO class_students (class_id, student_id, status) VALUES (?, ?, ?)`,
                     [class_id, student_id, status]

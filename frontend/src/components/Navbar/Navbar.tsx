@@ -110,7 +110,7 @@ export const Navbar: React.FC<MainMenuProps> = ({ children }) => {
                 />
               </svg>
 
-              {!collapsed && (
+              {collapsed && (
                 <div className="absolute bg-white w-[15rem] right-0 ">
                   <ul className="space-y-1 p-2">
                     <li>

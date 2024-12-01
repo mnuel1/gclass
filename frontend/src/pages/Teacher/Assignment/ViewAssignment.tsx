@@ -24,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { AttachmentSection } from "@/components/ui/file-preview";
 import {
   Dialog,
   DialogContent,
@@ -306,6 +307,19 @@ export const ViewAssignment: React.FC = () => {
 
   const handleRemoveMember = (student_id: string) => {
     setMembers(members?.filter((member) => member.student_id !== student_id));
+  };
+
+  const handleDownload = (attachment) => {
+    if (attachment) {
+      const fileUrl = `${SERVER}/${attachment}`;
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download =
+        attachment.split("/").pop() || "assignment-attachment";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const MembersDialog = () => (
@@ -623,10 +637,16 @@ export const ViewAssignment: React.FC = () => {
                             />
                           </div>
 
-                          <FilePreview
+                          {student.attachments && (
+                            <AttachmentSection
+                              attachments={student.attachments}
+                              handleDownload={() => handleDownload(student.attachments)}
+                            />
+                          )}
+                          {/* <FilePreview
                             filePath={`${SERVER}/${student.attachments}`}
-                            onDownload={() => {}}
-                          />
+                            onDownload={() => {handleDownload}}
+                          /> */}
 
                           <Button
                             onClick={() =>

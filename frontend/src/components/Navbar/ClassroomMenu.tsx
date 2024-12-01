@@ -95,20 +95,22 @@ export const ClassroomMenu: React.FC<MainMenuProps> = ({ children }) => {
     }
     return route.showAlways || localStorage.getItem("role") !== "student";
   });
-
+  
   return (
     <div className="flex h-full w-full bg-slate-100">
       <div className="flex flex-col gap-4 ml-4 my-4 rounded-xl h-[calc(100vh-7rem)] z-0 w-[30%] md:w-[300px] p-4 bg-white">
         <div className="flex items-center justify-between pb-2 relative border-b border-gray-200">
           <div className="flex w-full items-center justify-between">
-            <h1 className="text-xl font-bold">{classroom?.name}</h1>
+            <h1 className="text-xl font-bold">{classroom?.name}</h1>            
             <div className="flex">
               <Clipboard class_code={classroom?.class_string_id || ""} />
-              <MoreModal
-                class_id={classroom?.class_id || ""}
-                name={classroom?.name || ""}
-                description={classroom?.description || ""}
-              />
+              {!isStudent && 
+                <MoreModal
+                  class_id={classroom?.class_id || ""}
+                  name={classroom?.name || ""}
+                  description={classroom?.description || ""}
+                />
+              }
             </div>
           </div>
         </div>

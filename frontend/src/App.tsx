@@ -128,11 +128,15 @@ function App() {
               element={<MeetingPage />}
             />
             <Route path="/" element={<DefaultLayout />}>
-              <Route index element={<LandingPage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="faq" element={<FAQPage />} />
-              <Route path="sign-in" element={<SignIn />} />
-              <Route path="sign-up" element={<SignUp />} />
+              <Route index element={
+                <ProtectedRoute>
+                  <LandingPage />
+                </ProtectedRoute>
+              } />
+              <Route path="about" element={<ProtectedRoute><AboutPage /> </ProtectedRoute>} />
+              <Route path="faq" element={<ProtectedRoute><FAQPage /> </ProtectedRoute>} />
+              <Route path="sign-in" element={<ProtectedRoute><SignIn /> </ProtectedRoute>} />
+              <Route path="sign-up" element={<ProtectedRoute><SignUp /> </ProtectedRoute>} />
 
               <Route
                 path="teacher/login"

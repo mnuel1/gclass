@@ -52,7 +52,7 @@ export const TeacherForgot:React.FC = () => {
                         
             startLoading()
             try {
-                const response = await authapi.post('/student/forgot', form)
+                const response = await authapi.post('/teacher/forgot', form)
                 
                 if (response.status === 200) {
                     SuccessToast("Request sent. Please check your email.")

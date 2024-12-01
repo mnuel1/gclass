@@ -187,10 +187,7 @@ const EditAccount = async (req, res) => {
             email_address: email_address,
             token: token
         });
-
-
         
-
     } catch (error) {
         console.log(error);
         return res.status(500).json({ title: "Internal Error", message: "Something went wrong!" });
