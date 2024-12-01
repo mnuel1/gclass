@@ -384,7 +384,7 @@ export default function StudentViewDashboard() {
               <h1 className="font-semibold text-lg lg:text-2xl">Classmates</h1>
             </div>
 
-            {membersData.length !== 0 ? (
+            {membersData && membersData.length !== 0 ? (
               <div className="space-y-4">
                 {membersData.map((student: any, index: number) => (
                   <div
