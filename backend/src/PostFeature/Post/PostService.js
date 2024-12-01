@@ -39,24 +39,27 @@ exports.createPostRecord = async (classId, postData) => {
         post.updatedAt
       ]
     );
-
+    
     if (results.affectedRows) {
       return {
         status: 201,
-        message: "Post created."
+        message: "Post created.",
+        postId: results.insertId
       }
     }
   } catch (err) {
     if (err.errno === 1048) {
       return {
         status: 400,
-        message: "Required fields cannot be empty."
+        message: "Required fields cannot be empty.",
+        postId: null
       }
     } else {
       console.log(err)
       return {
         status: 500, // Internal Server Error
-        message: "An unexpected error occurred. Please try again later."
+        message: "An unexpected error occurred. Please try again later.",
+        postId: null
       };
     }
   }
@@ -189,6 +192,7 @@ exports.getOnePostRecord = async (classId, postId) => {
 
 exports.getAllPostRecordsFromClass = async (classId) => {
   try {
+    
     const [postResults] = await db.query(`SELECT * FROM posts WHERE class_id = ?`, [classId]);
 
     const postIds = postResults.map((post) => post.post_id);
@@ -324,21 +328,35 @@ exports.getAllPostRecordsFromClass = async (classId) => {
       if (teacher) {
         postResponse.teacher = teacher;
       }
-
+      
       return postResponse;
     }));
+        
+    const groupedResult = formattedPosts.reduce((acc, activity) => {
+      const createdTime = new Date(activity.createdAt);  
+      const groupKey = formatDateForGrouping(createdTime);  
 
-    if (formattedPosts.length !== 0) {
+      if (!acc[groupKey]) {
+          acc[groupKey] = [];
+      }
+      
+      activity.formatted_created_time = formatDateTimeForActivity(createdTime);
+      acc[groupKey].push(activity);
+
+      return acc;
+    }, {});
+            
+    if (groupedResult.length !== 0) {
       return {
         status: 200,
         message: "Posts retrieved successfully.",
-        posts: formattedPosts,
+        posts: groupedResult,
       };
     } else {
       return {
         status: 404,
         message: "There are no current post/s in this class.",
-        posts: formattedPosts,
+        posts: groupedResult,
       };
     }
   } catch (err) {
@@ -463,3 +481,10 @@ const getReactionsForPost = async (postId) => {
   }));
 };
 
+const formatDateTimeForActivity = (date) => {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }).format(date);
+};
+
+const formatDateForGrouping = (date) => {
+  return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+};

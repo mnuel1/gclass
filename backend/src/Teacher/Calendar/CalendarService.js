@@ -182,6 +182,17 @@ const GetMeetingsService = async (teacher_id) => {
       [teacher_id]
     );
 
+    const [assignment] = await db.query(
+      `
+        SELECT
+          a.class_id,          
+          a.name AS title,
+          a.start_date
+        FROM assignments a 
+        JOIN class c ON a.class_id = c.class_id         
+        WHERE c.teacher_id = ?`, [teacher_id]
+    )
+
     if (!result.length) {
       return {
         error: false,
@@ -190,31 +201,42 @@ const GetMeetingsService = async (teacher_id) => {
       };
     }
 
-    const res = result.map((meeting) => {
-      const dateObject = new Date(meeting.start_date);
-
+    const combinedRes = [...result, ...assignment].map((item) => {
+      const dateObject = new Date(item.start_date);
+    
       const dayName = dateObject.toLocaleString("en-US", { weekday: "short" });
       const monthName = dateObject.toLocaleString("en-US", { month: "short" });
       const day = String(dateObject.getDate()).padStart(2, "0");
       const year = dateObject.getFullYear();
-
+    
       const hours = String(dateObject.getHours()).padStart(2, "0");
       const minutes = String(dateObject.getMinutes()).padStart(2, "0");
-
+    
       const formattedDate = `${dayName} ${monthName} ${day} ${year} ${hours}:${minutes}:00 ${
         Intl.DateTimeFormat().resolvedOptions().timeZone
       }`;
 
-      meeting.date = formattedDate;
-      meeting.time = `${hours}:${minutes}`;
+      item.type = "meeting"    
 
-      return meeting;
+      if (!item.class_meeting_id) {        
+        item.class_meeting_id = null;
+        item.link = null;
+        item.created_time = null;
+        item.type = "assignment"
+      }
+          
+      item.date = formattedDate;
+      item.time = `${hours}:${minutes}`;
+      
+    
+      return item;
     });
-
+    
+            
     return {
       error: false,
       succesfull: true,
-      data: res,
+      data: combinedRes,
     };
   } catch (error) {
     console.error(error);

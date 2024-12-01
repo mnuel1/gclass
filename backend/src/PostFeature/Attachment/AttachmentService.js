@@ -4,11 +4,12 @@ const { format } = require('date-fns');
 
 exports.createAttachmentRecordForPost = async (postId, attachmentData) => {
     const {
+        fileName,
         filePath,
         type,
     } = attachmentData;
-
-    const fileName = filePath.replace(/.*\d+-/, '');
+        
+    // const fileName = filePath.replace(/.*\d+-/, '');
 
     const attachment = new Attachment(
         attachmentId = null,
