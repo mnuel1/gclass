@@ -12,6 +12,7 @@ import { FailedToast } from "../Toast/FailedToast";
 import { Authentication } from "../../Auth/Authentication";
 import { ConfirmModal } from "../Modal/ConfirmModal";
 import { EditSched } from "../Modal/EditSchedModal";
+import { log } from "console";
 
 const getDaysInMonth = (year: number, month: number): Date[] => {
   const date = new Date(year, month, 1);
@@ -39,7 +40,8 @@ export const CalendarView: React.FC = () => {
   const [classid, setClassid] = useState("");
   const { data, isSuccess, isError, isLoading } = useMeetingQuery(getID());
   const { startLoading, stopLoading } = useModalStore();
-
+  
+  
   useEffect(() => {
     if (isLoading) {
       startLoading();
@@ -191,9 +193,11 @@ export const CalendarView: React.FC = () => {
                     <div className="">
                       <div
                         onClick={() => {
-                          setEdit(true);
-                          setID(event.class_meeting_id);
-                          setClassid(event.class_id);
+                          if (event.type !== "assignment") {
+                            setEdit(true);
+                            setID(event.class_meeting_id);
+                            setClassid(event.class_id);
+                          }
                         }}
                         className="grow"
                       >
@@ -210,12 +214,14 @@ export const CalendarView: React.FC = () => {
                           })()}
                         </p>
                       </div>
-                      <a
+                      {event.link && 
+                        <a
                         className="text-blue-700 hover:underline"
                         href={event.link}
                       >
                         Meeting Link
-                      </a>
+                      </a>}
+                      
                     </div>
                     <button
                       onClick={() => {

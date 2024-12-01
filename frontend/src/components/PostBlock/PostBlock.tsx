@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   formatTimeAgo,
   formatToDate,
@@ -5,12 +7,14 @@ import {
 } from "@/utils/formatters";
 import { Video } from "lucide-react";
 import React from "react";
-
+import { FilePreview } from "../ui/file-preview";
+import { SERVER } from "../../process/axios";
 interface Props {
   teacher_name: string;
   posts: string;
   formatted_created_time: string;
   link: string;
+  attachments: [];
 }
 
 export const PostBlock: React.FC<Props> = ({
@@ -18,14 +22,25 @@ export const PostBlock: React.FC<Props> = ({
   posts,
   formatted_created_time,
   link,
+  attachments
 }) => {
   const date = formatToDate(formatted_created_time);
 
-  const hasAssignment = posts.toLowerCase().includes("assignment");
-  const hasMeeting = posts.toLowerCase().includes("meeting");
+  let postType = "Post";
 
-  const formattedPosts = formatFirstSentence(posts);
+  if (posts) {
+    if (posts.toLowerCase().includes("assignment")) {
+      postType = "Assignment";
+    } else if (posts.toLowerCase().includes("meeting")) {
+      postType = "Meeting";
+    }
+  }
+      
+  const formattedPosts = posts ? formatFirstSentence(posts) : "";
 
+  const handleDownload = (attachment) => {
+    window.open(`${SERVER}/uploads/documents/${attachment}`, "_blank")
+  }
   return (
     <>
       <div className="flex gap-4 w-full">
@@ -46,16 +61,12 @@ export const PostBlock: React.FC<Props> = ({
             </div>
           </div>
           <div>
-            {hasAssignment && (
+            {postType && (
               <span className="text-[0.7rem] px-4 py-1 border opacity-60 rounded-full">
-                Assignment
+                {postType}
               </span>
             )}
-            {hasMeeting && (
-              <span className="text-[0.7rem] px-4 py-1 border opacity-60 rounded-full">
-                Meeting
-              </span>
-            )}
+            
           </div>
           <div className="flex flex-col rounded-lg w-full">
             <div dangerouslySetInnerHTML={{ __html: formattedPosts }} />
@@ -75,6 +86,12 @@ export const PostBlock: React.FC<Props> = ({
                   Join Meeting
                 </span>
               </a>
+            )}
+            {attachments && attachments.length !== 0 && (
+              <FilePreview
+                filePath={`${SERVER}/uploads/documents/${attachments[0].fileName}`}
+                onDownload={() => {handleDownload(attachments[0].fileName)}}
+              />
             )}
           </div>
         </div>

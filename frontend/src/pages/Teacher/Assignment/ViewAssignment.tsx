@@ -353,6 +353,9 @@ export const ViewAssignment: React.FC = () => {
     </Dialog>
   );
 
+  const handleDownload = (attachment) => {
+    window.open(`${SERVER}/${attachment}`, "_blank")
+  }
   return (
     <>
       {del && (
@@ -625,7 +628,7 @@ export const ViewAssignment: React.FC = () => {
 
                           <FilePreview
                             filePath={`${SERVER}/${student.attachments}`}
-                            onDownload={() => {}}
+                            onDownload={() => {handleDownload(student.attachments)}}
                           />
 
                           <Button
