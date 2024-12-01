@@ -62,6 +62,131 @@ exports.createPostRecord = async (classId, postData) => {
   }
 }
 
+// Get One Post Record by Post ID
+exports.getOnePostRecord = async (classId, postId) => {
+  try {
+    // Fetch the post record
+    const [postResults] = await db.query(`SELECT * FROM posts WHERE post_id = ? AND class_id = ?`, [postId, classId]);
+
+    if (postResults.length === 0) {
+      return {
+        status: 404,
+        message: "Post not found.",
+      };
+    }
+
+    const post = postResults[0];
+
+    // Fetch attachments for the post
+    const [attachments] = await db.query(`SELECT * FROM attachments WHERE post_id = ?`, [postId]);
+
+    // Fetch replies and their details
+    const [replies] = await db.query(`SELECT * FROM replies WHERE post_id = ?`, [postId]);
+    const formattedReplies = await Promise.all(
+      replies.map(async (reply) => {
+        const replyStudent = reply.student_id ? await getStudentData(reply.student_id) : null;
+        const replyTeacher = reply.teacher_id ? await getTeacherData(reply.teacher_id) : null;
+
+        // Fetch reactions for the reply
+        const [replyReactions] = await db.query(`SELECT * FROM reactions WHERE reply_id = ?`, [reply.reply_id]);
+        const formattedReplyReactions = await Promise.all(
+          replyReactions.map(async (reaction) => {
+            const reactionStudent = reaction.student_id ? await getStudentData(reaction.student_id) : null;
+            const reactionTeacher = reaction.teacher_id ? await getTeacherData(reaction.teacher_id) : null;
+
+            return {
+              reactionId: reaction.reaction_id,
+              replyId: reaction.reply_id,
+              type: reaction.type,
+              createdAt: format(new Date(reaction.created_at), 'yyyy-MM-dd HH:mm:ss'),
+              teacher: reactionTeacher ? { ...reactionTeacher, password: undefined } : undefined,
+              student: reactionStudent ? { ...reactionStudent, password: undefined } : undefined,
+            };
+          })
+        );
+
+        // Fetch attachments for the reply
+        const [replyAttachments] = await db.query(`SELECT * FROM attachments WHERE reply_id = ?`, [reply.reply_id]);
+
+        return {
+          replyId: reply.reply_id,
+          postId: reply.post_id,
+          content: reply.content,
+          teacher: replyTeacher ? { ...replyTeacher, password: undefined } : undefined,
+          student: replyStudent ? { ...replyStudent, password: undefined } : undefined,
+          reactions: formattedReplyReactions,
+          attachments: replyAttachments.map((attachment) => ({
+            attachmentId: attachment.attachment_id,
+            replyId: attachment.reply_id,
+            fileName: attachment.file_name,
+            filePath: attachment.file_path,
+            type: attachment.type,
+            uploadedAt: format(new Date(attachment.uploaded_at), 'yyyy-MM-dd HH:mm:ss'),
+          })),
+          createdAt: format(new Date(reply.created_at), 'yyyy-MM-dd HH:mm:ss'),
+          updatedAt: format(new Date(reply.updated_at), 'yyyy-MM-dd HH:mm:ss'),
+        };
+      })
+    );
+
+    // Fetch reactions for the post
+    const [reactions] = await db.query(`SELECT * FROM reactions WHERE post_id = ?`, [postId]);
+    const formattedReactions = await Promise.all(
+      reactions.map(async (reaction) => {
+        const reactionStudent = reaction.student_id ? await getStudentData(reaction.student_id) : null;
+        const reactionTeacher = reaction.teacher_id ? await getTeacherData(reaction.teacher_id) : null;
+
+        return {
+          reactionId: reaction.reaction_id,
+          postId: reaction.post_id,
+          type: reaction.type,
+          createdAt: format(new Date(reaction.created_at), 'yyyy-MM-dd HH:mm:ss'),
+          teacher: reactionTeacher ? { ...reactionTeacher, password: undefined } : undefined,
+          student: reactionStudent ? { ...reactionStudent, password: undefined } : undefined,
+        };
+      })
+    );
+
+    // Fetch teacher data
+    const teacher = post.teacher_id ? await getTeacherData(post.teacher_id) : null;
+
+    // Format the post record
+    const formattedPost = {
+      postId: post.post_id,
+      classId: post.class_id,
+      subject: post.subject || "",
+      content: post.content || "",
+      postType: post.post_type,
+      attachments: attachments.map((attachment) => ({
+        attachmentId: attachment.attachment_id,
+        postId: attachment.post_id,
+        fileName: attachment.file_name,
+        filePath: attachment.file_path,
+        type: attachment.type,
+        uploadedAt: format(new Date(attachment.uploaded_at), 'yyyy-MM-dd HH:mm:ss'),
+      })),
+      replies: formattedReplies,
+      reactions: formattedReactions,
+      createdAt: format(new Date(post.created_at), 'yyyy-MM-dd HH:mm:ss'),
+      updatedAt: format(new Date(post.updated_at), 'yyyy-MM-dd HH:mm:ss'),
+      teacher: teacher ? { ...teacher, password: undefined } : undefined,
+    };
+
+    return {
+      status: 200,
+      message: "Post retrieved successfully.",
+      post: formattedPost,
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      status: 500,
+      message: "An error occurred while retrieving the post.",
+    };
+  }
+};
+
+
 exports.getAllPostRecordsFromClass = async (classId) => {
   try {
     const [postResults] = await db.query(`SELECT * FROM posts WHERE class_id = ?`, [classId]);
@@ -225,6 +350,41 @@ exports.getAllPostRecordsFromClass = async (classId) => {
   }
 };
 
+// Delete Post Record by Post ID
+exports.deletePostRecord = async (classId, postId) => {
+  try {
+    // Delete attachments associated with the post
+    await db.query('DELETE FROM attachments WHERE post_id = ?', [postId]);
+
+    // Delete replies associated with the post
+    await db.query('DELETE FROM replies WHERE post_id = ?', [postId]);
+
+    // Delete reactions associated with the post
+    await db.query('DELETE FROM reactions WHERE post_id = ?', [postId]);
+
+    // Finally, delete the post itself
+    const [deleteResult] = await db.query('DELETE FROM posts WHERE post_id = ? AND class_id = ?', [postId, classId]);
+
+    if (deleteResult.affectedRows === 0) {
+      return {
+        status: 404,
+        message: "Post not found, deletion failed.",
+      };
+    }
+
+    return {
+      status: 200,
+      message: "Post deleted successfully.",
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      status: 500,
+      message: "An error occurred while deleting the post.",
+    };
+  }
+};
+
 // Helper function to fetch student data by student_id
 const getStudentData = async (studentId) => {
   try {
@@ -252,7 +412,6 @@ const getStudentData = async (studentId) => {
     return null;
   }
 };
-
 
 // Helper function to fetch teacher data by teacher_id
 const getTeacherData = async (teacherId) => {
@@ -282,3 +441,25 @@ const getTeacherData = async (teacherId) => {
     return null;
   }
 };
+
+// Helper function to fetch replies for a post
+const getRepliesForPost = async (postId) => {
+  const [replies] = await db.query('SELECT * FROM replies WHERE post_id = ?', [postId]);
+  return replies.map(reply => ({
+    replyId: reply.reply_id,
+    content: reply.content,
+    createdAt: format(new Date(reply.created_at), 'yyyy-MM-dd HH:mm:ss'),
+    updatedAt: format(new Date(reply.updated_at), 'yyyy-MM-dd HH:mm:ss'),
+  }));
+};
+
+// Helper function to fetch reactions for a post
+const getReactionsForPost = async (postId) => {
+  const [reactions] = await db.query('SELECT * FROM reactions WHERE post_id = ?', [postId]);
+  return reactions.map(reaction => ({
+    reactionId: reaction.reaction_id,
+    type: reaction.type,
+    createdAt: format(new Date(reaction.created_at), 'yyyy-MM-dd HH:mm:ss'),
+  }));
+};
+
