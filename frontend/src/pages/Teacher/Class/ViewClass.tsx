@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 
 import { Authentication } from "../../../Auth/Authentication";
 import {
+  usePostQuery,
   useActivityQuery,
   useAddMeeting,
 } from "../../../process/Activity/useActivityQuery";
@@ -17,6 +18,33 @@ import { PostBlock } from "../../../components/PostBlock/PostBlock";
 import { FailedToast } from "../../../components/Toast/FailedToast";
 import { MeetModal } from "../../../components/Modal/MeetModal";
 import { Button } from "@/components/ui/button";
+import { PostInput } from "@/components/PostInput/PostInput";
+
+const mergeData = (data, pData) => {
+  const merged = { ...data };
+  
+  for (const date in pData) {
+    if (merged[date]) {
+      merged[date] = [...merged[date], ...pData[date]];
+    } else {
+      merged[date] = pData[date];
+    }
+  }
+  
+  const sortedMerged = Object.keys(merged)
+    .sort((a, b) => new Date(b) - new Date(a)) 
+    .reduce((acc, date) => {      
+      acc[date] = merged[date].sort((a, b) => 
+        new Date(b.formatted_created_time) - new Date(a.formatted_created_time)
+      );
+      return acc;
+    }, {});
+
+  return sortedMerged;
+};
+
+
+
 
 export const ClassroomView: React.FC = () => {
   const { getUser, getID } = Authentication();
@@ -30,6 +58,11 @@ export const ClassroomView: React.FC = () => {
   const { data, isSuccess, isError, isLoading, isEmpty } = useActivityQuery(
     classroom.class_id
   );
+
+  const { pData, pIsSuccess, pIsError, pError, pIsLoading, pIsEmpty } = usePostQuery(
+    classroom.class_id
+  );
+
   const { activity, getActivity } = useActivityStore();
   const { startLoading, stopLoading } = useModalStore();
 
@@ -56,19 +89,25 @@ export const ClassroomView: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || pIsLoading) {
       startLoading();
     } else {
       stopLoading();
     }
-    if (isSuccess && data) {
-      getActivity(data);
+    if (isSuccess && data && pIsSuccess && pData) {
+      const mergedData = mergeData(data, pData);
+      console.log(mergedData);
+            
+      getActivity(mergedData);
     }
-    if (isError) {
+    if (isError || pIsError) {
       FailedToast("Something went wrong!");
     }
-  }, [data, isSuccess, getActivity, isError]);
+  }, [data, pData, isSuccess, pIsSuccess, getActivity, isError, pIsError]);
 
+  
+  
+  
   return (
     <>
       {modal && (
@@ -90,8 +129,11 @@ export const ClassroomView: React.FC = () => {
           Create New Meeting
         </Button>
       </div>
-
+      
       <div className="pb-24 mx-4 pt-4 overflow-y-auto h-full pr-4">
+        <div className="pb-2">
+          <PostInput classId={classroom.class_id}/>
+        </div>
         {!isEmpty ? (
           Object.entries(activity).map(([startDate, act]) => (
             <>
@@ -107,9 +149,10 @@ export const ClassroomView: React.FC = () => {
                   <PostBlock
                     key={index}
                     teacher_name={name}
-                    posts={act.posts}
+                    posts={act.posts ? act.posts : act.content}
                     formatted_created_time={act.formatted_created_time}
                     link={act.link}
+                    attachments={act.attachments}
                   />
                 ))}
             </>

@@ -6,5 +6,6 @@ export interface Event {
     start_date: string
     date: Date;    	
 	time: string;
+    
 }
 

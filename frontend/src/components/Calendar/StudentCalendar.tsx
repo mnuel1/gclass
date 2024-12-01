@@ -149,12 +149,13 @@ export const CalendarView: React.FC = () => {
                           })()}
                         </p>
                       </div>
-                      <a
+                      {event.link && 
+                        <a
                         className="text-blue-700 hover:underline"
                         href={event.link}
                       >
                         Meeting Link
-                      </a>
+                      </a>}
                     </div>
                   </div>
                 ))

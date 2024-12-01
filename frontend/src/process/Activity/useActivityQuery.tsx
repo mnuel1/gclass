@@ -1,11 +1,30 @@
 // @ts-nocheck
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { fetchActivity, addMeetingService } from "./activityService";
+import { fetchActivity, addMeetingService, fetchPost } from "./activityService";
 import useModalStore from "../Modal/useModalStore";
 // import { useNavigate } from "react-router-dom";
 import { FailedToast } from "../../components/Toast/FailedToast";
 import { SuccessToast } from "../../components/Toast/SuccessToast";
+
+export const usePostQuery = (class_id: string) => {
+  const { data, isSuccess, isError, error, isLoading } = useQuery({
+    queryKey: ["postclass", class_id],
+    queryFn: () => fetchPost(class_id),
+    staleTime: 1000 * 60 * 5,
+    // refetchOnWindowFocus: false,
+  });
+  const pIsEmpty = isSuccess && (!data || data.length === 0);
+  const pData = data;
+  const pIsSuccess = isSuccess;
+  const pIsError = isError;
+  const pError = error;
+  const pIsLoading = isLoading
+    
+  return { pData, pIsSuccess, pIsError, pError, pIsLoading, pIsEmpty };
+};
+
+
 export const useActivityQuery = (class_id: string) => {
   const { data, isSuccess, isError, error, isLoading } = useQuery({
     queryKey: ["activity", class_id],

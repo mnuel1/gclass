@@ -309,19 +309,7 @@ export const ViewAssignment: React.FC = () => {
     setMembers(members?.filter((member) => member.student_id !== student_id));
   };
 
-  const handleDownload = (attachment) => {
-    if (attachment) {
-      const fileUrl = `${SERVER}/${attachment}`;
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.download =
-        attachment.split("/").pop() || "assignment-attachment";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
+  
   const MembersDialog = () => (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
@@ -367,6 +355,9 @@ export const ViewAssignment: React.FC = () => {
     </Dialog>
   );
 
+  const handleDownload = (attachment) => {
+    window.open(`${SERVER}/${attachment}`, "_blank")
+  }
   return (
     <>
       {del && (
@@ -637,16 +628,11 @@ export const ViewAssignment: React.FC = () => {
                             />
                           </div>
 
-                          {student.attachments && (
-                            <AttachmentSection
-                              attachments={student.attachments}
-                              handleDownload={() => handleDownload(student.attachments)}
-                            />
-                          )}
-                          {/* <FilePreview
+                          
+                          <FilePreview
                             filePath={`${SERVER}/${student.attachments}`}
-                            onDownload={() => {handleDownload}}
-                          /> */}
+                            onDownload={() => {handleDownload(student.attachments)}}
+                          />
 
                           <Button
                             onClick={() =>
