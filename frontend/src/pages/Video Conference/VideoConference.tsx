@@ -31,7 +31,7 @@ export const VideoConference: React.FC = () => {
   useEffect(() => {
     // Connect to WebSocket server as a teacher
     const socket = new WebSocket(
-      `ws://localhost:4000?role=teacher&classId=${classId}`
+      `ws://api.actsclassroom.online?role=teacher&classId=${classId}`
     );
     setWs(socket);
     socket.onopen = () => {

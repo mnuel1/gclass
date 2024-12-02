@@ -55,7 +55,7 @@ router.post("/student/forgot", async (req, res) => {
 router.post("/teacher/forgot", async (req, res) => {
   try {
     const { email_address } = req.body;
-    const forgotPasswordLink = `http://localhost:5173/teacher/reset?email=${encodeURIComponent(
+    const forgotPasswordLink = `http://actsclassroom.com/teacher/reset?email=${encodeURIComponent(
       email_address
     )}`;
 

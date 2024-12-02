@@ -89,7 +89,7 @@ export const StudentViewAssignment: React.FC = () => {
       try {
         startLoading();
         const response = await fetch(
-          "http://localhost:4000/student/upload/assignment",
+          "https://api.actsclassroom.online/student/upload/assignment",
           {
             method: "POST",
             body: formData,
