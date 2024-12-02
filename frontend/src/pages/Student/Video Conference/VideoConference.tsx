@@ -24,7 +24,7 @@ export const StudentVideoConference: React.FC = () => {
     }
 
     const socket = new WebSocket(
-      `ws://api.actsclassroom.online?role=student&classId=${classId}&studentId=${studentId}&studentName=${getUser()}`
+      `wss://api.actsclassroom.online?role=student&classId=${classId}&studentId=${studentId}&studentName=${getUser()}`
     );
 
     setWs(socket);
