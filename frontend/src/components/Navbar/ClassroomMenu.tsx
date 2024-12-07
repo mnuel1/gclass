@@ -13,6 +13,7 @@ type MainMenuProps = {
 }
 export const ClassroomMenu:React.FC<MainMenuProps> = ({children}) => {
     
+    
     const [classroom, setclassroom] = useState<ClassroomTypes>();    
     const length : number  = window.location.href.split("/").length
     const class_id = window.location.href.split("/")[length-2]

@@ -224,10 +224,7 @@ function App() {
                         
                         <Route path="*" element={<NotFound />} />
 
-                       
-                        
-                        
-                                                                                                                    
+                                                                                                                                                                                           
                         <Route path="/room" element={<VideoLayout />} >
                             <Route index element={<Main/>} />
                             <Route path="/room/:roomId" element={<Room/>} />

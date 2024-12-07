@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'; // Import necessary h
 import { Authentication } from './Auth/Authentication';
 
 const MeetingPage = () => {
-    const { getID, getRole } = Authentication()
+    const { getUser, getRole } = Authentication()
     const navigate = useNavigate();
     const { class_id, meeting_name } = useParams();
     
@@ -15,18 +15,19 @@ const MeetingPage = () => {
         }
                 
         const meet_name = decodeURIComponent(meeting_name || "");        
-        if (getRole() === 'Teacher') {
+        // if (getRole() === 'Teacher') {
                         
-            localStorage.setItem('meetingName', meet_name || "");
-            localStorage.setItem('classId', class_id || "");
-            navigate(`/teacher/${getID()}/class/${class_id}/meeting`);            
+        //     sessionStorage.setItem('user', getUser() || "");
+        //     sessionStorage.setItem('role', "teacher");
+        //     // navigate(`/teacher/${getID()}/class/${class_id}/meeting`);            
                     
-        } else if (getRole() === 'Student') {                        
-            localStorage.setItem('meetingName', meet_name || "");
-            localStorage.setItem('classId', class_id || "");            
+        // } else if (getRole() === 'Student') {                        
+        //     sessionStorage.setItem('user', getUser() || "");
+        //     sessionStorage.setItem('role', "student");            
        
-            navigate(`/student/${getID()}/class/${class_id}/meeting`);
-        } 
+        //     // navigate(`/student/${getID()}/class/${class_id}/meeting`);
+        // } 
+        navigate(`/room/${meet_name}`);
     }, [getRole(), navigate, class_id, meeting_name]);
 
     return null;

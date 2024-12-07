@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import Peer from 'simple-peer';
 import socket from '../../socket';
@@ -6,10 +7,14 @@ import VideoCard from '../Video/VideoCard';
 import BottomBar from '../BottomBar/BottomBar';
 import Chat from '../Chat/Chat';
 import Participants from '../Participants/Participants';
-
-
+import { FailedToast } from '../../components/Toast/FailedToast';
+import { SuccessToast } from '../../components/Toast/SuccessToast';
+import * as faceApi from 'face-api.js';
 const Room = () => {
+
   const currentUser = sessionStorage.getItem('user');
+  const role = sessionStorage.getItem('role');
+    
   const [peers, setPeers] = useState([]);
   const [userVideoAudio, setUserVideoAudio] = useState({
     localUser: { video: true, audio: true },
@@ -26,15 +31,32 @@ const Room = () => {
   const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate()
   
-  
+  const counter = useRef(0)
   useEffect(() => {  
-    if (!roomId) {
+    if (!roomId || !currentUser) {
       navigate('/room');
     }
     
   }, [roomId, navigate]);
 
+  
   useEffect(() => {
+
+    // send signal to socket for increment counter
+    const handleIncrement = () => {  
+      
+      if (counter.current === 3) return;
+      
+      counter.current += 1;
+      socket.emit('BE-student-increment', { roomId });
+      
+    };
+    if (role === "teacher") {      
+      socket.on('FE-teacher-notify', (data) => {                
+        FailedToast(data.msg);
+      })
+    }
+    
     // Get Video Devices
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const filtered = devices.filter((device) => device.kind === 'videoinput');
@@ -51,7 +73,7 @@ const Room = () => {
         userVideoRef.current.srcObject = stream;
         userStream.current = stream;
 
-        socket.emit('BE-join-room', { roomId, userName: currentUser });
+        socket.emit('BE-join-room', { roomId, userName: currentUser, role: role });
         socket.on('FE-user-join', (users) => {
           // all users
           const peersJoined : any = [];
@@ -74,6 +96,7 @@ const Room = () => {
               
               peersJoined.push(peer);
 
+                            
               setUserVideoAudio((preList) => {
                 return {
                   ...preList,
@@ -146,6 +169,52 @@ const Room = () => {
       });
     });
 
+    const detect = async () => {
+    
+      if (userVideoRef.current && role === "student") {
+        const constraints = { video: { facingMode: 'user' } };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        userVideoRef.current.srcObject = stream;
+        userVideoRef.current.play();
+
+        // Function to load face-api.js models
+        const loadModels = async () => {         
+          await faceApi.loadSsdMobilenetv1Model('/models')
+          await faceApi.loadFaceLandmarkModel('/models')
+          await faceApi.loadFaceRecognitionModel('/models')
+          console.log("Models loaded");
+        };
+
+        // Function to detect faces
+        const detectFaces = async () => {
+          
+          
+          if (userVideoRef.current) {
+            const canvas = faceApi.createCanvasFromMedia(userVideoRef.current);
+            document.body.append(canvas);
+            faceApi.matchDimensions(canvas, userVideoRef.current);
+
+            const detections = await faceApi.detectAllFaces(userVideoRef.current, new faceApi.SsdMobilenetv1Options())
+              .withFaceLandmarks().withFaceDescriptors();                                          
+
+            if (counter.current !== 3) {
+              if (detections.length > 0) {
+                SuccessToast("Student is present")
+              } else {
+                FailedToast("Student is not present")
+                handleIncrement();
+              }
+            }
+            
+          }
+        };
+
+        await loadModels();
+        setInterval(detectFaces, 5000);
+
+      }
+    }
+    detect()
     return () => {
       socket.disconnect();
     };
@@ -233,7 +302,7 @@ const Room = () => {
     e.preventDefault();
     socket.emit('BE-leave-room', { roomId, leaver: currentUser });
     sessionStorage.removeItem('user');
-    window.location.href = '/';
+    window.location.href = '/room';
   };
 
   const toggleCameraAudio = (target:string) => {

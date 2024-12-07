@@ -13,6 +13,7 @@ const Main: React.FC = () => {
     socket.on('FE-error-user-exist', ({ error }: { error: boolean }) => {
       if (!error) {
         sessionStorage.setItem('user', userName);
+        sessionStorage.setItem('role', userName === "t" ? "teacher" : "student");
         navigate(`/room/${roomName}`);
       } else {
         setErr(true);

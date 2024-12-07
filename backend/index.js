@@ -431,8 +431,7 @@ const logRoomParticipants = async (roomId) => {
 // Socket
 io.on('connection', (socket) => {
   console.log(`New User connected: ${socket.id}`);
-  
-  
+    
   socket.on('disconnect', () => {
     console.log('User disconnected!');
     // Clean up socketList on disconnect
@@ -456,12 +455,46 @@ io.on('connection', (socket) => {
   /**
    * Join Room
    */
-  socket.on('BE-join-room',async  ({ roomId, userName }) => {
+  socket.on("BE-student-increment", async ({ roomId }) => {
+    
+    const socketId = socket.id
+    if (socketList[socketId]) {
+    
+      const userRole = socketList[socketId].role;
+      // console.log(userRole);
+      
+      const user = socketList[socketId].userName;
+      if (userRole === 'student') {          
+          socketList[socketId].count += 1;
+          if (socketList[socketId].count === 3) {
+            socket.broadcast.to(roomId).emit('FE-teacher-notify', 
+              { msg: `${user} has been not detected 3 times.` }
+            );                        
+          }
+          // console.log(`Count for student with ID ${socketId} incremented to ${socketList[socketId].count}`);
+      } else {
+          console.log(`Role is not 'student' for socket ID ${socketId}.`);
+      }
+  } else {
+      console.log(`Socket ID ${socketId} not found in socketList.`);
+  }
+
+  }) 
+  socket.on('BE-join-room',async  ({ roomId, userName, role }) => {
+    console.log(`new user join`);
+
     // Socket Join RoomName
     socket.join(roomId);
-    socketList[socket.id] = { userName, video: true, audio: true };
+    socketList[socket.id] = { 
+      userName, 
+      video: true, 
+      audio: true, 
+      role: role, 
+      count: 0 
+    };
 
-    await logRoomParticipants(roomId);
+    console.log(`New User joined: ${userName} role: ${role}`);
+    // await logRoomParticipants(roomId);
 
     // Set User List
     io.in(roomId).fetchSockets().then((clients) => {
@@ -516,3 +549,60 @@ io.on('connection', (socket) => {
 http.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+// const wss = new WebSocket.Server({ server });
+
+// wss.on('connection', (ws, request) => {
+//   const parsedUrl = url.parse(request.url || '', true);
+//   const queryParams = new URLSearchParams(parsedUrl.query);  // Convert query object to URLSearchParams
+
+//   console.log(`New WebSocket connection: ${queryParams.toString()}`);
+//   const role = queryParams.get('role');
+//   const classId = queryParams.get('classId');
+//   const studentId = queryParams.get('studentId');
+//   const studentName = queryParams.get('studentName');
+
+//   if (!classId) {
+//     console.error('Class ID is missing!');
+//     return;
+//   }
+
+//   if (!classes[classId]) {
+//     classes[classId] = { teacherSocket: null, students: {} };
+//   }
+
+//   if (role === 'teacher') {
+//     classes[classId].teacherSocket = ws;
+//   } else if (role === 'student') {
+//     classes[classId].students[studentId] = 0;
+//     ws.on('message', (message) => {
+//       const data = JSON.parse(message.toString());
+//       const { action } = data;
+
+//       if (action === 'increment') {
+        
+//         classes[classId].students[studentId] += 1;
+//         if (classes[classId].students[studentId] === 3) {
+//           const teacherSocket = classes[classId].teacherSocket;
+//           if (teacherSocket && teacherSocket.readyState === WebSocket.OPEN) {
+//             // Notify the teacher
+//             teacherSocket.send(JSON.stringify({
+//               type: 'absence_alert',
+//               message: `${studentName} has been not detected 3 times.`,
+//             }));
+	    
+//           }
+//         }
+//       }
+//     });
+//   }
+
+//   ws.on('close', () => {
+//     if (role === 'teacher') {
+//       classes[classId].teacherSocket = null;
+//     } else if (role === 'student') {
+//       delete classes[classId].students[studentId];
+//     }
+//   });
+// });
