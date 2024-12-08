@@ -1,238 +1,271 @@
-import React, { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
-import { AssignmentType } from '../../../process/Assignment/assignmentType'
-import useModalStore from '../../../process/Modal/useModalStore'
-import { FailedToast } from '../../../components/Toast/FailedToast'
-import { SERVER } from '../../../process/axios'
-import { Accordion } from '../../../components/Accordion/Accordion'
-import { Authentication } from '../../../Auth/Authentication'
-import { SuccessToast } from '../../../components/Toast/SuccessToast'
-import { ConfirmModal } from '../../../components/Modal/ConfirmModal'
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+// import { ClassroomTypes } from "../../../process/Classroom/classroomTypes";
+import { AssignmentType } from "../../../process/Assignment/assignmentType";
+import useModalStore from "../../../process/Modal/useModalStore";
+import { FailedToast } from "../../../components/Toast/FailedToast";
+import { SERVER } from "../../../process/axios";
+// import { Accordion } from "../../../components/Accordion/Accordion";
+import { Authentication } from "../../../Auth/Authentication";
+import { SuccessToast } from "../../../components/Toast/SuccessToast";
+import { ConfirmModal } from "../../../components/Modal/ConfirmModal";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, Clock } from "lucide-react";
+import { DragDropFileUpload } from "@/components/ui/drag-drop-file-uploads";
+import { AttachmentSection } from "@/components/ui/file-preview";
 
 interface ErrorsState {
-    attachment?: string;
+  attachment?: string;
 }
 
-export const StudentViewAssignment:React.FC = () => {
-    const { getID } = Authentication()
-    const location = useLocation()
-    const navigate = useNavigate()    
-    const classroom : ClassroomTypes = location.state.classroom
-    const ass : AssignmentType = location.state.assignment    
-    const [errors, setErrors] = useState<ErrorsState>({})
-    const [form,setForm] = useState({        
-        attachment: ass.attachment,     
-    })
-    const [edit, setEdit] = useState(false)    
-    const [confirm, setConfirm] = useState(false)
-    
-    const {startLoading, stopLoading} = useModalStore()
-        
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-        
-        if (type === 'file') {            
-            const fileInput = e.target as HTMLInputElement;
-            const file = fileInput.files ? fileInput.files[0] : null;
-            setForm(prevForm => ({
-                ...prevForm,
-                ["attachment"]: file,
-            }));
-        } else {
-            setForm(prevForm => ({
-                ...prevForm,
-                [name]: value,
-            }));
-        }
-    };
-   
+export const StudentViewAssignment: React.FC = () => {
+  const { getID } = Authentication();
+  const location = useLocation();
+  const navigate = useNavigate();
+  // const classroom: ClassroomTypes = location.state.classroom;
+  const ass: AssignmentType = location.state.assignment;
+  const [errors, setErrors] = useState<ErrorsState>({});
+  const [form, setForm] = useState({
+    attachment: ass.attachment,
+  });
+  const [edit, setEdit] = useState(false);
+  const [confirm, setConfirm] = useState(false);
 
-    const validate = () => {
-        const newErrors: { [key: string]: string } = {};
-        
-        if (form.attachment.length <= 0) {
-            newErrors.attachment = "Attach your answers here.";
-        }
-        
-        return newErrors;
-    };
+  const { startLoading, stopLoading } = useModalStore();
 
+  // const handleChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  // ) => {
+  //   const { name, value, type } = e.target;
 
-    const handleSubmit = async () => {
-        // e.preventDefault();
-        const validationErrors = validate();
-                
-        if (Object.keys(validationErrors).length === 0) {         
+  //   if (type === "file") {
+  //     const fileInput = e.target as HTMLInputElement;
+  //     const file = fileInput.files ? fileInput.files[0] : null;
+  //     setForm((prevForm) => ({
+  //       ...prevForm,
+  //       ["attachment"]: file,
+  //     }));
+  //   } else {
+  //     setForm((prevForm) => ({
+  //       ...prevForm,
+  //       [name]: value,
+  //     }));
+  //   }
+  // };
 
-            const formData = new FormData();
-            formData.append('assignment_id', ass.assignment_id);
-            formData.append('student_id', getID()); 
-            formData.append('status', ass.assignment_status);
-            formData.append('attachment', form.attachment);
-                                    
-            try {
-                startLoading()
-                const response = await fetch("http://localhost:4000/student/upload/assignment", 
-                    {
-                        method:'POST',
-                        body: formData
-                    }
-                )
-
-                if (response.status === 201) {
-                    FailedToast("You cannot submit the assignment because the due date has passed.")
-                    stopLoading()
-                    return;
-                }
-                    
-                if (response.status === 200) {
-                    SuccessToast("Assignment Submitted!")                    
-                    stopLoading()
-                    window.location.reload()
-                    navigate(-1)
-                  
-                } else {                    
-                    FailedToast("Submit assignment failed!")
-                    stopLoading()
-                }
-                
-            } catch (error) {
-                FailedToast("Something went wrong!")
-                stopLoading()
-            }
-
-        } else {
-            setErrors(validationErrors);
-        }
-
+  const handleDownload = () => {
+    if (ass.attachments) {
+      const fileUrl = `${SERVER}/${ass.attachments}`;
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download =
+        ass.attachments.split("/").pop() || "assignment-attachment";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
-        
-    const isReturned = ass.assignment_status === 'Returned';
-    const isTurnedIn = ass.assignment_status === 'Turned In';
-    const isPending = ass.assignment_status === 'Pending';
-    const isNotTurnedIn = ass.assignment_status === 'Not Turned In';
-    const isLate = new Date() > new Date(ass.due_date);
-    const renderSubmitButton = () => (
-        <button
-          onClick={() => setConfirm(true)}
-          type='button'
-          className={`bg-blue-500 p-2 rounded-md w-[10rem] text-white hover:bg-blue-600 mt-2`}>
-          {isLate ? "Late Turned In" : (isTurnedIn ? "Turned In again" : (isPending ? "Turned In" : (isNotTurnedIn ? "Late Turned In" : "")))}
-        </button>
-      );
-            
-    return (
-        <>
-            {confirm && <ConfirmModal onClose={() => setConfirm(false)} id='' onConfirm={handleSubmit} />}
-            <div className='flex items-center justify-between border-b-2 border-gray-300 p-4'>
-            
-                <h1 className='text-2xl font-bold'>{classroom.name}'s Assignment</h1>
-                      
-             </div>
-            
-            <form action="">            
-                <div className='h-full p-4 m-6 flex flex-col gap-6'>
-                    <div className='flex flex-col gap-2 border border-gray-200 rounded-lg'>
-                        <div className='flex justify-between'>
-                            <div className='p-4 flex flex-col'>
-                                <div className='flex items-center gap-6 mb-4'>
-                                    <span className='text-sm font-light'>Due Date <span className='font-semibold'>{ass.due_date}</span></span>
-                                    <h2 className='font-semibold text-blue-700'>{ass.points} 
-                                        <span className='font-light text-black text-xs'> Points </span></h2>
-                                </div>
-                                <span className='text-xs italic text-gray-400'>Title: </span>
-                                <h2 className='font-semibold'>{ass.name}</h2>
-                            </div>
-                            
-                        </div>
-                        
-                        <div className='border-t border-gray-200 mx-6'>
+  };
 
-                        </div>
-                        <div className='p-4 flex flex-col'>
-                            <span className='text-xs italic text-gray-400'>Instruction:</span>
-                            <span className='font-medium text-sm'>{ass.instruction}</span>
-                            
-                        </div>
-                    </div>
-                   
-                    <div className='border border-gray-200 p-4 rounded-lg flex flex-col'>
-                    
-                        {ass.attachments && (                       
-                            <Accordion name='Attachment Preview'>
-                                {ass.attachments.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-                                    <img 
-                                        src={`${SERVER}/${ass.attachments}`} 
-                                        alt={`Preview of ${ass.assignment_id}`} 
-                                        style={{ width: '100%', maxWidth: '600px', height: 'auto' }} 
-                                    />
-                                ) : ass.attachments.match(/\.pdf$/i) ? (
-                                    <iframe 
-                                        src={`${SERVER}/${ass.attachments}`} 
-                                        width="100%" 
-                                        height="600px" 
-                                        title="PDF Preview"
-                                    />
-                                ) : (
-                                    <p>Preview not available for this file type.</p>
-                                )}                        
-                            </Accordion>
-                        )}
-                        {!ass.attachments  && 
-                            <>
-                                <span className='text-xs italic text-gray-400'>Insert your answer here.</span>
-                                <input                         
-                                    type="file"                            
-                                    onChange={handleChange}
-                                    className="w-full rounded-lg p-4 text-sm"
-                                />
-                                {errors.attachment && <p className="text-red-500 text-sm">{errors.attachment}</p>}
-                            </>
-                        }
-                        
-                    </div>
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
 
-                    <>
-                        {!isReturned && (
-                        <div className='flex gap-4'>
-                                                        
-                            {(!isTurnedIn )&& (
-                            <>
-                                {renderSubmitButton()}
-                            </>
-                            )}
+    if (form.attachment.length <= 0) {
+      newErrors.attachment = "Attach your answers here.";
+    }
 
-                            {(isTurnedIn || isLate) && ass.attachments && !edit && (
-                            <>
-                                <button
-                                onClick={() => setEdit(true)}
-                                type='button'
-                                className={`bg-blue-500 p-2 rounded-md w-[10rem] text-white hover:bg-blue-600 mt-2`}>
-                                Edit
-                                </button>                                
-                            </>
-                            )}
-                            
-                            {(isTurnedIn || isLate) && edit && (
-                            <>
-                                {renderSubmitButton()}
-                                <button
-                                onClick={() => setEdit(false)}
-                                type='button'
-                                className={`bg-gray-500 p-2 rounded-md w-[10rem] text-white hover:bg-gray-600 mt-2`}>
-                                Cancel Edit
-                                </button>
-                            </>
-                            )}
-                        </div>
-                        )}
-                    </>
-                </div>
-            </form>
-        
-        </>
-    )
+    return newErrors;
+  };
 
-}
+  const handleSubmit = async () => {
+    const validationErrors = validate();
 
+    if (Object.keys(validationErrors).length === 0) {
+      const formData = new FormData();
+      formData.append("assignment_id", ass.assignment_id);
+      formData.append("student_id", getID());
+      formData.append("status", ass.assignment_status);
+      formData.append("attachment", form.attachment);
+
+      try {
+        startLoading();
+        const response = await fetch(
+          "https://api.actsclassroom.online/student/upload/assignment",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (response.status === 201) {
+          FailedToast(
+            "You cannot submit the assignment because the due date has passed."
+          );
+          stopLoading();
+          return;
+        }
+
+        if (response.status === 200) {
+          SuccessToast("Assignment Submitted!");
+          stopLoading();
+          window.location.reload();
+          navigate(-1);
+        } else {
+          FailedToast("Submit assignment failed!");
+          stopLoading();
+        }
+      } catch (error) {
+        FailedToast("Something went wrong!");
+        stopLoading();
+      }
+    } else {
+      setErrors(validationErrors);
+    }
+  };
+
+  const isReturned = ass.assignment_status === "Returned";
+  const isTurnedIn = ass.assignment_status === "Turned In";
+  const isPending = ass.assignment_status === "Pending";
+  const isNotTurnedIn = ass.assignment_status === "Not Turned In";
+  const isLate = new Date() > new Date(ass.due_date);
+  const renderSubmitButton = () => (
+    <Button
+      onClick={() => setConfirm(true)}
+      type="button"
+      className="text-white"
+      size="sm"
+    >
+      {isLate
+        ? "Late Turned In"
+        : isTurnedIn
+        ? "Turned In again"
+        : isPending
+        ? "Turned In"
+        : isNotTurnedIn
+        ? "Late Turned In"
+        : ""}
+    </Button>
+  );
+
+  return (
+    <>
+      {confirm && (
+        <ConfirmModal
+          onClose={() => setConfirm(false)}
+          id=""
+          onConfirm={handleSubmit}
+        />
+      )}
+      <div className="flex items-center justify-between px-4 py-4">
+        <Button
+          variant="link"
+          className="text-black px-0"
+          onClick={() => navigate(-1)}
+        >
+          <ChevronLeft />
+          <span className="text-blue-700">Back</span>
+        </Button>
+        {isNotTurnedIn ? (
+          <div className="flex items-center gap-2 text-xs italic h-9 px-4 py-2">
+            {" "}
+            <Clock size={14} className="text-blue-700" />
+            Not Turned In{" "}
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+
+      <form action="" className="h-[80vh] overflow-hidden">
+        <div className="h-full overflow-y-auto pb-40 mx-4 flex flex-col gap-6 px-6 py-4 bg-white rounded-xl">
+          <div className="flex flex-col gap-2 ">
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              <div className="flex flex-col mb-4">
+                <h2 className="font-semibold text-2xl md:text-3xl">
+                  {ass.name}
+                </h2>
+                <span className="text-sm opacity-60">Due {ass.due_date}</span>
+              </div>
+              <div className="text-sm mt-1">
+                <p className="text-xs font-medium opacity-50">Points</p>
+                <h2>{ass.points} possible</h2>
+              </div>
+            </div>
+
+            <div className="text-sm mt-1">
+              <p className="text-xs font-medium opacity-50">Instructions</p>
+              {ass.instruction ? (
+                <h2>{ass.instruction}</h2>
+              ) : (
+                <p className="text-gray-500 italic">
+                  No instructions provided for this assignment.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            {ass.attachments && (
+              <AttachmentSection
+                attachments={ass.attachments}
+                handleDownload={handleDownload}
+              />
+            )}
+            {!ass.attachments && (
+              <>
+                <p className="text-xs font-medium opacity-50">
+                  Insert your answer here.
+                </p>
+                {!ass.attachments && (
+                  <DragDropFileUpload
+                    onFileChange={(file) =>
+                      setForm((prevForm) => ({
+                        ...prevForm,
+                        attachment: file,
+                      }))
+                    }
+                    error={errors.attachment}
+                  />
+                )}
+              </>
+            )}
+          </div>
+
+          <>
+            {!isReturned && (
+              <div className="flex flex-col sm:flex-row gap-2">
+                {!isTurnedIn && <>{renderSubmitButton()}</>}
+
+                {(isTurnedIn || isLate) && ass.attachments && !edit && (
+                  <>
+                    <Button
+                      onClick={() => setEdit(true)}
+                      type="button"
+                      className="text-white px-6"
+                      size="sm"
+                    >
+                      Edit
+                    </Button>
+                  </>
+                )}
+
+                {(isTurnedIn || isLate) && edit && (
+                  <>
+                    {renderSubmitButton()}
+                    <Button
+                      onClick={() => setEdit(false)}
+                      type="button"
+                      size="sm"
+                      className="text-white"
+                    >
+                      Cancel Edit
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+          </>
+        </div>
+      </form>
+    </>
+  );
+};

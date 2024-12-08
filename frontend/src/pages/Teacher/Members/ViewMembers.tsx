@@ -1,237 +1,360 @@
-import React, { useEffect, useState }from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { api } from '../../../process/axios'
-import useMemberStore from '../../../process/Member/useMemberStore'
-import { useMemberQuery, useAddMember, useRemoveMember } from '../../../process/Member/useMemberQuery'
-import useModalStore from '../../../process/Modal/useModalStore'
-import { Authentication } from '../../../Auth/Authentication'
+// @ts-nocheck
 
-import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Users, UserPlus, UserMinus, Search, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Authentication } from "../../../Auth/Authentication";
+import { api } from "../../../process/axios";
+import useMemberStore from "../../../process/Member/useMemberStore";
+import {
+  useMemberQuery,
+  useAddMember,
+  useRemoveMember,
+} from "../../../process/Member/useMemberQuery";
+import useModalStore from "../../../process/Modal/useModalStore";
+import { FailedToast } from "../../../components/Toast/FailedToast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PendingMembers } from "./PendingMembers";
 
-import { FailedToast } from '../../../components/Toast/FailedToast'
-import { Accordion } from '../../../components/Accordion/Accordion'
+const AddMemberDialog = ({ classroom, isOpen, setIsOpen }) => {
+  const [search, setSearch] = useState("");
+  const [members, setMembers] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const { startLoading, stopLoading } = useModalStore();
+  const addMembersMutation = useAddMember();
 
-
-export const PendingMembers = ({class_id}) => {
-
-    const [ member, getMember ] = useState([])
-
-    const {startLoading, stopLoading} = useModalStore()
-    useEffect(() => {
-        const getPendingMembers = async () => {
-            try {
-                startLoading();
-                                   
-                const response = await api.get(`/teacher/pending/member/${class_id}`,);
-                
-                if (response.status !== 200) {
-                  FailedToast("Something went wrong");
-                  stopLoading();
-                  return;
-                }                
-                getMember(response.data.data)
-                            
-                stopLoading();
-            } catch (error) {
-                console.error('Error fetching teachers:', error);
-                FailedToast("An error occurred while fetching teachers.");
-                stopLoading();
-            }
-        }
-        getPendingMembers()
-        
-    }, []);
-
-    const addMembersMutation = useAddMember()
-    const handleAddSave = (id, student) => {
-                
-        const data = {
-            class_id: id,
-            members: [student]
-        }
-        console.log(data);
-        addMembersMutation.mutate(data)
-        
-        
+  const searchStudents = async (searchTerm) => {
+    if (searchTerm.length < 2) {
+      setSearchResults([]);
+      return;
     }
+    startLoading();
+    try {
+      const response = await api.get(
+        `/search/students/${searchTerm}/${classroom.class_id}`
+      );
+      if (response.status === 200) {
+        setSearchResults(response.data.data);
+      }
+    } catch (error) {
+      FailedToast("Search failed");
+    } finally {
+      stopLoading();
+    }
+  };
 
-    const removeMemberMutation = useRemoveMember()
-    const handleRemoveSave = (id, student) => {
-        
-        const data = {
-            class_id: id,            
-            members: [student]
-        }
-        console.log(data);
-        
-        removeMemberMutation.mutate(data)        
-        window.location.reload()
-    }   
+  useEffect(() => {
+    const debounceSearch = setTimeout(() => {
+      searchStudents(search);
+    }, 500);
+    return () => clearTimeout(debounceSearch);
+  }, [search]);
 
-    return (
-        <Accordion name={`Students requesting to join: ${member.length === 0 ? '' : member.length}`}>
-            {member.length !== 0 ? (
-                member.map((student, index) => (
-                <>       
-                    <div key={index} className='flex items-center justify-between my-2 p-2 '>
-                        <div className='flex gap-2 items-center '>
-                            <div className='rounded-full w-[40px] flex justify-center p-2 
-                            bg-green-400 font-bold flex-none self-start'> {student.fullname[0].toUpperCase()} </div>
-                            <span className='font-semibold'>{student.fullname} </span>
+  const handleAddMember = (member) => {
+    if (!members.some((m) => m.student_id === member.student_id)) {
+      setMembers([...members, member]);
+    }
+    setSearch("");
+    setSearchResults([]);
+  };
+
+  const handleRemoveMember = (studentId) => {
+    setMembers(members.filter((m) => m.student_id !== studentId));
+  };
+
+  const handleSave = () => {
+    addMembersMutation.mutate({
+      class_id: classroom.class_id,
+      members: members,
+    });
+    setIsOpen(false);
+    window.location.reload();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add Members</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+            <Input
+              placeholder="Search students..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          {search && (
+            <ScrollArea className="h-48 rounded-md border">
+              {searchResults.map((result) => (
+                <div
+                  key={result.student_id}
+                  className="flex items-center justify-between p-2 hover:bg-gray-100"
+                >
+                  <span>{result.fullname}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleAddMember(result)}
+                  >
+                    Add
+                  </Button>
+                </div>
+              ))}
+            </ScrollArea>
+          )}
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium">Selected Students</h4>
+            <ScrollArea className="h-48 rounded-md border">
+              {members.map((member) => (
+                <div
+                  key={member.student_id}
+                  className="flex items-center justify-between p-2 hover:bg-gray-100"
+                >
+                  <span>{member.fullname}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemoveMember(member.student_id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </ScrollArea>
+          </div>
+          <Button onClick={handleSave} className="w-full">
+            Add Selected Members
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const RemoveMemberDialog = ({
+  classroom,
+  members: currentMembers,
+  isOpen,
+  setIsOpen,
+}) => {
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const removeMemberMutation = useRemoveMember();
+
+  const handleToggleMember = (member) => {
+    setSelectedMembers((prev) =>
+      prev.includes(member)
+        ? prev.filter((m) => m !== member)
+        : [...prev, member]
+    );
+  };
+
+  const handleRemove = () => {
+    removeMemberMutation.mutate({
+      class_id: classroom.class_id,
+      members: selectedMembers,
+    });
+    setIsOpen(false);
+    window.location.reload();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Remove Members</DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="h-[400px] rounded-md border p-4">
+          {currentMembers.map((member) => (
+            <div
+              key={member.student_id}
+              className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg"
+            >
+              <Checkbox
+                id={member.student_id}
+                checked={selectedMembers.includes(member)}
+                onCheckedChange={() => handleToggleMember(member)}
+              />
+              <span>{member.fullname}</span>
+            </div>
+          ))}
+        </ScrollArea>
+        <Button
+          onClick={handleRemove}
+          variant="destructive"
+          disabled={selectedMembers.length === 0}
+          className="w-full"
+        >
+          Remove Selected Members
+        </Button>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const Members = () => {
+  const { getUser } = Authentication();
+  const name = getUser();
+  const location = useLocation();
+  const classroom = location.state.classroom;
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+
+  const { data, isSuccess, isError, isLoading } = useMemberQuery(
+    classroom.class_id
+  );
+  const { member, getMember } = useMemberStore();
+  const { startLoading, stopLoading } = useModalStore();
+
+  useEffect(() => {
+    if (isLoading) startLoading();
+    else stopLoading();
+    if (isSuccess && data) getMember(data);
+    if (isError) FailedToast("Failed to load members");
+  }, [data, isSuccess, isError]);
+
+  const getInitialsColor = (name) => {
+    const colors = [
+      "bg-blue-500/10 text-blue-600",
+      "bg-purple-500/10 text-purple-600",
+      "bg-rose-500/10 text-rose-600",
+      "bg-amber-500/10 text-amber-600",
+      "bg-emerald-500/10 text-emerald-600",
+    ];
+    return colors[name.length % colors.length];
+  };
+
+  return (
+    <div className="h-[75vh] overflow-y-auto overflow-hidden pb-32">
+      <div className="px-4 py-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-medium tracking-tight text-gray-900">
+            {classroom.name}
+            <span className="text-sm font-normal text-gray-500 ml-2">
+              Members
+            </span>
+          </h1>
+        </div>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Users className="w-4 h-4" />
+            <span>{member.length + 1} members</span>
+          </div>
+          <div className="flex flex-col md:flex-row gap-2">
+            <Button
+              onClick={() => setIsAddDialogOpen(true)}
+              className="text-white text-xs px-4 h-fit py-2 rounded-xl shadown-none"
+            >
+              <UserPlus className="w-4 h-4" />
+              Add Member
+            </Button>
+            <Button
+              onClick={() => setIsRemoveDialogOpen(true)}
+              className="text-red-600 bg-transparent text-xs px-4 h-fit py-2 rounded-xl shadown-none border border-red-600"
+            >
+              <UserMinus className="w-4 h-4" />
+	      Remove Member
+
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="mb-4">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Teacher
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${getInitialsColor(
+                  name
+                )}`}
+              >
+                {name[0].toUpperCase()}
+              </div>
+              <div>
+                <div className="font-medium text-gray-900">{name}</div>
+                <div className="text-sm text-gray-500">Class Owner</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Students
+              </span>
+              <span className="text-sm text-gray-500">
+                {member.length} {member.length === 1 ? "student" : "students"}
+              </span>
+            </div>
+
+            {member.length > 0 ? (
+              <div className="space-y-4">
+                {member.map((student, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between py-2 group hover:bg-gray-50 rounded-lg transition-colors duration-200 px-2"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${getInitialsColor(
+                          student.fullname
+                        )}`}
+                      >
+                        {student.fullname[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {student.fullname}
                         </div>
-
-                        <div className='flex gap-4'>
-                            <button 
-                                className='px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700' 
-                                onClick={() => handleAddSave(class_id, student)}>
-                                    Accept
-                            </button>
-                            <button 
-                                className='px-4 py-2 rounded-md text-white bg-red-600 hover:bg-red-700' 
-                                onClick={() => handleRemoveSave(class_id, student)}>
-                                    Reject
-                            </button>
-
+                        <div className="text-sm text-gray-500">
+                          Joined {student.created_time}
                         </div>
-                    </div>                                                                
-                </>                      
-            ))): (
-                <></>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-gray-400">No students have joined yet</div>
+              </div>
             )}
-        </Accordion>
-    )
-}
+          </div>
 
-export const Members:React.FC = () => {
-    const { getUser } = Authentication()
-    const name = getUser()
-    // const [active, setActive] = useState("pending")
-    const location = useLocation()
-    const navigate = useNavigate()    
-    const classroom : ClassroomTypes = location.state.classroom
-    
-    const { data, isSuccess, isError, isLoading } = useMemberQuery(classroom.class_id);
-    
-    const { member, getMember } = useMemberStore()
-    const {    
-        startLoading,
-        stopLoading } = useModalStore()
-  
-    const handleAddMember = () => {
-        stopLoading()
-        navigate(`new`, {state:{ classroom: classroom}})
-    }
+          <PendingMembers class_id={classroom.class_id} />
+        </div>
 
-    const handleRemoveMember = () => {
-        stopLoading()
-        navigate(`remove`, {state:{ member: member, classroom: classroom}})
-    }
+        <AddMemberDialog
+          classroom={classroom}
+          isOpen={isAddDialogOpen}
+          setIsOpen={setIsAddDialogOpen}
+        />
 
-    useEffect(() => {
-        if (isLoading){
-            startLoading()
-        } else {
-            stopLoading()
-        }
-        if (isSuccess && data) {          
-            getMember(data);                        
-        }
+        <RemoveMemberDialog
+          classroom={classroom}
+          members={member}
+          isOpen={isRemoveDialogOpen}
+          setIsOpen={setIsRemoveDialogOpen}
+        />
+      </div>
+    </div>
+  );
+};
 
-        if (isError) {            
-            FailedToast("Something went wrong!")
-        }
-    }, [data, isSuccess, getMember, isError]);
-
-    return (
-        <>
-            
-            <div className='flex md:items-center justify-between flex-col md:flex-row gap-4 md:gap-0 
-                border-b-2 border-gray-300 px-8 py-4'>
-            
-                <h1 className='text-2xl font-bold'>{`${classroom.name}'s Members`.toUpperCase()}</h1>
-                <div className='flex gap-2'>
-
-                    <button 
-                        type='button' 
-                        className='p-2 rounded-md text-black flex 
-                        items-center gap-2 hover:bg-blue-200 border border-gray-300'
-                        onClick={handleAddMember}
-                        > 
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-
-                        Add Member
-                    </button>
-                    <button 
-                        type='button' 
-                        className='p-2 rounded-md text-black flex 
-                        items-center gap-2 hover:bg-red-300 bg-red-200  '
-                        onClick={handleRemoveMember}
-                        > 
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-red-800">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
-                        </svg>
-
-                        <span className='text-red-800'> Remove Member </span>
-                    </button>
-
-                </div>
-                
-            </div>
-            
-
-            <div className='p-4 m-6 bg-white grow'>          
-                <div className='flex flex-col gap-4 p-2'>
-                    <div className='flex border-b-2 border-gray-300'>
-                        <span className='text-[11px] text-gray-400'>Teacher</span>                            
-                    </div>
-                    <div className='flex justify-between'>
-                        <div className='flex gap-2 items-center'>
-                            <div className='rounded-full w-[40px] flex justify-center p-2 bg-[green] font-bold flex-none self-start'> T </div>
-                            <span className='font-semibold'>{name}</span>
-                        </div>
-
-                        <div>
-                            
-                        </div>
-                    </div>
-                    
-                    
-                    
-                </div>
-                                                                    
-                <div className='border-b-2 border-gray-300 my-2 '/>                            
-                <Accordion name={`${member.length === 0 ? '' : member.length} Students`}>
-
-                    {member.length !== 0 ? (
-                        member.map((student, index) => (
-                        <>       
-                            <div key={index} className='flex items-center justify-between my-2 p-2 '>
-                                <div className='flex gap-2 items-center '>
-                                    <div className='rounded-full w-[40px] flex justify-center p-2 
-                                    bg-green-400 font-bold flex-none self-start'> {student.fullname[0].toUpperCase()} </div>
-                                    <span className='font-semibold'>{student.fullname} </span>
-                                </div>
-
-                                <span className='text-xs text-gray-400'>{student.created_time}</span>
-                            </div>                                                                
-                        </>                      
-                    ))): (
-                        <h1 className='m-2 p-2 text-gray-400 text-sm'> No members yet.  
-                            <span onClick={handleAddMember} 
-                                className='cursor-pointer text-blue-500 hover:text-blue-600 m-2 font-semibold'>
-                                You can add your students here.
-                            </span>
-                        </h1>
-                    )}
-                </Accordion>
-
-                <PendingMembers class_id={classroom.class_id}/>
-            </div>
-
-        </>
-    )
-
-}
-
+export default Members;

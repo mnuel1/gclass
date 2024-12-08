@@ -239,9 +239,7 @@ const GetAssignStudentsWorkService = async(assignment_id) => {
                 assignments.*, 
                 GROUP_CONCAT(
                     CONCAT(
-                        '{"',
-                            'form_id": "', IFNULL(class_assignments.form_id, ''), '",',
-                            'form_answers": "', IFNULL(class_assignments.form_answers, ''), '",',
+                        '{"',                            
                             'assignment_status": "', IFNULL(class_assignments.assignment_status, ''), '",',
                             'pass_date": "', IFNULL(class_assignments.pass_date, ''), '",',
                             'grade": "', IFNULL(class_assignments.grade, ''), '",',
@@ -281,6 +279,7 @@ const GetAssignStudentsWorkService = async(assignment_id) => {
             assignment.students = JSON.parse(`[${assignment.students}]`)
             return assignment;
         });
+	
 
 
         return {
@@ -366,7 +365,7 @@ const GetGradeAssignmentService = async(class_id) => {
                 succesfull: false
             };
         }
-        // console.log(result[0].students);
+        
         
         
         const groupedResult = result.reduce((acc, assignment) => {
@@ -382,11 +381,12 @@ const GetGradeAssignmentService = async(class_id) => {
             assignment.due_date = dueDate
             assignment.start_date = dateStart
             assignment.formatted_start_date = formatDateTimeForAssignment(startDate);
-            assignment.students = JSON.parse(`[${assignment.students}]`);
+	    assignment.students = JSON.parse(`[${assignment.students}]`);
             acc[groupKey].push(assignment);
 
             return acc;
         }, {});
+
 
         return {
             error: false,
@@ -410,9 +410,7 @@ const GetAssignmentsService = async (class_id) => {
                 assignments.*,
                 GROUP_CONCAT(                   
                     CONCAT(
-                        '{',
-                            '"form_id": "', IFNULL(class_assignments.form_id, ''), '",',
-                            '"form_answers": "', IFNULL(class_assignments.form_answers, ''), '",',
+                        '{',                            
                             '"assignment_status": "', IFNULL(class_assignments.assignment_status, ''), '",',
                             '"pass_date": "', IFNULL(class_assignments.pass_date, ''), '",',
                             '"grade": "', IFNULL(class_assignments.grade, ''), '",',

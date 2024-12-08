@@ -1,21 +1,19 @@
-import React, { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // Import necessary hooks
-import { Authentication } from './Auth/Authentication';
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom"; // Import necessary hooks
+import { Authentication } from "./Auth/Authentication";
 
 const MeetingPage = () => {
-    const { getUser, getRole } = Authentication()
-    const navigate = useNavigate();
-    const { class_id, meeting_name } = useParams();
-    
-    
-    useEffect(() => {
-        
-        if (getRole() === null ) {
-            navigate(-1)
-        }
-                
-        const meet_name = decodeURIComponent(meeting_name || "");        
-        // if (getRole() === 'Teacher') {
+  const { getRole } = Authentication();
+  const navigate = useNavigate();
+  const { class_id, meeting_name } = useParams();
+
+  useEffect(() => {
+    if (getRole() === null) {
+      navigate(-1);
+    }
+
+    const meet_name = decodeURIComponent(meeting_name || "");
+    // if (getRole() === 'Teacher') {
                         
         //     sessionStorage.setItem('user', getUser() || "");
         //     sessionStorage.setItem('role', "teacher");
@@ -27,10 +25,11 @@ const MeetingPage = () => {
        
         //     // navigate(`/student/${getID()}/class/${class_id}/meeting`);
         // } 
-        navigate(`/room/${meet_name}`);
-    }, [getRole(), navigate, class_id, meeting_name]);
+//}
+        navigate(`/room/${meet_name}`);    
+  }, [getRole(), navigate, class_id, meeting_name]);
 
-    return null;
+  return null;
 };
 
 export default MeetingPage;

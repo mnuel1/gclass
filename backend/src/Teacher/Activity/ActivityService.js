@@ -8,6 +8,8 @@ const formatDateTimeForActivity = (date) => {
     return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }).format(date);
 };
 
+const transporter = require("../../../mailer")
+
 
 const GetActivityService = async (class_id) => {
     try {        
@@ -57,7 +59,7 @@ const CreateMeetingActivityService = async (meetingData) => {
     const connection = await db.getConnection();
     try {
         const { class_id, title } = meetingData;
-        const link = `/meeting/${class_id}/${encodeURIComponent(title + class_id)}`
+        const link = `/meeting/${class_id}/${encodeURIComponent(title)}`
         
         const post = `<h4 class='text-sm'>
             Meeting now : ${title}<br />
@@ -109,13 +111,13 @@ const CreateMeetingActivityService = async (meetingData) => {
         const emailAddresses = getStudentsResult.map(student => student.email_address).join(',');
 
         const mailOptions = {
-            from: 'nreplyedusync@resiboph.site',
+            from: 'noreply@resiboph.site',
             to: emailAddresses,
             subject: "Meeting now",
             html: `<h4 class='text-sm'>
             <strong>Meeting now!</strong><br />
             <strong>${title}</strong><br />
-            Don't forget, we've got a meeting today! Check our class in Edusync to join<br />                        
+            Don't forget, we've got a meeting today! Check our class in ActClassroom to join<br />                        
             See you there!
             </h4>`,            
         };

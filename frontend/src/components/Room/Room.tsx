@@ -6,7 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import VideoCard from '../Video/VideoCard';
 import BottomBar from '../BottomBar/BottomBar';
 import Chat from '../Chat/Chat';
-import Participants from '../Participants/Participants';
+//import Participants from '../Participants/Participants';
 import { FailedToast } from '../../components/Toast/FailedToast';
 import { SuccessToast } from '../../components/Toast/SuccessToast';
 import * as faceApi from 'face-api.js';
@@ -301,8 +301,7 @@ const Room = () => {
   const goToBack = (e) => {
     e.preventDefault();
     socket.emit('BE-leave-room', { roomId, leaver: currentUser });
-    sessionStorage.removeItem('user');
-    window.location.href = '/room';
+    window.history.back();
   };
 
   const toggleCameraAudio = (target:string) => {
@@ -427,11 +426,7 @@ const Room = () => {
         });
     }
   };
-  const clickParticipants = (e) => {    
-      e.stopPropagation();
-      setDisplayParticipant(!displayParticipant);    
-  }  
-  return (
+    return (
     <div className="flex w-full max-h-screen flex-row"onClick={clickBackground}>
       <div className='relative w-full h-screen'>
         <div className='max-w-full h-[92%] flex flex-row justify-around flex-wrap items-center p-[15px] border-box gap-2'>
@@ -466,11 +461,10 @@ const Room = () => {
           videoDevices={videoDevices}
           showVideoDevices={showVideoDevices}
           setShowVideoDevices={setShowVideoDevices}
-          clickParticipants={clickParticipants}
-        />
+                  />
       </div>
       <div className="relative">
-        <Participants display={displayParticipant} peers={peers}/>    
+         
         <Chat display={displayChat} roomId={roomId} />        
       </div>
       

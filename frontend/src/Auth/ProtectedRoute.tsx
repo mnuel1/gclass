@@ -8,12 +8,12 @@ interface ProtectedRouteProps {
 
 
 export const ProtectedRoute:React.FC<ProtectedRouteProps> = ({ children }) => {
-    const {getID} = Authentication()
-    const teacherId = getID();
-
-    if (teacherId) {
-        // Redirect to the teacher layout if teacherId exists
-        return <Navigate to={`/teacher/${teacherId}`} replace />;
+    const {getID, getRole} = Authentication()
+    const id = getID();
+    const role  = getRole() === "Student" ? "student" : "teacher"
+        
+    if (id) {        
+        return <Navigate to={`/${role}/${id}`} replace />;
     }
 
     return children;

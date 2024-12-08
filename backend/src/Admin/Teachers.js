@@ -141,11 +141,11 @@ const ChangeStatus = async (req, res) => {
         
 
         const mailOptions = {
-            from: 'nreplyedusync@resiboph.site',
+            from: 'noreply@resiboph.site',
             to: email_address,
             subject: `Your account has been approved!`,
             html: `<h4 class='text-sm'>
-            <strong>Welcome to Edusync!</strong><br />
+            <strong>Welcome to ActClassroom!</strong><br />
             <strong>Your account has been approved by the admin</strong><br />
             You can now access the portal and start using our services.<br />
             Your username is: <strong>${username}</strong><br />

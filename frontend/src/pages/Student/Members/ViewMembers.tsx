@@ -1,99 +1,138 @@
-import React, { useEffect }from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import useMemberStore from '../process/Member/useMemberStore'
-import { useMemberQuery } from '../process/Member/useMemberQuery'
-import useModalStore from '../../../process/Modal/useModalStore'
-import { Authentication } from '../../../Auth/Authentication'
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { Users } from "lucide-react";
+import useMemberStore from "../process/Member/useMemberStore";
+import { useMemberQuery } from "../process/Member/useMemberQuery";
+import useModalStore from "../../../process/Modal/useModalStore";
+import { ClassroomTypes } from "../../../process/Classroom/classroomTypes";
+import { FailedToast } from "../../../components/Toast/FailedToast";
 
-import { ClassroomTypes } from '../../../process/Classroom/classroomTypes'
+export const StudentMembers: React.FC = () => {
+  const location = useLocation();
+  const classroom: ClassroomTypes = location.state.classroom;
+  const { data, isSuccess, isError, isLoading } = useMemberQuery(
+    classroom.class_id
+  );
+  const { member, getMember } = useMemberStore();
+  const { startLoading, stopLoading } = useModalStore();
 
-import { FailedToast } from '../../../components/Toast/FailedToast'
-import { Accordion } from '../../../components/Accordion/Accordion'
+  useEffect(() => {
+    if (isLoading) {
+      startLoading();
+    } else {
+      stopLoading();
+    }
+    if (isSuccess && data) {
+      getMember(data);
+    }
+    if (isError) {
+      FailedToast("Something went wrong!");
+    }
+  }, [data, isSuccess, getMember, isError]);
 
+  const getInitialsColor = (name: string) => {
+    const colors = [
+      "bg-blue-500/10 text-blue-600",
+      "bg-purple-500/10 text-purple-600",
+      "bg-rose-500/10 text-rose-600",
+      "bg-amber-500/10 text-amber-600",
+      "bg-emerald-500/10 text-emerald-600",
+    ];
+    const index = name.length % colors.length;
+    return colors[index];
+  };
 
-export const StudentMembers:React.FC = () => {
+  return (
+    <div className="h-[90vh]">
+      <div className="px-4 py-4 overflow-y-auto h-full">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8">
+          <h1 className="text-2xl font-medium tracking-tight text-gray-900">
+            {classroom.name}
+            <span className="text-sm font-normal text-gray-500 ml-2">
+              Members
+            </span>
+          </h1>
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Users className="w-4 h-4" />
+            <span>{member.length + 1} members</span>
+          </div>
+        </div>
 
-    const location = useLocation()
-    const navigate = useNavigate()    
-    const classroom : ClassroomTypes = location.state.classroom
-    
-    const { data, isSuccess, isError, isLoading } = useMemberQuery(classroom.class_id);
-    const { member, getMember } = useMemberStore()
-    const {    
-        startLoading,
-        stopLoading } = useModalStore()
-
-       
-    useEffect(() => {
-        if (isLoading){
-            startLoading()
-        } else {
-            stopLoading()
-        }
-        if (isSuccess && data) {          
-            getMember(data);                        
-        }
-
-        if (isError) {            
-            FailedToast("Something went wrong!")
-        }
-    }, [data, isSuccess, getMember, isError]);
-
-    return (
-        <>
-            
-            <div className='flex md:items-center justify-between flex-col md:flex-row gap-4 md:gap-0 
-                border-b-2 border-gray-300 px-8 py-4'>            
-                <h1 className='text-2xl font-bold'>{`${classroom.name}'s Members`.toUpperCase()}</h1>    
+        {/* Content */}
+        <div className="space-y-4">
+          {/* Teacher Section */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="mb-4">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Teacher
+              </span>
             </div>
-            
-
-            <div className='p-4 m-6 bg-white grow'>        
-                <div className='flex flex-col gap-4 p-2'>
-                    <div className='flex border-b-2 border-gray-300'>
-                        <span className='text-[11px] text-gray-400'>Teacher</span>                            
-                    </div>
-                    <div className='flex justify-between'>
-                        <div className='flex gap-2 items-center'>
-                            <div className='rounded-full w-[40px] flex justify-center p-2 
-                            bg-blue-300 font-bold flex-none self-start'> {classroom.teacher_name.charAt(0).toUpperCase()} </div>
-                            <span className='font-semibold'>{classroom.teacher_name}</span>
-                        </div>
-
-                        <div>
-                            
-                        </div>
-                    </div>
-                    
-                    
-                    
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${getInitialsColor(
+                    classroom.teacher_name
+                  )}`}
+                >
+                  {classroom.teacher_name.charAt(0).toUpperCase()}
                 </div>
-                                                                    
-                <div className='border-b-2 border-gray-300 my-2 '/>                            
-                <Accordion name={`${member.length === 0 ? '' : member.length} Students`}>
+                <div>
+                  <div className="font-medium text-gray-900">
+                    {classroom.teacher_name}
+                  </div>
+                  <div className="text-sm text-gray-500">Class Owner</div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                    {member.length !== 0 ? (
-                        member.map((student, index) => (
-                        <>       
-                            <div key={index} className='flex items-center justify-between my-2 p-2 '>
-                                <div className='flex gap-2 items-center '>
-                                    <div className='rounded-full w-[40px] flex justify-center p-2 
-                                    bg-blue-300 font-bold flex-none self-start'> {student.fullname[0].toUpperCase()} </div>
-                                    <span className='font-semibold'>{student.fullname} </span>
-                                </div>
-
-                                <span className='text-xs text-gray-400'>{student.created_time}</span>
-                            </div>                                                                
-                        </>                      
-                    ))): (
-                        <h1 className='m-2 p-2 text-gray-400 text-sm'> No members yet.
-                        </h1>
-                    )}
-                </Accordion>
+          {/* Students Section */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Students
+              </span>
+              <span className="text-sm text-gray-500">
+                {member.length} {member.length === 1 ? "student" : "students"}
+              </span>
             </div>
 
-        </>
-    )
-
-}
-
+            {member.length !== 0 ? (
+              <div className="space-y-4">
+                {member.map((student, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between py-2 group hover:bg-gray-50 rounded-lg transition-colors duration-200 px-2"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${getInitialsColor(
+                          student.fullname
+                        )}`}
+                      >
+                        {student.fullname[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {student.fullname}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          Joined {student.created_time}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-gray-400">No students have joined yet</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
